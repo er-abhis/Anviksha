@@ -73,3 +73,52 @@ yarn-error.log
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# Dependencies
+node_modules/
+
+# React Native
+android/.gradle/
+android/app/build/
+android/build/
+ios/build/
+
+# Metro
+.metro-health-check*
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+# Android
+*.keystore
+*.jks
+key.properties
+
+# Local Gradle
+.gradle/
+
+# Build outputs
+build/
+dist/
+
+# Expo (if ever used)
+.expo/
+.expo-shared/
+
+# npm/yarn
+npm-debug.log*
+yarn-error.log*
+
+# Misc
+coverage/
