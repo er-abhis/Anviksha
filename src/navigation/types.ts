@@ -18,10 +18,12 @@ export type RootStackParamList = {
   Main: NavigatorScreenParams<MainTabParamList>;
   Settings: undefined;
   Simulations: { worldId?: string } | undefined;
-  Quiz: { simulationId?: string } | undefined;
+  Quiz: { lessonId: string };
+  Lesson: { lessonId: string };
   DailyChallenge: undefined;
   Worlds: undefined;
   WorldDetail: { worldId: string };
+  Glossary: undefined;
   ComingSoon: { title: string; message?: string } | undefined;
 };
 

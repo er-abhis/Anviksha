@@ -13,13 +13,12 @@ import {
 import { useTheme } from '../../../theme/ThemeProvider';
 import { RootStackParamList } from '../../../navigation/types';
 import { useProgressStore } from '../../../store';
-import { WORLDS, isWorldUnlocked, worldProgress } from '../../../content/curriculum';
+import { WORLDS, isWorldUnlocked, lessonsForWorld, worldProgress } from '../../../content';
 
 export const WorldsScreen: React.FC = () => {
   const { colors, radius, spacing } = useTheme();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const completedWorlds = useProgressStore(s => s.completedWorlds);
   const completed = useProgressStore(s => s.completed);
 
   return (
@@ -28,8 +27,9 @@ export const WorldsScreen: React.FC = () => {
       {[...WORLDS]
         .sort((a, b) => a.order - b.order)
         .map(world => {
-          const unlocked = isWorldUnlocked(world, completedWorlds);
+          const unlocked = isWorldUnlocked(world, completed);
           const progress = worldProgress(world.id, completed);
+          const lessonCount = lessonsForWorld(world.id).length;
           return (
             <Card
               key={world.id}
@@ -62,13 +62,15 @@ export const WorldsScreen: React.FC = () => {
                   />
                 </View>
                 <View style={styles.flex}>
-                  <Text variant="bodyStrong">{world.title}</Text>
+                  <Text variant="bodyStrong">{`${world.order}. ${world.title}`}</Text>
                   <Text variant="caption" color="textSecondary">
-                    {unlocked
-                      ? world.subtitle
-                      : 'Complete previous worlds to unlock'}
+                    {!unlocked
+                      ? 'Complete previous worlds to unlock'
+                      : lessonCount > 0
+                      ? `${lessonCount} lessons · ${world.subtitle}`
+                      : `${world.subtitle} · lessons coming soon`}
                   </Text>
-                  {unlocked && (
+                  {unlocked && lessonCount > 0 && (
                     <View style={{ marginTop: spacing.sm }}>
                       <ProgressBar progress={progress} />
                     </View>

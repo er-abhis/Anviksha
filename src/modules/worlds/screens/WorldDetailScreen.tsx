@@ -18,7 +18,7 @@ import {
 import { useTheme } from '../../../theme/ThemeProvider';
 import { RootStackParamList } from '../../../navigation/types';
 import { useProgressStore } from '../../../store';
-import { WORLDS, lessonsForWorld } from '../../../content/curriculum';
+import { WORLDS, isLessonUnlocked, lessonsForWorld } from '../../../content';
 
 export const WorldDetailScreen: React.FC = () => {
   const { colors, radius, spacing } = useTheme();
@@ -54,8 +54,13 @@ export const WorldDetailScreen: React.FC = () => {
             {world.title}
           </Text>
           <Text variant="body" color="textInverse" style={styles.sub}>
-            {world.subtitle}
+            {world.description}
           </Text>
+          {lessons.length > 0 && (
+            <Text variant="label" color="textInverse" style={{ marginTop: spacing.md, opacity: 0.9 }}>
+              {`${lessons.filter(l => l.id in completed).length} / ${lessons.length} lessons complete`}
+            </Text>
+          )}
         </View>
       </Gradient>
 
@@ -63,53 +68,38 @@ export const WorldDetailScreen: React.FC = () => {
       {lessons.length === 0 ? (
         <EmptyState
           icon="book-outline"
-          title="No lessons yet"
-          message="Lessons for this world are coming soon."
+          title="Lessons coming soon"
+          message="This world is on the roadmap. Keep progressing through the earlier worlds — its lessons will appear here."
         />
       ) : (
         lessons.map(lesson => {
           const done = lesson.id in completed;
+          const unlocked = isLessonUnlocked(lesson, completed);
+          const bg = done ? colors.success : unlocked ? colors.primaryMuted : colors.surfaceAlt;
+          const iconName = done ? 'checkmark' : unlocked ? 'play' : 'lock-closed';
+          const iconColor = done ? '#FFFFFF' : unlocked ? colors.primary : colors.textTertiary;
           return (
             <Card
               key={lesson.id}
               elevation="sm"
-              onPress={() =>
-                navigation.navigate('ComingSoon', {
-                  title: lesson.title,
-                  message:
-                    'This lesson’s interactive content is coming soon. Your progress will be saved once it lands.',
-                })
-              }
+              style={{ opacity: unlocked || done ? 1 : 0.7 }}
+              onPress={() => navigation.navigate('Lesson', { lessonId: lesson.id })}
             >
               <View style={[styles.row, { gap: spacing.md }]}>
-                <View
-                  style={[
-                    styles.badge,
-                    {
-                      backgroundColor: done
-                        ? colors.success
-                        : colors.primaryMuted,
-                      borderRadius: radius.sm,
-                    },
-                  ]}
-                >
-                  <Icon
-                    name={done ? 'checkmark' : 'play'}
-                    size={18}
-                    color={done ? '#FFFFFF' : colors.primary}
-                  />
+                <View style={[styles.badge, { backgroundColor: bg, borderRadius: radius.sm }]}>
+                  <Icon name={iconName} size={18} color={iconColor} />
                 </View>
                 <View style={styles.flex}>
-                  <Text variant="bodyStrong">{lesson.title}</Text>
+                  <Text variant="bodyStrong">{`${lesson.order}. ${lesson.title}`}</Text>
                   <Text variant="caption" color="textSecondary">
-                    {`${lesson.estimatedMinutes} min · ${lesson.summary}`}
+                    {done
+                      ? `Completed · ${lesson.estimatedMinutes} min`
+                      : unlocked
+                      ? `${lesson.estimatedMinutes} min · ${lesson.difficulty} · ${lesson.xp} XP`
+                      : 'Locked — finish the previous lesson'}
                   </Text>
                 </View>
-                <Icon
-                  name="chevron-forward"
-                  size={18}
-                  color={colors.textTertiary}
-                />
+                <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
               </View>
             </Card>
           );

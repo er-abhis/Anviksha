@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -13,15 +13,33 @@ import {
 } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { RootStackParamList } from '../../../navigation/types';
-import { useProgressStore } from '../../../store';
+import { useAchievementsStore, useProgressStore } from '../../../store';
+import { BADGES, LESSONS, WORLDS, isWorldUnlocked } from '../../../content';
 
 export const ProfileScreen: React.FC = () => {
-  const { colors, spacing } = useTheme();
+  const { colors, radius, spacing } = useTheme();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  const { xp, coins, level, streakDays } = useProgressStore();
+  const { xp, coins, level, streakDays, completed } = useProgressStore();
+  const unlocked = useAchievementsStore(s => s.unlocked);
   const fresh = xp === 0 && coins === 0;
+
+  const lessonsDone = Object.keys(completed).length;
+  const worldsUnlocked = WORLDS.filter(w => isWorldUnlocked(w, completed)).length;
+  const badgesEarned = BADGES.filter(b => unlocked[b.slug]).length;
+
+  const stats = [
+    { icon: 'book', label: 'Lessons', value: `${lessonsDone}/${LESSONS.length}` },
+    { icon: 'planet', label: 'Worlds', value: `${worldsUnlocked}/${WORLDS.length}` },
+    { icon: 'trophy', label: 'Badges', value: `${badgesEarned}/${BADGES.length}` },
+  ];
+
+  const menu: { icon: string; label: string; onPress: () => void }[] = [
+    { icon: 'map-outline', label: 'My Worlds', onPress: () => navigation.navigate('Worlds') },
+    { icon: 'book-outline', label: 'AI Glossary', onPress: () => navigation.navigate('Glossary') },
+    { icon: 'settings-outline', label: 'Settings', onPress: () => navigation.navigate('Settings') },
+  ];
 
   return (
     <Screen scroll contentContainerStyle={{ gap: spacing.xl }}>
@@ -51,7 +69,7 @@ export const ProfileScreen: React.FC = () => {
         </View>
       </Card>
 
-      <View style={[styles.stats, { gap: spacing.sm }]}>
+      <View style={[styles.badges, { gap: spacing.sm }]}>
         <XPBadge value={xp} kind="xp" />
         <XPBadge value={coins} kind="coins" />
         <XPBadge value={streakDays} kind="streak" />
@@ -59,9 +77,46 @@ export const ProfileScreen: React.FC = () => {
 
       {fresh && (
         <Text variant="body" color="textSecondary" center>
-          Complete your first challenge to start earning XP and coins.
+          Complete your first lesson or daily challenge to start earning XP and coins.
         </Text>
       )}
+
+      <Card elevation="sm" padded={false}>
+        <View style={styles.statsRow}>
+          {stats.map((s, i) => (
+            <View
+              key={s.label}
+              style={[
+                styles.stat,
+                i < stats.length - 1 && { borderRightWidth: StyleSheet.hairlineWidth, borderRightColor: colors.border },
+              ]}
+            >
+              <Icon name={s.icon} size={18} color={colors.primary} />
+              <Text variant="h3">{s.value}</Text>
+              <Text variant="caption" color="textSecondary">{s.label}</Text>
+            </View>
+          ))}
+        </View>
+      </Card>
+
+      <Card elevation="sm" padded={false} style={{ paddingHorizontal: spacing.lg }}>
+        {menu.map((m, i) => (
+          <Pressable
+            key={m.label}
+            onPress={m.onPress}
+            style={[
+              styles.menuRow,
+              i < menu.length - 1 && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border },
+            ]}
+          >
+            <View style={[styles.menuIcon, { backgroundColor: colors.surfaceAlt, borderRadius: radius.sm }]}>
+              <Icon name={m.icon} size={18} color={colors.text} />
+            </View>
+            <Text variant="body" style={styles.flex}>{m.label}</Text>
+            <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
+          </Pressable>
+        ))}
+      </Card>
     </Screen>
   );
 };
@@ -69,12 +124,10 @@ export const ProfileScreen: React.FC = () => {
 const styles = StyleSheet.create({
   identity: { flexDirection: 'row', alignItems: 'center' },
   flex: { flex: 1 },
-  stats: { flexDirection: 'row' },
-  avatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  badges: { flexDirection: 'row' },
+  avatar: { width: 56, height: 56, borderRadius: 28, alignItems: 'center', justifyContent: 'center' },
+  statsRow: { flexDirection: 'row' },
+  stat: { flex: 1, alignItems: 'center', gap: 4, paddingVertical: 18 },
+  menuRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 14 },
+  menuIcon: { width: 34, height: 34, alignItems: 'center', justifyContent: 'center' },
 });

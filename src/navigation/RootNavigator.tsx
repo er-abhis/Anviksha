@@ -17,6 +17,8 @@ import { QuizScreen } from '../modules/quiz/screens/QuizScreen';
 import { DailyChallengeScreen } from '../modules/dailyChallenge/screens/DailyChallengeScreen';
 import { WorldsScreen } from '../modules/worlds/screens/WorldsScreen';
 import { WorldDetailScreen } from '../modules/worlds/screens/WorldDetailScreen';
+import { LessonScreen } from '../modules/learn/screens/LessonScreen';
+import { GlossaryScreen } from '../modules/glossary/screens/GlossaryScreen';
 import { ComingSoonScreen } from '../modules/common/screens/ComingSoonScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -60,7 +62,21 @@ export const RootNavigator: React.FC = () => {
           options={{ presentation: 'card', animation: 'slide_from_right' }}
         />
         <Stack.Screen name="Simulations" component={SimulationsScreen} />
-        <Stack.Screen name="Quiz" component={QuizScreen} />
+        <Stack.Screen
+          name="Lesson"
+          component={LessonScreen}
+          options={{ animation: 'slide_from_right' }}
+        />
+        <Stack.Screen
+          name="Quiz"
+          component={QuizScreen}
+          options={{ animation: 'slide_from_bottom' }}
+        />
+        <Stack.Screen
+          name="Glossary"
+          component={GlossaryScreen}
+          options={{ animation: 'slide_from_right' }}
+        />
         <Stack.Screen
           name="DailyChallenge"
           component={DailyChallengeScreen}

@@ -1,182 +1,146 @@
 import React, { useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {
-  Button,
-  Card,
-  EmptyState,
-  Header,
-  Screen,
-  Text,
-  XPBadge,
-} from '../../../components';
+import { Button, Card, Header, Screen, Text, XPBadge } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { useAchievementsStore, useProgressStore } from '../../../store';
-import { DAILY_CHALLENGE, todayISO } from '../../../content/curriculum';
-
-const LETTERS = ['A', 'B', 'C', 'D'];
+import {
+  buildDailyChallenge,
+  questionsByIds,
+  todayISO,
+} from '../../../content';
+import { QuizResult, QuizSession } from '../../learn/components/QuizSession';
 
 export const DailyChallengeScreen: React.FC = () => {
-  const { colors, radius, spacing } = useTheme();
+  const { colors, spacing } = useTheme();
   const navigation = useNavigation();
 
-  const q = DAILY_CHALLENGE;
-  const today = todayISO();
-  const completedDate = useProgressStore(s => s.dailyCompletedDate);
-  const completeDailyChallenge = useProgressStore(
-    s => s.completeDailyChallenge,
-  );
-  const logActivity = useProgressStore(s => s.logActivity);
+  const store = useProgressStore();
   const unlock = useAchievementsStore(s => s.unlock);
+  const today = todayISO();
 
-  const alreadyDone = completedDate === today;
-  const [selected, setSelected] = useState<number | null>(null);
-  const answered = selected !== null;
+  // Freeze the day's session on mount so it doesn't reshuffle after completion.
+  const [daily] = useState(() => buildDailyChallenge(today, store.completed));
+  const questions = questionsByIds(daily.questionIds);
 
-  const onSelect = (i: number) => {
-    if (answered || alreadyDone) return;
-    setSelected(i);
-    const correct = i === q.correctIndex;
+  const doneToday = store.dailyCompletedDate === today;
+  const [running, setRunning] = useState(false);
+  const [practice, setPractice] = useState(false);
+
+  const eligible = !doneToday && !practice;
+
+  const onComplete = (r: QuizResult) => {
+    if (!eligible) return;
     const at = Date.now();
-    completeDailyChallenge(
-      today,
-      correct ? q.xpReward : 0,
-      correct ? q.coinReward : 0,
-    );
+    store.completeDailyChallenge(today, r.xp, r.coins);
     unlock('first-challenge', at);
-    logActivity({
-      label: correct
-        ? 'Daily challenge solved'
-        : 'Daily challenge attempted',
-      detail: correct ? `+${q.xpReward} XP` : 'Better luck tomorrow',
-      icon: correct ? 'checkmark-circle' : 'close-circle',
+    store.logActivity({
+      label: 'Completed the daily challenge',
+      detail: `${r.correct}/${r.total} correct · +${r.xp} XP`,
+      icon: 'sparkles',
       at,
     });
   };
 
-  if (alreadyDone && !answered) {
+  if (running) {
     return (
-      <Screen>
-        <Header
-          title="Daily Challenge"
-          onBack={() => navigation.goBack()}
-        />
-        <EmptyState
-          icon="checkmark-done-circle-outline"
-          title="Challenge complete"
-          message="You’ve finished today’s challenge. Come back tomorrow for a new one."
-          actionLabel="Back to Home"
-          onAction={() => navigation.goBack()}
-        />
+      <Screen padded={false} edges={['top']}>
+        <Header title="Daily Challenge" onBack={() => navigation.goBack()} />
+        <View style={{ flex: 1 }}>
+          <QuizSession
+            questions={questions}
+            passThreshold={0}
+            computeReward={(correct) =>
+              eligible
+                ? { xp: r(daily, correct, 'xp'), coins: r(daily, correct, 'coins') }
+                : { xp: 0, coins: 0 }
+            }
+            onComplete={onComplete}
+            onExit={() => navigation.goBack()}
+          />
+        </View>
       </Screen>
     );
   }
-
-  const correct = selected === q.correctIndex;
 
   return (
     <Screen scroll contentContainerStyle={{ gap: spacing.xl }}>
       <Header title="Daily Challenge" onBack={() => navigation.goBack()} />
 
-      <View style={styles.rewardRow}>
-        <View style={styles.flex}>
-          <Text variant="label" color="textSecondary">
-            Today’s question
-          </Text>
-          <Text variant="h2">{q.question}</Text>
-        </View>
-        <XPBadge value={q.xpReward} kind="xp" />
-      </View>
-
-      <View style={{ gap: spacing.sm }}>
-        {q.options.map((opt, i) => {
-          const isChosen = selected === i;
-          const isRight = i === q.correctIndex;
-          let borderColor = colors.border;
-          let bg = colors.surface;
-          if (answered && isRight) {
-            borderColor = colors.success;
-            bg = colors.surfaceAlt;
-          } else if (answered && isChosen && !isRight) {
-            borderColor = colors.error;
-            bg = colors.surfaceAlt;
-          }
-          return (
-            <Pressable
-              key={i}
-              onPress={() => onSelect(i)}
-              disabled={answered}
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: spacing.md,
-                padding: spacing.lg,
-                borderRadius: radius.md,
-                borderWidth: 1,
-                borderColor,
-                backgroundColor: bg,
-                opacity: answered && !isChosen && !isRight ? 0.6 : 1,
-              }}
-            >
-              <View
-                style={[
-                  styles.letter,
-                  { backgroundColor: colors.surfaceAlt, borderRadius: radius.sm },
-                ]}
-              >
-                <Text variant="label" color="textSecondary">
-                  {LETTERS[i]}
-                </Text>
-              </View>
-              <Text variant="body" style={styles.flex}>
-                {opt}
-              </Text>
-              {answered && isRight && (
-                <Icon name="checkmark-circle" size={20} color={colors.success} />
-              )}
-              {answered && isChosen && !isRight && (
-                <Icon name="close-circle" size={20} color={colors.error} />
-              )}
-            </Pressable>
-          );
-        })}
-      </View>
-
-      {answered && (
-        <Card elevation="md">
-          <View style={styles.resultRow}>
-            <Icon
-              name={correct ? 'trophy' : 'information-circle'}
-              size={22}
-              color={correct ? colors.success : colors.primary}
-            />
-            <Text variant="bodyStrong" color={correct ? 'success' : 'text'}>
-              {correct
-                ? `Correct! +${q.xpReward} XP · +${q.coinReward} coins`
-                : 'Not quite — the right answer is highlighted.'}
+      <Card elevation="md">
+        <View style={[styles.head, { marginBottom: spacing.md }]}>
+          <View style={[styles.icon, { backgroundColor: colors.primaryMuted }]}>
+            <Icon name="sparkles" size={26} color={colors.primary} />
+          </View>
+          <View style={styles.flex}>
+            <Text variant="h2">Today’s Challenge</Text>
+            <Text variant="label" color="textSecondary">
+              {`${questions.length} questions from your unlocked lessons`}
             </Text>
           </View>
+        </View>
+
+        {doneToday ? (
+          <View style={[styles.doneBanner, { backgroundColor: colors.surfaceAlt }]}>
+            <Icon name="checkmark-done-circle" size={20} color={colors.success} />
+            <Text variant="body" color="textSecondary" style={styles.flex}>
+              Completed today. Come back tomorrow for a fresh set — or practise now (no rewards).
+            </Text>
+          </View>
+        ) : (
+          <View style={[styles.rewardRow, { gap: spacing.sm }]}>
+            <XPBadge value={daily.xpReward} kind="xp" />
+            <XPBadge value={daily.coinReward} kind="coins" />
+            <Text variant="caption" color="textTertiary" style={styles.flex}>
+              Earn per correct answer
+            </Text>
+          </View>
+        )}
+      </Card>
+
+      <View style={{ gap: spacing.sm }}>
+        {!doneToday && (
           <Button
-            label="Back to Home"
-            size="sm"
-            onPress={() => navigation.goBack()}
-            style={{ marginTop: spacing.lg }}
+            label="Start challenge"
+            onPress={() => setRunning(true)}
+            right={<Icon name="arrow-forward" size={18} color={colors.onPrimary} />}
           />
-        </Card>
-      )}
+        )}
+        {doneToday && (
+          <Button
+            label="Practise again"
+            variant="secondary"
+            onPress={() => {
+              setPractice(true);
+              setRunning(true);
+            }}
+          />
+        )}
+        <Text variant="caption" color="textTertiary" center>
+          Question types include multiple choice, true/false, matching, ordering and scenarios.
+        </Text>
+      </View>
     </Screen>
   );
 };
 
+// Per-correct reward from the session's max reward (xpReward/coinReward are per-question totals).
+const r = (
+  daily: { xpReward: number; coinReward: number; questionIds: string[] },
+  correct: number,
+  kind: 'xp' | 'coins',
+): number => {
+  const perQ = kind === 'xp'
+    ? daily.xpReward / daily.questionIds.length
+    : daily.coinReward / daily.questionIds.length;
+  return Math.round(perQ * correct);
+};
+
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  rewardRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
-  letter: {
-    width: 32,
-    height: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  resultRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  head: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  icon: { width: 52, height: 52, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
+  doneBanner: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 12, borderRadius: 12 },
+  rewardRow: { flexDirection: 'row', alignItems: 'center' },
 });

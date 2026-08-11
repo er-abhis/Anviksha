@@ -4,12 +4,12 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { Card, EmptyState, Header, Screen, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { useAchievementsStore } from '../../../store';
-import { ACHIEVEMENTS } from '../../../content/curriculum';
+import { BADGES } from '../../../content';
 
 export const AchievementsScreen: React.FC = () => {
   const { colors, radius, spacing } = useTheme();
   const unlocked = useAchievementsStore(s => s.unlocked);
-  const unlockedCount = ACHIEVEMENTS.filter(a => unlocked[a.slug]).length;
+  const unlockedCount = BADGES.filter(a => unlocked[a.slug]).length;
 
   return (
     <Screen scroll contentContainerStyle={{ gap: spacing.md }}>
@@ -23,11 +23,11 @@ export const AchievementsScreen: React.FC = () => {
         />
       ) : (
         <Text variant="label" color="textSecondary">
-          {`${unlockedCount} of ${ACHIEVEMENTS.length} unlocked`}
+          {`${unlockedCount} of ${BADGES.length} unlocked`}
         </Text>
       )}
 
-      {ACHIEVEMENTS.map(a => {
+      {BADGES.map(a => {
         const isUnlocked = Boolean(unlocked[a.slug]);
         return (
           <Card

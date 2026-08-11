@@ -8,6 +8,7 @@ import { useTheme } from '../../../theme/ThemeProvider';
 import { useResponsive } from '../../../hooks/useResponsive';
 import { CONTENT_MAX_WIDTH } from '../../../constants/layout';
 import {
+  Card,
   EmptyState,
   IconButton,
   SectionTitle,
@@ -17,13 +18,13 @@ import {
 import { RootStackParamList } from '../../../navigation/types';
 import { useAchievementsStore, useProgressStore } from '../../../store';
 import {
-  ACHIEVEMENTS,
-  DAILY_CHALLENGE,
+  BADGES,
+  buildDailyChallenge,
   currentWorld,
   firstAvailableLesson,
   todayISO,
   worldProgress,
-} from '../../../content/curriculum';
+} from '../../../content';
 import { ContinueCard } from '../components/ContinueCard';
 import { DailyChallengeCard } from '../components/DailyChallengeCard';
 import { CurrentWorldCard } from '../components/CurrentWorldCard';
@@ -36,24 +37,21 @@ export const HomeScreen: React.FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  const { xp, coins, level, streakDays, completed, completedWorlds, activity } =
+  const { xp, coins, level, streakDays, completed, activity } =
     useProgressStore();
   const dailyCompletedDate = useProgressStore(s => s.dailyCompletedDate);
   const unlocked = useAchievementsStore(s => s.unlocked);
 
-  const world = currentWorld(completedWorlds);
-  const lesson = firstAvailableLesson(completed, completedWorlds);
+  const world = currentWorld(completed);
+  const lesson = firstAvailableLesson(completed);
   const dailyDone = dailyCompletedDate === todayISO();
+  const daily = buildDailyChallenge(todayISO(), completed);
 
-  const unlockedAchievements = ACHIEVEMENTS.filter(a => unlocked[a.slug]);
+  const unlockedAchievements = BADGES.filter(a => unlocked[a.slug]);
 
   const openLesson = () => {
     if (!lesson) return;
-    navigation.navigate('ComingSoon', {
-      title: lesson.title,
-      message:
-        'This lesson’s interactive content is coming soon. Your progress will be saved once it lands.',
-    });
+    navigation.navigate('Lesson', { lessonId: lesson.id });
   };
 
   return (
@@ -135,11 +133,11 @@ export const HomeScreen: React.FC = () => {
           <SectionTitle title="Daily Challenge" />
           <DailyChallengeCard
             data={{
-              title: dailyDone ? 'Today’s challenge' : 'No challenge yet today',
+              title: dailyDone ? 'Today’s challenge' : 'Today’s challenge',
               description: dailyDone
                 ? 'Nice work — you’ve completed today’s challenge.'
-                : DAILY_CHALLENGE.question,
-              xpReward: DAILY_CHALLENGE.xpReward,
+                : `${daily.questionIds.length} quick questions from your unlocked lessons. Earn up to ${daily.xpReward} XP.`,
+              xpReward: daily.xpReward,
               completed: dailyDone,
             }}
             onStart={() => navigation.navigate('DailyChallenge')}
@@ -203,6 +201,22 @@ export const HomeScreen: React.FC = () => {
           )}
         </View>
 
+        {/* AI Glossary */}
+        <Card elevation="sm" onPress={() => navigation.navigate('Glossary')}>
+          <View style={styles.glossaryRow}>
+            <View style={[styles.glossaryIcon, { backgroundColor: colors.primaryMuted }]}>
+              <Icon name="book" size={22} color={colors.primary} />
+            </View>
+            <View style={styles.flex}>
+              <Text variant="bodyStrong">AI Glossary</Text>
+              <Text variant="caption" color="textSecondary">
+                Look up any term — in plain words and technical detail
+              </Text>
+            </View>
+            <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
+          </View>
+        </Card>
+
         {/* Recent Activity */}
         <View>
           <SectionTitle title="Recent Activity" />
@@ -234,6 +248,8 @@ export const HomeScreen: React.FC = () => {
 const styles = StyleSheet.create({
   fill: { flex: 1 },
   flex: { flex: 1 },
+  glossaryRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  glossaryIcon: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   headerRow: { flexDirection: 'row', alignItems: 'center' },
   stats: { flexDirection: 'row', alignItems: 'center' },
   levelPill: {
