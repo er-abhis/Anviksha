@@ -18,8 +18,9 @@ export const navigateFromNotification = (target?: NotificationTarget): void => {
       navigationRef.navigate('DailyChallenge');
       break;
     case 'Lesson':
+      // Every chapter opens at its introduction, then the learner starts it.
       if (target.lessonId) {
-        navigationRef.navigate('Lesson', { lessonId: target.lessonId });
+        navigationRef.navigate('LessonIntro', { lessonId: target.lessonId });
       }
       break;
     case 'Home':

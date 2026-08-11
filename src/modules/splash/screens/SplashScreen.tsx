@@ -52,9 +52,11 @@ export const SplashScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.fill}>
+      {/* contain = whole artwork visible & centered on every device/aspect
+          ratio; the black backdrop hides the (black) letterbox margins. */}
       <Animated.Image
         source={SPLASH}
-        resizeMode="cover"
+        resizeMode="contain"
         style={[StyleSheet.absoluteFill, style]}
       />
     </View>

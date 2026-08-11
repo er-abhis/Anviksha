@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Pre-JS native splash: black backdrop (matches splash_image) + centered art.
-     The JS SplashScreen then shows the same image full-bleed. -->
+<!-- Pre-JS native splash: solid black only (matches the artwork's own black bg).
+     A windowBackground <bitmap> cannot scale to "fit-center" across arbitrary
+     screen sizes/aspect ratios without either stretching or cropping, so we show
+     a clean brand-black backdrop here and let the JS SplashScreen render the full
+     artwork with resizeMode="contain" (entire image, centered, no crop) the
+     instant React mounts. Black backdrop == no visible letterbox bars. -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@color/splash_background" />
-    <item>
-        <bitmap
-            android:src="@drawable/splash_image"
-            android:gravity="fill_horizontal|center_vertical" />
-    </item>
 </layer-list>

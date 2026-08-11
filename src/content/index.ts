@@ -6,6 +6,7 @@
  */
 import {
   DailyChallenge,
+  Difficulty,
   GlossaryTerm,
   Lesson,
   Question,
@@ -78,23 +79,24 @@ export const isWorldComplete = (
   return lessons.length > 0 && lessons.every(l => l.id in completed);
 };
 
-/** World 1 is always open; later worlds open when the previous world is done. */
+/**
+ * Every world is independent — all are open from the start. Explore any topic
+ * freely; progression is enforced *within* a world, not across worlds.
+ */
 export const isWorldUnlocked = (
-  world: World,
-  completed: Record<string, number>,
-): boolean => {
-  if (world.order === 1) return true;
-  const prev = WORLDS.find(w => w.order === world.order - 1);
-  return prev ? isWorldComplete(prev.id, completed) : false;
-};
+  _world: World,
+  _completed: Record<string, number>,
+): boolean => true;
 
-/** Lessons unlock sequentially, and only inside an unlocked world. */
+/**
+ * Lessons unlock sequentially INSIDE their own world only. Lesson 1 is always
+ * open; each later lesson opens once the previous lesson in the same world is
+ * completed. A world's progression never depends on any other world.
+ */
 export const isLessonUnlocked = (
   lesson: Lesson,
   completed: Record<string, number>,
 ): boolean => {
-  const world = getWorld(lesson.worldId);
-  if (!world || !isWorldUnlocked(world, completed)) return false;
   if (lesson.order === 1) return true;
   const prev = lessonsForWorld(lesson.worldId).find(
     l => l.order === lesson.order - 1,
@@ -110,29 +112,45 @@ export const isLessonUnlocked = (
  */
 export const isLessonInteractiveUnlocked = isLessonUnlocked;
 
-/** All lessons in curriculum order (world order, then lesson order). */
-const orderedLessons = (): Lesson[] =>
-  [...LESSONS].sort((a, b) => {
-    const wa = getWorld(a.worldId)?.order ?? 0;
-    const wb = getWorld(b.worldId)?.order ?? 0;
-    return wa - wb || a.order - b.order;
-  });
-
 /**
- * The earlier lesson the learner must finish before this lesson's interactive
- * section unlocks, or undefined if it's already unlocked. Used to tell the user
- * exactly what to complete next.
+ * The earlier lesson IN THE SAME WORLD the learner must finish before this
+ * lesson unlocks, or undefined if already unlocked. Used to tell the user
+ * exactly what to complete next. Never points at another world.
  */
 export const blockingLesson = (
   lesson: Lesson,
   completed: Record<string, number>,
 ): Lesson | undefined => {
-  const ordered = orderedLessons();
-  const idx = ordered.findIndex(l => l.id === lesson.id);
+  const siblings = lessonsForWorld(lesson.worldId);
+  const idx = siblings.findIndex(l => l.id === lesson.id);
   for (let i = idx - 1; i >= 0; i--) {
-    if (!(ordered[i].id in completed)) return ordered[i];
+    if (!(siblings[i].id in completed)) return siblings[i];
   }
   return undefined;
+};
+
+/** Static, at-a-glance stats for a world card (independent of progress). */
+export interface WorldSummary {
+  lessonCount: number;
+  minutes: number;
+  xp: number;
+  difficulty: Difficulty;
+}
+
+export const worldSummary = (worldId: string): WorldSummary => {
+  const lessons = lessonsForWorld(worldId);
+  const counts: Record<Difficulty, number> = { beginner: 0, intermediate: 0, advanced: 0 };
+  lessons.forEach(l => (counts[l.difficulty] += 1));
+  const difficulty = (Object.keys(counts) as Difficulty[]).reduce(
+    (a, b) => (counts[b] > counts[a] ? b : a),
+    'beginner',
+  );
+  return {
+    lessonCount: lessons.length,
+    minutes: lessons.reduce((s, l) => s + l.estimatedMinutes, 0),
+    xp: lessons.reduce((s, l) => s + l.xp, 0),
+    difficulty,
+  };
 };
 
 /** Fraction (0..1) of a world's lessons completed. */

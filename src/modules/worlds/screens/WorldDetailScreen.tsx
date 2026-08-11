@@ -83,7 +83,7 @@ export const WorldDetailScreen: React.FC = () => {
             <Card
               key={lesson.id}
               elevation="sm"
-              onPress={() => navigation.navigate('Lesson', { lessonId: lesson.id })}
+              onPress={() => navigation.navigate('LessonIntro', { lessonId: lesson.id })}
             >
               <View style={[styles.row, { gap: spacing.md }]}>
                 <View style={[styles.badge, { backgroundColor: bg, borderRadius: radius.sm }]}>
@@ -96,7 +96,7 @@ export const WorldDetailScreen: React.FC = () => {
                       ? `Completed · ${lesson.estimatedMinutes} min`
                       : unlocked
                       ? `${lesson.estimatedMinutes} min · ${lesson.difficulty} · ${lesson.xp} XP`
-                      : 'Intro open · finish the previous lesson to unlock'}
+                      : 'Complete the previous lesson to unlock — you’re one step away'}
                   </Text>
                 </View>
                 <Icon name="chevron-forward" size={18} color={colors.textTertiary} />

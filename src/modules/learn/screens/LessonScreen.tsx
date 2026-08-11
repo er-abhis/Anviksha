@@ -28,7 +28,7 @@ import { ActivityRenderer } from '../components/ActivityRenderer';
  * activity and route into the quiz that awards XP and completes the chapter.
  */
 export const LessonScreen: React.FC = () => {
-  const { colors, radius, spacing } = useTheme();
+  const { colors, spacing } = useTheme();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'Lesson'>>();
   const lesson = getLesson(route.params.lessonId);
@@ -134,7 +134,7 @@ export const LessonScreen: React.FC = () => {
             right={<Icon name="arrow-forward" size={18} color={colors.onPrimary} />}
           />
         )}
-        <Text variant="caption" color="textTertiary" center style={{ borderRadius: radius.sm }}>
+        <Text variant="caption" color="textTertiary" center>
           Score 70% or higher to {isDone ? 'keep' : 'earn'} {lesson.xp} XP and complete the chapter.
         </Text>
       </View>

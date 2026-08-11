@@ -192,7 +192,7 @@ export const LessonIntroScreen: React.FC = () => {
 
         {/* ---------- Motivation ---------- */}
         <Animated.View entering={FadeInDown.delay(380).duration(400)}>
-          <Gradient colors={gradient} style={[styles.motivation, { borderRadius: radius.lg }]}>
+          <Gradient colors={gradient} style={{ ...styles.motivation, borderRadius: radius.lg }}>
             <Icon name="rocket-outline" size={22} color="#FFFFFF" />
             <Text variant="h3" color="textInverse" center style={{ marginTop: spacing.sm }}>
               {pickMotivation(lesson)}
@@ -231,12 +231,15 @@ export const LessonIntroScreen: React.FC = () => {
                 <Icon name="lock-closed" size={20} color={colors.primary} />
               </View>
               <Text variant="bodyStrong" center>
-                Complete the previous chapter to unlock the interactive learning experience.
+                Complete the previous lesson to unlock this one.
+              </Text>
+              <Text variant="body" color="textSecondary" center>
+                You’re only one step away.
               </Text>
               <Button label="Start learning" disabled onPress={() => {}} fullWidth />
               {blocker && (
                 <Text variant="caption" color="textTertiary" center>
-                  {`Finish Chapter ${blocker.order} — “${blocker.title}” — first.`}
+                  {`Finish Lesson ${blocker.order} — “${blocker.title}” — first.`}
                 </Text>
               )}
             </View>

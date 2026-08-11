@@ -52,7 +52,7 @@ export const HomeScreen: React.FC = () => {
 
   const openLesson = () => {
     if (!lesson) return;
-    navigation.navigate('Lesson', { lessonId: lesson.id });
+    navigation.navigate('LessonIntro', { lessonId: lesson.id });
   };
 
   return (

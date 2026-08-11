@@ -62,11 +62,20 @@ describe('content integrity', () => {
 });
 
 describe('progression', () => {
-  it('locks everything past world 1 for a fresh user', () => {
+  it('opens every world from the start (independent topics)', () => {
     const completed = {};
-    expect(isWorldUnlocked(WORLDS[0], completed)).toBe(true);
-    expect(isWorldUnlocked(WORLDS[1], completed)).toBe(false);
+    for (const w of WORLDS) expect(isWorldUnlocked(w, completed)).toBe(true);
     expect(firstAvailableLesson(completed)?.id).toBe(lessonsForWorld(WORLDS[0].id)[0].id);
+  });
+
+  it('every world exposes lesson 1 without touching any other world', () => {
+    // Nothing completed anywhere → lesson 1 of each world is playable,
+    // lesson 2 of each world is not.
+    for (const w of WORLDS) {
+      const ls = lessonsForWorld(w.id);
+      expect(isLessonInteractiveUnlocked(ls[0], {})).toBe(true);
+      if (ls[1]) expect(isLessonInteractiveUnlocked(ls[1], {})).toBe(false);
+    }
   });
 
   it('gates lesson 2 interactive until lesson 1 is done, and names the blocker', () => {
@@ -82,12 +91,14 @@ describe('progression', () => {
     expect(blockingLesson(second, done)).toBeUndefined();
   });
 
-  it('unlocks the next world only when the previous is fully complete', () => {
-    const w1 = lessonsForWorld(WORLDS[0].id);
+  it('progress in one world never unlocks lessons in another', () => {
+    // Complete ALL of world 1 — world 2's lesson 2 must still be locked.
     const completed: Record<string, number> = {};
-    w1.forEach(l => (completed[l.id] = 100));
+    lessonsForWorld(WORLDS[0].id).forEach(l => (completed[l.id] = 100));
     expect(isWorldComplete(WORLDS[0].id, completed)).toBe(true);
-    expect(isWorldUnlocked(WORLDS[1], completed)).toBe(true);
+    const w2 = lessonsForWorld(WORLDS[1].id);
+    expect(isLessonInteractiveUnlocked(w2[0], completed)).toBe(true);
+    if (w2[1]) expect(isLessonInteractiveUnlocked(w2[1], completed)).toBe(false);
   });
 });
 

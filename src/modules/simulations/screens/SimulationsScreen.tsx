@@ -61,7 +61,7 @@ export const SimulationsScreen: React.FC = () => {
       <Button
         label="Open the full lesson"
         variant="secondary"
-        onPress={() => navigation.navigate('Lesson', { lessonId: lesson.id })}
+        onPress={() => navigation.navigate('LessonIntro', { lessonId: lesson.id })}
         right={<Icon name="arrow-forward" size={18} color={colors.text} />}
       />
     </Screen>

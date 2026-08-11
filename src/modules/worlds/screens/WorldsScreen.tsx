@@ -1,10 +1,11 @@
 import React from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {
   Card,
+  Gradient,
   Header,
   ProgressBar,
   Screen,
@@ -13,74 +14,111 @@ import {
 import { useTheme } from '../../../theme/ThemeProvider';
 import { RootStackParamList } from '../../../navigation/types';
 import { useProgressStore } from '../../../store';
-import { WORLDS, isWorldUnlocked, lessonsForWorld, worldProgress } from '../../../content';
+import {
+  WORLDS,
+  lessonsForWorld,
+  worldProgress,
+  worldSummary,
+} from '../../../content';
+import { Difficulty } from '../../../content/types';
+
+const DIFFICULTY: Record<Difficulty, { label: string; icon: string }> = {
+  beginner: { label: 'Beginner', icon: 'leaf-outline' },
+  intermediate: { label: 'Intermediate', icon: 'trending-up-outline' },
+  advanced: { label: 'Advanced', icon: 'flame-outline' },
+};
 
 export const WorldsScreen: React.FC = () => {
   const { colors, radius, spacing } = useTheme();
-  const navigation =
-    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const completed = useProgressStore(s => s.completed);
 
   return (
     <Screen scroll contentContainerStyle={{ gap: spacing.md }}>
-      <Header title="Worlds" onBack={() => navigation.goBack()} />
+      <Header title="Explore topics" onBack={() => navigation.goBack()} />
+      <Text variant="body" color="textSecondary">
+        Every topic is open — pick any one and learn at your own pace.
+      </Text>
+
       {[...WORLDS]
         .sort((a, b) => a.order - b.order)
         .map(world => {
-          const unlocked = isWorldUnlocked(world, completed);
+          const lessons = lessonsForWorld(world.id);
+          const summary = worldSummary(world.id);
           const progress = worldProgress(world.id, completed);
-          const lessonCount = lessonsForWorld(world.id).length;
+          const doneCount = lessons.filter(l => l.id in completed).length;
+          const diff = DIFFICULTY[summary.difficulty];
+
+          const state =
+            doneCount === 0
+              ? 'new'
+              : doneCount >= lessons.length && lessons.length > 0
+              ? 'done'
+              : 'progress';
+          const cta =
+            state === 'new'
+              ? 'Start Learning'
+              : state === 'done'
+              ? 'Revisit lessons'
+              : 'Continue Learning';
+
           return (
             <Card
               key={world.id}
               elevation="sm"
-              onPress={() =>
-                unlocked
-                  ? navigation.navigate('WorldDetail', { worldId: world.id })
-                  : Alert.alert(
-                      'World locked',
-                      'Complete previous worlds to unlock.',
-                    )
-              }
+              // Every world is open — no cross-world locks.
+              onPress={() => navigation.navigate('WorldDetail', { worldId: world.id })}
             >
               <View style={[styles.row, { gap: spacing.md }]}>
-                <View
-                  style={[
-                    styles.icon,
-                    {
-                      backgroundColor: unlocked
-                        ? colors.primaryMuted
-                        : colors.surfaceAlt,
-                      borderRadius: radius.md,
-                    },
-                  ]}
-                >
-                  <Icon
-                    name={unlocked ? world.icon : 'lock-closed'}
-                    size={22}
-                    color={unlocked ? colors.primary : colors.textTertiary}
-                  />
-                </View>
+                <Gradient colors={world.gradient} style={{ ...styles.badge, borderRadius: radius.md }}>
+                  <Icon name={world.icon} size={24} color="#FFFFFF" />
+                </Gradient>
                 <View style={styles.flex}>
-                  <Text variant="bodyStrong">{`${world.order}. ${world.title}`}</Text>
-                  <Text variant="caption" color="textSecondary">
-                    {!unlocked
-                      ? 'Complete previous worlds to unlock'
-                      : lessonCount > 0
-                      ? `${lessonCount} lessons · ${world.subtitle}`
-                      : world.subtitle}
+                  <View style={styles.titleRow}>
+                    <Text variant="bodyStrong" style={styles.flex}>{world.title}</Text>
+                    {state === 'done' && (
+                      <View style={[styles.donePill, { backgroundColor: colors.success, borderRadius: radius.pill }]}>
+                        <Icon name="checkmark" size={11} color="#FFFFFF" />
+                        <Text variant="caption" color="textInverse">Completed</Text>
+                      </View>
+                    )}
+                  </View>
+                  <Text variant="caption" color="textSecondary" numberOfLines={2}>
+                    {world.description || world.subtitle}
                   </Text>
-                  {unlocked && lessonCount > 0 && (
-                    <View style={{ marginTop: spacing.sm }}>
-                      <ProgressBar progress={progress} />
-                    </View>
-                  )}
                 </View>
-                <Icon
-                  name="chevron-forward"
-                  size={18}
-                  color={colors.textTertiary}
-                />
+              </View>
+
+              {lessons.length > 0 && (
+                <>
+                  <View style={styles.metaRow}>
+                    <Meta icon={diff.icon} label={diff.label} />
+                    <Meta icon="book-outline" label={`${summary.lessonCount} Lessons`} />
+                    <Meta icon="time-outline" label={`${summary.minutes} min`} />
+                    <Meta icon="star" label={`${summary.xp} XP`} />
+                  </View>
+
+                  <View style={{ marginTop: spacing.md, gap: spacing.xs }}>
+                    <View style={styles.progressLabels}>
+                      <Text variant="caption" color="textSecondary">
+                        {state === 'done'
+                          ? `Earned ${summary.xp} XP`
+                          : state === 'new'
+                          ? 'Not started'
+                          : 'In progress'}
+                      </Text>
+                      <Text variant="caption" color="textSecondary">
+                        {`${doneCount} / ${summary.lessonCount}`}
+                      </Text>
+                    </View>
+                    <ProgressBar progress={progress} fillColor={state === 'done' ? 'success' : 'primary'} />
+                  </View>
+                </>
+              )}
+
+              <View style={[styles.ctaRow, { marginTop: spacing.md }]}>
+                <Text variant="label" color="primary">{cta}</Text>
+                <Icon name="arrow-forward" size={16} color={colors.primary} />
               </View>
             </Card>
           );
@@ -89,13 +127,29 @@ export const WorldsScreen: React.FC = () => {
   );
 };
 
+const Meta: React.FC<{ icon: string; label: string }> = ({ icon, label }) => {
+  const { colors, radius, spacing } = useTheme();
+  return (
+    <View
+      style={[
+        styles.metaChip,
+        { backgroundColor: colors.surfaceAlt, borderRadius: radius.pill, paddingHorizontal: spacing.sm },
+      ]}
+    >
+      <Icon name={icon} size={12} color={colors.textSecondary} />
+      <Text variant="caption" color="textSecondary">{label}</Text>
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center' },
   flex: { flex: 1 },
-  icon: {
-    width: 48,
-    height: 48,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  badge: { width: 52, height: 52, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  donePill: { flexDirection: 'row', alignItems: 'center', gap: 3, paddingHorizontal: 8, paddingVertical: 3 },
+  metaRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 12 },
+  metaChip: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 5 },
+  progressLabels: { flexDirection: 'row', justifyContent: 'space-between' },
+  ctaRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
 });
