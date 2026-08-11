@@ -8,6 +8,7 @@ import {
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types';
 import { useTheme, useThemeMode } from '../theme/ThemeProvider';
+import { navigationRef } from './navigationRef';
 import { MainTabs } from './MainTabs';
 import { SplashScreen } from '../modules/splash/screens/SplashScreen';
 import { OnboardingScreen } from '../modules/onboarding/screens/OnboardingScreen';
@@ -17,6 +18,7 @@ import { QuizScreen } from '../modules/quiz/screens/QuizScreen';
 import { DailyChallengeScreen } from '../modules/dailyChallenge/screens/DailyChallengeScreen';
 import { WorldsScreen } from '../modules/worlds/screens/WorldsScreen';
 import { WorldDetailScreen } from '../modules/worlds/screens/WorldDetailScreen';
+import { LessonIntroScreen } from '../modules/learn/screens/LessonIntroScreen';
 import { LessonScreen } from '../modules/learn/screens/LessonScreen';
 import { GlossaryScreen } from '../modules/glossary/screens/GlossaryScreen';
 
@@ -43,7 +45,7 @@ export const RootNavigator: React.FC = () => {
   }, [mode, theme]);
 
   return (
-    <NavigationContainer theme={navTheme}>
+    <NavigationContainer ref={navigationRef} theme={navTheme}>
       <Stack.Navigator
         initialRouteName="Splash"
         screenOptions={{ headerShown: false }}
@@ -61,6 +63,11 @@ export const RootNavigator: React.FC = () => {
           options={{ presentation: 'card', animation: 'slide_from_right' }}
         />
         <Stack.Screen name="Simulations" component={SimulationsScreen} />
+        <Stack.Screen
+          name="LessonIntro"
+          component={LessonIntroScreen}
+          options={{ animation: 'slide_from_right' }}
+        />
         <Stack.Screen
           name="Lesson"
           component={LessonScreen}

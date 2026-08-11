@@ -3,8 +3,10 @@ import {
   QUESTIONS,
   WORLDS,
   PASS_THRESHOLD,
+  blockingLesson,
   buildDailyChallenge,
   firstAvailableLesson,
+  isLessonInteractiveUnlocked,
   isWorldComplete,
   isWorldUnlocked,
   lessonsForWorld,
@@ -65,6 +67,19 @@ describe('progression', () => {
     expect(isWorldUnlocked(WORLDS[0], completed)).toBe(true);
     expect(isWorldUnlocked(WORLDS[1], completed)).toBe(false);
     expect(firstAvailableLesson(completed)?.id).toBe(lessonsForWorld(WORLDS[0].id)[0].id);
+  });
+
+  it('gates lesson 2 interactive until lesson 1 is done, and names the blocker', () => {
+    const w1 = lessonsForWorld(WORLDS[0].id);
+    const [first, second] = w1;
+    // Fresh user: lesson 1 open, lesson 2 interactive locked -> blocker is lesson 1.
+    expect(isLessonInteractiveUnlocked(first, {})).toBe(true);
+    expect(isLessonInteractiveUnlocked(second, {})).toBe(false);
+    expect(blockingLesson(second, {})?.id).toBe(first.id);
+    // After finishing lesson 1, lesson 2 unlocks and has no blocker.
+    const done = { [first.id]: 100 };
+    expect(isLessonInteractiveUnlocked(second, done)).toBe(true);
+    expect(blockingLesson(second, done)).toBeUndefined();
   });
 
   it('unlocks the next world only when the previous is fully complete', () => {

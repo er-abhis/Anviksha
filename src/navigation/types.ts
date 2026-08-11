@@ -19,6 +19,7 @@ export type RootStackParamList = {
   Settings: undefined;
   Simulations: { lessonId: string };
   Quiz: { lessonId: string };
+  LessonIntro: { lessonId: string };
   Lesson: { lessonId: string };
   DailyChallenge: undefined;
   Worlds: undefined;

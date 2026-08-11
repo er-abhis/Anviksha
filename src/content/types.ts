@@ -128,6 +128,9 @@ export interface Lesson {
   commonMistakes?: string[];
   /** One-line wrap-up. Optional; rendered when present. */
   summary?: string;
+  /** Closing motivational line on the intro screen. Optional; a varied
+   *  deterministic fallback is used when absent. */
+  motivation?: string;
   prerequisiteLessonIds: string[];
   nextLessonId: string | null;
 }

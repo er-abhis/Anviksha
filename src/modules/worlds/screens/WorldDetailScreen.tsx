@@ -76,13 +76,13 @@ export const WorldDetailScreen: React.FC = () => {
           const done = lesson.id in completed;
           const unlocked = isLessonUnlocked(lesson, completed);
           const bg = done ? colors.success : unlocked ? colors.primaryMuted : colors.surfaceAlt;
-          const iconName = done ? 'checkmark' : unlocked ? 'play' : 'lock-closed';
-          const iconColor = done ? '#FFFFFF' : unlocked ? colors.primary : colors.textTertiary;
+          // Intro is always open; a locked lesson shows a book (readable), not a barrier.
+          const iconName = done ? 'checkmark' : unlocked ? 'play' : 'book-outline';
+          const iconColor = done ? '#FFFFFF' : unlocked ? colors.primary : colors.textSecondary;
           return (
             <Card
               key={lesson.id}
               elevation="sm"
-              style={{ opacity: unlocked || done ? 1 : 0.7 }}
               onPress={() => navigation.navigate('Lesson', { lessonId: lesson.id })}
             >
               <View style={[styles.row, { gap: spacing.md }]}>
@@ -96,7 +96,7 @@ export const WorldDetailScreen: React.FC = () => {
                       ? `Completed · ${lesson.estimatedMinutes} min`
                       : unlocked
                       ? `${lesson.estimatedMinutes} min · ${lesson.difficulty} · ${lesson.xp} XP`
-                      : 'Locked — finish the previous lesson'}
+                      : 'Intro open · finish the previous lesson to unlock'}
                   </Text>
                 </View>
                 <Icon name="chevron-forward" size={18} color={colors.textTertiary} />

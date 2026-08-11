@@ -14,9 +14,19 @@ import {
 import { useTheme } from '../../../theme/ThemeProvider';
 import { RootStackParamList } from '../../../navigation/types';
 import { useProgressStore } from '../../../store';
-import { getLesson, getWorld, isLessonUnlocked } from '../../../content';
+import {
+  blockingLesson,
+  getLesson,
+  getWorld,
+  isLessonInteractiveUnlocked,
+} from '../../../content';
 import { ActivityRenderer } from '../components/ActivityRenderer';
 
+/**
+ * The interactive lesson — reached from the Introduction screen's "Start
+ * learning". Intro/roadmap live in LessonIntroScreen; here we run the hands-on
+ * activity and route into the quiz that awards XP and completes the chapter.
+ */
 export const LessonScreen: React.FC = () => {
   const { colors, radius, spacing } = useTheme();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -35,99 +45,45 @@ export const LessonScreen: React.FC = () => {
 
   const world = getWorld(lesson.worldId);
   const isDone = lesson.id in completed;
-  const locked = !isLessonUnlocked(lesson, completed);
 
-  if (locked) {
+  // Defensive: the intro screen gates entry, but never trust the caller.
+  if (!isLessonInteractiveUnlocked(lesson, completed)) {
+    const blocker = blockingLesson(lesson, completed);
     return (
       <Screen>
         <Header title={lesson.title} onBack={() => navigation.goBack()} />
         <EmptyState
           icon="lock-closed"
-          title="Lesson locked"
-          message="Complete the previous lesson to unlock this one."
-          actionLabel="Back"
-          onAction={() => navigation.goBack()}
+          title="Interactive experience locked"
+          message={
+            blocker
+              ? `Complete Chapter ${blocker.order} — “${blocker.title}” — to unlock this.`
+              : 'Complete the previous chapter to unlock this.'
+          }
+          actionLabel="View introduction"
+          onAction={() => navigation.replace('LessonIntro', { lessonId: lesson.id })}
         />
       </Screen>
     );
   }
 
-  const meta = [
-    { icon: 'speedometer-outline', label: lesson.difficulty },
-    { icon: 'time-outline', label: `${lesson.estimatedMinutes} min` },
-    { icon: 'flash', label: `${lesson.xp} XP` },
-    { icon: 'server', label: `${lesson.coins}` },
-  ];
-
   return (
     <Screen scroll contentContainerStyle={{ gap: spacing.xl }}>
       <Header
         title={world?.title ?? 'Lesson'}
-        subtitle={`Lesson ${lesson.order}`}
+        subtitle={`Chapter ${lesson.order} · ${lesson.title}`}
         onBack={() => navigation.goBack()}
       />
 
-      <View style={{ gap: spacing.sm }}>
-        <Text variant="h1">{lesson.title}</Text>
-        <Text variant="body" color="textSecondary">{lesson.subtitle}</Text>
-        <View style={styles.metaRow}>
-          {meta.map(m => (
-            <View key={m.label} style={[styles.metaChip, { backgroundColor: colors.surfaceAlt, borderRadius: radius.pill }]}>
-              <Icon name={m.icon} size={13} color={colors.textSecondary} />
-              <Text variant="caption" color="textSecondary">{m.label}</Text>
-            </View>
-          ))}
+      {isDone && (
+        <View style={styles.doneRow}>
+          <Icon name="checkmark-circle" size={16} color={colors.success} />
+          <Text variant="label" color="success">Completed</Text>
         </View>
-        {isDone && (
-          <View style={styles.doneRow}>
-            <Icon name="checkmark-circle" size={16} color={colors.success} />
-            <Text variant="label" color="success">Completed</Text>
-          </View>
-        )}
-      </View>
-
-      <Section icon="bulb-outline" title="Introduction">
-        <Text variant="body" color="textSecondary">{lesson.description}</Text>
-      </Section>
-
-      {!!lesson.explanation && (
-        <Section icon="school-outline" title="In simple words">
-          <Text variant="body">{lesson.explanation}</Text>
-        </Section>
       )}
-
-      <Section icon="earth-outline" title="In the real world">
-        <Card elevation="sm">
-          <Text variant="body">{lesson.realWorld}</Text>
-        </Card>
-      </Section>
-
-      <Section icon="list-outline" title="You’ll learn to">
-        <View style={{ gap: spacing.sm }}>
-          {lesson.objectives.map(o => (
-            <View key={o} style={styles.bullet}>
-              <Icon name="ellipse" size={7} color={colors.primary} style={{ marginTop: 7 }} />
-              <Text variant="body" style={styles.flex}>{o}</Text>
-            </View>
-          ))}
-        </View>
-      </Section>
 
       <Section icon="flask-outline" title="Try it yourself">
         <ActivityRenderer activity={lesson.activity} />
-      </Section>
-
-      <Section icon="key-outline" title="Key takeaways">
-        <Card elevation="sm">
-          <View style={{ gap: spacing.sm }}>
-            {lesson.keyTakeaways.map(k => (
-              <View key={k} style={styles.bullet}>
-                <Icon name="checkmark" size={15} color={colors.success} style={{ marginTop: 3 }} />
-                <Text variant="body" style={styles.flex}>{k}</Text>
-              </View>
-            ))}
-          </View>
-        </Card>
       </Section>
 
       {!!lesson.commonMistakes?.length && (
@@ -145,11 +101,18 @@ export const LessonScreen: React.FC = () => {
         </Section>
       )}
 
-      {!!lesson.summary && (
-        <Section icon="flag-outline" title="Summary">
-          <Text variant="body" color="textSecondary">{lesson.summary}</Text>
-        </Section>
-      )}
+      <Section icon="key-outline" title="Key takeaways">
+        <Card elevation="sm">
+          <View style={{ gap: spacing.sm }}>
+            {lesson.keyTakeaways.map(k => (
+              <View key={k} style={styles.bullet}>
+                <Icon name="checkmark" size={15} color={colors.success} style={{ marginTop: 3 }} />
+                <Text variant="body" style={styles.flex}>{k}</Text>
+              </View>
+            ))}
+          </View>
+        </Card>
+      </Section>
 
       <View style={{ gap: spacing.sm }}>
         <Button
@@ -166,13 +129,13 @@ export const LessonScreen: React.FC = () => {
         />
         {isDone && lesson.nextLessonId && (
           <Button
-            label="Next lesson"
-            onPress={() => navigation.push('Lesson', { lessonId: lesson.nextLessonId! })}
+            label="Next chapter"
+            onPress={() => navigation.replace('LessonIntro', { lessonId: lesson.nextLessonId! })}
             right={<Icon name="arrow-forward" size={18} color={colors.onPrimary} />}
           />
         )}
-        <Text variant="caption" color="textTertiary" center>
-          Score 70% or higher to {isDone ? 'keep' : 'earn'} {lesson.xp} XP and complete the lesson.
+        <Text variant="caption" color="textTertiary" center style={{ borderRadius: radius.sm }}>
+          Score 70% or higher to {isDone ? 'keep' : 'earn'} {lesson.xp} XP and complete the chapter.
         </Text>
       </View>
     </Screen>
@@ -198,9 +161,7 @@ const Section: React.FC<{ icon: string; title: string; children: React.ReactNode
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  metaRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 4 },
-  metaChip: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 5 },
-  doneRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 },
+  doneRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   sectionHead: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   bullet: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
 });

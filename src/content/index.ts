@@ -102,6 +102,39 @@ export const isLessonUnlocked = (
   return prev ? prev.id in completed : true;
 };
 
+/**
+ * Whether a lesson's INTERACTIVE part (activity, quiz, XP, completion) is open.
+ * The introduction is always readable; only the hands-on section is gated.
+ * Same sequential rule as isLessonUnlocked — kept as a named alias so screens
+ * read intent clearly.
+ */
+export const isLessonInteractiveUnlocked = isLessonUnlocked;
+
+/** All lessons in curriculum order (world order, then lesson order). */
+const orderedLessons = (): Lesson[] =>
+  [...LESSONS].sort((a, b) => {
+    const wa = getWorld(a.worldId)?.order ?? 0;
+    const wb = getWorld(b.worldId)?.order ?? 0;
+    return wa - wb || a.order - b.order;
+  });
+
+/**
+ * The earlier lesson the learner must finish before this lesson's interactive
+ * section unlocks, or undefined if it's already unlocked. Used to tell the user
+ * exactly what to complete next.
+ */
+export const blockingLesson = (
+  lesson: Lesson,
+  completed: Record<string, number>,
+): Lesson | undefined => {
+  const ordered = orderedLessons();
+  const idx = ordered.findIndex(l => l.id === lesson.id);
+  for (let i = idx - 1; i >= 0; i--) {
+    if (!(ordered[i].id in completed)) return ordered[i];
+  }
+  return undefined;
+};
+
 /** Fraction (0..1) of a world's lessons completed. */
 export const worldProgress = (
   worldId: string,

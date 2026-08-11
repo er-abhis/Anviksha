@@ -50,6 +50,25 @@ jest.mock('react-native-mmkv', () => {
   return { createMMKV: () => instance };
 });
 
+// notifee is native — stub methods + enums used by the notifications service.
+jest.mock('@notifee/react-native', () => ({
+  __esModule: true,
+  default: {
+    createChannel: jest.fn(async () => 'reminders'),
+    requestPermission: jest.fn(async () => ({ authorizationStatus: 1 })),
+    createTriggerNotification: jest.fn(async () => undefined),
+    cancelTriggerNotifications: jest.fn(async () => undefined),
+    onForegroundEvent: jest.fn(() => () => {}),
+    onBackgroundEvent: jest.fn(() => {}),
+    getInitialNotification: jest.fn(async () => null),
+  },
+  AndroidImportance: { DEFAULT: 3 },
+  AuthorizationStatus: { AUTHORIZED: 1, PROVISIONAL: 4 },
+  EventType: { PRESS: 1 },
+  RepeatFrequency: { DAILY: 3 },
+  TriggerType: { TIMESTAMP: 0 },
+}));
+
 // SQLite is native (JSI) — stub the quick-sqlite connection used by the runner.
 jest.mock('react-native-quick-sqlite', () => ({
   open: () => ({
