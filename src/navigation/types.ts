@@ -17,14 +17,13 @@ export type RootStackParamList = {
   Onboarding: undefined;
   Main: NavigatorScreenParams<MainTabParamList>;
   Settings: undefined;
-  Simulations: { worldId?: string } | undefined;
+  Simulations: { lessonId: string };
   Quiz: { lessonId: string };
   Lesson: { lessonId: string };
   DailyChallenge: undefined;
   Worlds: undefined;
   WorldDetail: { worldId: string };
   Glossary: undefined;
-  ComingSoon: { title: string; message?: string } | undefined;
 };
 
 declare global {

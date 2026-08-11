@@ -43,6 +43,23 @@ const initial = {
 // Simple, tunable curve. ponytail: flat 500xp/level; swap for a curve when design lands.
 const levelForXp = (xp: number) => Math.floor(xp / 500) + 1;
 
+/** The ISO (yyyy-mm-dd) day before the given ISO day. */
+const prevISODay = (iso: string): string => {
+  const d = new Date(`${iso}T00:00:00`);
+  d.setDate(d.getDate() - 1);
+  return d.toISOString().slice(0, 10);
+};
+
+/**
+ * Next streak length given the previously-completed day and today.
+ * Consecutive day → +1; same day (already counted) → unchanged; any gap → 1.
+ */
+const nextStreak = (prevDate: string | null, today: string, current: number): number => {
+  if (prevDate === today) return current || 1;
+  if (prevDate === prevISODay(today)) return current + 1;
+  return 1;
+};
+
 const MAX_ACTIVITY = 20;
 
 export const useProgressStore = create<ProgressState>()(
@@ -71,8 +88,7 @@ export const useProgressStore = create<ProgressState>()(
             xp: nextXp,
             level: levelForXp(nextXp),
             coins: state.coins + coins,
-            // ponytail: naive streak (1 on first completion). Real day-gap logic later.
-            streakDays: state.streakDays === 0 ? 1 : state.streakDays,
+            streakDays: nextStreak(state.dailyCompletedDate, date, state.streakDays),
           };
         }),
       logActivity: entry =>

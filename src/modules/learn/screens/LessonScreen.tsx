@@ -90,6 +90,12 @@ export const LessonScreen: React.FC = () => {
         <Text variant="body" color="textSecondary">{lesson.description}</Text>
       </Section>
 
+      {!!lesson.explanation && (
+        <Section icon="school-outline" title="In simple words">
+          <Text variant="body">{lesson.explanation}</Text>
+        </Section>
+      )}
+
       <Section icon="earth-outline" title="In the real world">
         <Card elevation="sm">
           <Text variant="body">{lesson.realWorld}</Text>
@@ -123,6 +129,27 @@ export const LessonScreen: React.FC = () => {
           </View>
         </Card>
       </Section>
+
+      {!!lesson.commonMistakes?.length && (
+        <Section icon="warning-outline" title="Common mistakes">
+          <Card elevation="sm">
+            <View style={{ gap: spacing.sm }}>
+              {lesson.commonMistakes.map(m => (
+                <View key={m} style={styles.bullet}>
+                  <Icon name="alert-circle" size={15} color={colors.warning} style={{ marginTop: 3 }} />
+                  <Text variant="body" style={styles.flex}>{m}</Text>
+                </View>
+              ))}
+            </View>
+          </Card>
+        </Section>
+      )}
+
+      {!!lesson.summary && (
+        <Section icon="flag-outline" title="Summary">
+          <Text variant="body" color="textSecondary">{lesson.summary}</Text>
+        </Section>
+      )}
 
       <View style={{ gap: spacing.sm }}>
         <Button

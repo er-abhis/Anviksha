@@ -19,7 +19,6 @@ import { WorldsScreen } from '../modules/worlds/screens/WorldsScreen';
 import { WorldDetailScreen } from '../modules/worlds/screens/WorldDetailScreen';
 import { LessonScreen } from '../modules/learn/screens/LessonScreen';
 import { GlossaryScreen } from '../modules/glossary/screens/GlossaryScreen';
-import { ComingSoonScreen } from '../modules/common/screens/ComingSoonScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -90,11 +89,6 @@ export const RootNavigator: React.FC = () => {
         <Stack.Screen
           name="WorldDetail"
           component={WorldDetailScreen}
-          options={{ animation: 'slide_from_right' }}
-        />
-        <Stack.Screen
-          name="ComingSoon"
-          component={ComingSoonScreen}
           options={{ animation: 'slide_from_right' }}
         />
       </Stack.Navigator>

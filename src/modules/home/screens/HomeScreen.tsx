@@ -11,6 +11,7 @@ import {
   Card,
   EmptyState,
   IconButton,
+  Logo,
   SectionTitle,
   Text,
   XPBadge,
@@ -74,6 +75,7 @@ export const HomeScreen: React.FC = () => {
       >
         {/* Greeting + stats */}
         <View style={styles.headerRow}>
+          <Logo size={36} style={styles.brandMark} />
           <View style={styles.flex}>
             <Text variant="label" color="textSecondary">
               Welcome back
@@ -81,11 +83,9 @@ export const HomeScreen: React.FC = () => {
             <Text variant="h1">Ready to explore?</Text>
           </View>
           <IconButton
-            name="notifications-outline"
-            accessibilityLabel="Notifications"
-            onPress={() =>
-              navigation.navigate('ComingSoon', { title: 'Notifications' })
-            }
+            name="settings-outline"
+            accessibilityLabel="Settings"
+            onPress={() => navigation.navigate('Settings')}
           />
         </View>
 
@@ -250,7 +250,8 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   glossaryRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   glossaryIcon: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
-  headerRow: { flexDirection: 'row', alignItems: 'center' },
+  headerRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  brandMark: { borderRadius: 10 },
   stats: { flexDirection: 'row', alignItems: 'center' },
   levelPill: {
     flexDirection: 'row',

@@ -68,8 +68,8 @@ export const WorldDetailScreen: React.FC = () => {
       {lessons.length === 0 ? (
         <EmptyState
           icon="book-outline"
-          title="Lessons coming soon"
-          message="This world is on the roadmap. Keep progressing through the earlier worlds — its lessons will appear here."
+          title="No lessons here yet"
+          message="Keep progressing through the earlier worlds to continue your journey."
         />
       ) : (
         lessons.map(lesson => {

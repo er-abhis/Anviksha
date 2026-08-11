@@ -65,6 +65,7 @@ export type ColorPalette = {
   coins: string;
   streak: string;
   success: string;
+  warning: string;
   error: string;
 
   // misc
@@ -94,6 +95,7 @@ export const lightColors: ColorPalette = {
   coins: palette.amber500,
   streak: palette.amber500,
   success: palette.green500,
+  warning: palette.amber500,
   error: palette.rose500,
 
   skeleton: palette.gray200,
@@ -122,6 +124,7 @@ export const darkColors: ColorPalette = {
   coins: palette.amber500,
   streak: palette.amber500,
   success: palette.green500,
+  warning: palette.amber500,
   error: palette.rose500,
 
   skeleton: palette.gray800,

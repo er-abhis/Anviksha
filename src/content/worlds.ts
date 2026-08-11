@@ -117,4 +117,15 @@ export const WORLDS: World[] = [
     gradient: ['#1D4ED8', '#06B6D4'],
     icon: 'git-merge',
   },
+  {
+    id: 'world-future-of-ai',
+    slug: 'future-of-ai',
+    order: 11,
+    title: 'The Future of AI',
+    subtitle: 'AGI, safety, ethics and careers',
+    description:
+      'Look ahead with clear eyes: what AGI would mean, how we keep AI safe and fair, and how to build a career alongside it.',
+    gradient: ['#7C3AED', '#F59E0B'],
+    icon: 'telescope',
+  },
 ];

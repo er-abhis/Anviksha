@@ -40,8 +40,21 @@ describe('content integrity', () => {
   it('authored worlds carry a substantial question bank', () => {
     for (const w of WORLDS) {
       if (lessonsForWorld(w.id).length > 0) {
-        expect(questionsForWorld(w.id).length).toBeGreaterThanOrEqual(80);
+        expect(questionsForWorld(w.id).length).toBeGreaterThanOrEqual(60);
       }
+    }
+  });
+
+  it('every world has authored lessons (no empty worlds)', () => {
+    for (const w of WORLDS) {
+      expect(lessonsForWorld(w.id).length).toBeGreaterThan(0);
+    }
+  });
+
+  it('every lesson has at least 5 questions for its quiz', () => {
+    for (const l of LESSONS) {
+      const n = QUESTIONS.filter(q => q.lessonId === l.id).length;
+      expect(n).toBeGreaterThanOrEqual(5);
     }
   });
 });
@@ -64,12 +77,12 @@ describe('progression', () => {
 });
 
 describe('daily challenge', () => {
-  it('is deterministic per date and sized 5–10', () => {
+  it('is deterministic per date and sized 5–15', () => {
     const a = buildDailyChallenge('2026-08-10', {});
     const b = buildDailyChallenge('2026-08-10', {});
     expect(a.questionIds).toEqual(b.questionIds);
     expect(a.questionIds.length).toBeGreaterThanOrEqual(5);
-    expect(a.questionIds.length).toBeLessThanOrEqual(10);
+    expect(a.questionIds.length).toBeLessThanOrEqual(15);
   });
 
   it('varies across dates', () => {

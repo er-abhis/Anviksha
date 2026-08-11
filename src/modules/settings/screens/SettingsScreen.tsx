@@ -1,6 +1,14 @@
 import React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import {
+  Alert,
+  Linking,
+  Pressable,
+  Share,
+  StyleSheet,
+  View,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { Card, Header, Screen, SectionTitle, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import {
@@ -10,7 +18,70 @@ import {
 } from '../../../store';
 import { ThemePreference } from '../../../store';
 import { SettingRow } from '../components/SettingRow';
-import { APP } from '../../../constants/app';
+import { APP, SHARE_MESSAGE } from '../../../constants/app';
+
+/** Web Play Store listing (works in a browser even before the app is live). */
+const webStoreUrl = () =>
+  APP.playStoreUrl ||
+  `https://play.google.com/store/apps/details?id=${APP.androidPackageId}`;
+
+const shareApp = async () => {
+  try {
+    await Share.share({ message: `${SHARE_MESSAGE} ${webStoreUrl()}`.trim() });
+  } catch {
+    // User dismissed the sheet, or sharing is unavailable — nothing to do.
+  }
+};
+
+const rateApp = async () => {
+  // Prefer the native Play Store app; fall back to the web listing.
+  const marketUrl = `market://details?id=${APP.androidPackageId}`;
+  try {
+    if (await Linking.canOpenURL(marketUrl)) {
+      await Linking.openURL(marketUrl);
+      return;
+    }
+    await Linking.openURL(webStoreUrl());
+  } catch {
+    Alert.alert(
+      'Not available yet',
+      `${APP.name} isn’t on the Play Store yet. Thanks for wanting to rate it!`,
+    );
+  }
+};
+
+const ActionRow: React.FC<{
+  icon: string;
+  label: string;
+  description?: string;
+  onPress: () => void;
+}> = ({ icon, label, description, onPress }) => {
+  const { colors, spacing } = useTheme();
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      style={({ pressed }) => [
+        styles.actionRow,
+        { paddingVertical: spacing.md, gap: spacing.md, opacity: pressed ? 0.6 : 1 },
+      ]}
+    >
+      <View style={[styles.actionIcon, { backgroundColor: colors.surfaceAlt }]}>
+        <Icon name={icon} size={18} color={colors.text} />
+      </View>
+      <View style={styles.flex}>
+        <Text variant="bodyStrong">{label}</Text>
+        {description && (
+          <Text variant="caption" color="textSecondary">
+            {description}
+          </Text>
+        )}
+      </View>
+      <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
+    </Pressable>
+  );
+};
 
 const THEME_OPTIONS: { key: ThemePreference; label: string }[] = [
   { key: 'light', label: 'Light' },
@@ -108,6 +179,25 @@ export const SettingsScreen: React.FC = () => {
         </Card>
       </View>
 
+      {/* About */}
+      <View>
+        <SectionTitle title="About" />
+        <Card padded={false} style={{ paddingHorizontal: spacing.lg }}>
+          <ActionRow
+            icon="share-social-outline"
+            label={`Share ${APP.name}`}
+            description="Tell a friend about the app"
+            onPress={shareApp}
+          />
+          <ActionRow
+            icon="star-outline"
+            label={`Rate ${APP.name}`}
+            description="Leave a rating on the Play Store"
+            onPress={rateApp}
+          />
+        </Card>
+      </View>
+
       <Text variant="caption" color="textTertiary" center>
         {`${APP.name} v${APP.version}`}
       </Text>
@@ -116,6 +206,15 @@ export const SettingsScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  flex: { flex: 1 },
+  actionRow: { flexDirection: 'row', alignItems: 'center' },
+  actionIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   segment: { flexDirection: 'row', padding: 4, gap: 4 },
   segmentItem: {
     flex: 1,

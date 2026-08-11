@@ -7,7 +7,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../navigation/types';
-import { Gradient, Text } from '../../../components';
+import { Gradient, Logo, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { APP } from '../../../constants/app';
 import { initDatabase } from '../../../database/db';
@@ -63,6 +63,7 @@ export const SplashScreen: React.FC<Props> = ({ navigation }) => {
       />
       <View style={styles.center}>
         <Animated.View style={[styles.logo, logoStyle]}>
+          <Logo size={96} style={styles.mark} />
           <Text variant="display" color="textInverse" center>
             {APP.name}
           </Text>
@@ -87,5 +88,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   logo: { alignItems: 'center' },
+  mark: { marginBottom: 16 },
   tag: { marginTop: 8, opacity: 0.9 },
 });

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Button, Card, ProgressBar, Text } from '../../../components';
+import { Button, Card, Confetti, ProgressBar, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { ChoiceQuestion, MatchQuestion, OrderQuestion, Question } from '../../../content';
 
@@ -314,6 +314,14 @@ const OrderView: React.FC<{ question: OrderQuestion; onNext: (c: boolean) => voi
 };
 
 /* ------------------------------- results ------------------------------- */
+/** A short motivational line, scaled to how well the learner did. */
+const praise = (accuracy: number): string => {
+  if (accuracy >= 1) return 'Flawless! You’re becoming an AI Explorer 🚀';
+  if (accuracy >= 0.9) return 'Excellent! You really get this.';
+  if (accuracy >= 0.7) return 'Great work — that’s a solid pass!';
+  return 'Nice effort — every round makes it click more.';
+};
+
 const Results: React.FC<{
   correct: number;
   total: number;
@@ -331,6 +339,7 @@ const Results: React.FC<{
 
   return (
     <ScrollView contentContainerStyle={{ padding: spacing.lg, gap: spacing.lg }}>
+      {good && <Confetti />}
       <View style={styles.resultHead}>
         <View style={[styles.resultRing, { borderColor: good ? colors.success : colors.error }]}>
           <Text variant="display" color={good ? 'success' : 'error'}>{`${pct}%`}</Text>
@@ -339,6 +348,11 @@ const Results: React.FC<{
         <Text variant="h2" center style={{ marginTop: spacing.md }}>
           {gated ? (passed ? 'Lesson passed!' : 'Almost there') : 'Challenge complete!'}
         </Text>
+        {good && (
+          <Text variant="body" color="primary" center style={{ marginTop: spacing.xs }}>
+            {praise(accuracy)}
+          </Text>
+        )}
         {gated && !passed && (
           <Text variant="body" color="textSecondary" center>
             You need 70% to pass. Review and try again — you’ve got this.

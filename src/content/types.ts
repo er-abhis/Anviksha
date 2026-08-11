@@ -117,11 +117,17 @@ export interface Lesson {
   coins: number;
   /** One or two short sentences — the hook. Never a wall of text. */
   description: string;
+  /** A few short sentences in plain English — the simple explanation. Optional. */
+  explanation?: string;
   /** Simple real-world explanation / analogy. */
   realWorld: string;
   objectives: string[];
   activity: Activity;
   keyTakeaways: string[];
+  /** Pitfalls learners commonly hit. Optional; rendered when present. */
+  commonMistakes?: string[];
+  /** One-line wrap-up. Optional; rendered when present. */
+  summary?: string;
   prerequisiteLessonIds: string[];
   nextLessonId: string | null;
 }

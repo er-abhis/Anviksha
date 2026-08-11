@@ -68,7 +68,7 @@ export const WorldsScreen: React.FC = () => {
                       ? 'Complete previous worlds to unlock'
                       : lessonCount > 0
                       ? `${lessonCount} lessons · ${world.subtitle}`
-                      : `${world.subtitle} · lessons coming soon`}
+                      : world.subtitle}
                   </Text>
                   {unlocked && lessonCount > 0 && (
                     <View style={{ marginTop: spacing.sm }}>

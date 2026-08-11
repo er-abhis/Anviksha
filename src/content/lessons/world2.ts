@@ -834,7 +834,7 @@ export const WORLD2_LESSONS: Lesson[] = [
       'It’s a loop — monitoring sends you back to collect and retrain.',
     ],
     prerequisiteLessonIds: ['w2-l7'],
-    nextLessonId: null,
+    nextLessonId: 'w3-l1',
   },
 ];
 

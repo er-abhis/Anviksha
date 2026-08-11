@@ -16,14 +16,31 @@ import { GLOSSARY } from './glossary';
 import { BADGES } from './badges';
 import { WORLD1_LESSONS, WORLD1_QUESTIONS } from './lessons/world1';
 import { WORLD2_LESSONS, WORLD2_QUESTIONS } from './lessons/world2';
+import { WORLD3_LESSONS, WORLD3_QUESTIONS } from './lessons/world3';
+import { WORLD4_LESSONS, WORLD4_QUESTIONS } from './lessons/world4';
+import { WORLD5_LESSONS, WORLD5_QUESTIONS } from './lessons/world5';
+import { WORLD6_LESSONS, WORLD6_QUESTIONS } from './lessons/world6';
+import { WORLD7_LESSONS, WORLD7_QUESTIONS } from './lessons/world7';
+import { WORLD8_LESSONS, WORLD8_QUESTIONS } from './lessons/world8';
+import { WORLD9_LESSONS, WORLD9_QUESTIONS } from './lessons/world9';
+import { WORLD10_LESSONS, WORLD10_QUESTIONS } from './lessons/world10';
+import { WORLD11_LESSONS, WORLD11_QUESTIONS } from './lessons/world11';
 
 export * from './types';
 export { WORLDS, GLOSSARY, BADGES };
 
 /* -------------------- aggregate registries -------------------- */
 /** Register a new world's content here — that's the only wiring step. */
-export const LESSONS: Lesson[] = [...WORLD1_LESSONS, ...WORLD2_LESSONS];
-export const QUESTIONS: Question[] = [...WORLD1_QUESTIONS, ...WORLD2_QUESTIONS];
+export const LESSONS: Lesson[] = [
+  ...WORLD1_LESSONS, ...WORLD2_LESSONS, ...WORLD3_LESSONS, ...WORLD4_LESSONS,
+  ...WORLD5_LESSONS, ...WORLD6_LESSONS, ...WORLD7_LESSONS, ...WORLD8_LESSONS,
+  ...WORLD9_LESSONS, ...WORLD10_LESSONS, ...WORLD11_LESSONS,
+];
+export const QUESTIONS: Question[] = [
+  ...WORLD1_QUESTIONS, ...WORLD2_QUESTIONS, ...WORLD3_QUESTIONS, ...WORLD4_QUESTIONS,
+  ...WORLD5_QUESTIONS, ...WORLD6_QUESTIONS, ...WORLD7_QUESTIONS, ...WORLD8_QUESTIONS,
+  ...WORLD9_QUESTIONS, ...WORLD10_QUESTIONS, ...WORLD11_QUESTIONS,
+];
 
 const LESSON_BY_ID = new Map(LESSONS.map(l => [l.id, l]));
 const WORLD_BY_ID = new Map(WORLDS.map(w => [w.id, w]));
@@ -177,7 +194,8 @@ export const buildDailyChallenge = (
 
   const seed = hashString(date);
   const shuffled = seededShuffle(pool, seed);
-  const count = Math.min(10, Math.max(5, Math.min(7, shuffled.length)));
+  // Duolingo-style set: aim for 12, never more than the pool has.
+  const count = Math.min(12, shuffled.length);
   const picked = shuffled.slice(0, count);
 
   return {
