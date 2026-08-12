@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
 import {
   DarkTheme as NavDark,
   DefaultTheme as NavLight,
@@ -21,6 +22,10 @@ import { WorldDetailScreen } from '../modules/worlds/screens/WorldDetailScreen';
 import { LessonIntroScreen } from '../modules/learn/screens/LessonIntroScreen';
 import { LessonScreen } from '../modules/learn/screens/LessonScreen';
 import { GlossaryScreen } from '../modules/glossary/screens/GlossaryScreen';
+import { CoffeeScreen } from '../modules/coffee/screens/CoffeeScreen';
+import { AboutScreen } from '../modules/about/screens/AboutScreen';
+import { AboutDeveloperScreen } from '../modules/about/screens/AboutDeveloperScreen';
+import { AppDrawer } from './AppDrawer';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -45,6 +50,7 @@ export const RootNavigator: React.FC = () => {
   }, [mode, theme]);
 
   return (
+    <View style={styles.flex}>
     <NavigationContainer ref={navigationRef} theme={navTheme}>
       <Stack.Navigator
         initialRouteName="Splash"
@@ -84,6 +90,21 @@ export const RootNavigator: React.FC = () => {
           options={{ animation: 'slide_from_right' }}
         />
         <Stack.Screen
+          name="Coffee"
+          component={CoffeeScreen}
+          options={{ animation: 'slide_from_right' }}
+        />
+        <Stack.Screen
+          name="About"
+          component={AboutScreen}
+          options={{ animation: 'slide_from_right' }}
+        />
+        <Stack.Screen
+          name="Developer"
+          component={AboutDeveloperScreen}
+          options={{ animation: 'slide_from_right' }}
+        />
+        <Stack.Screen
           name="DailyChallenge"
           component={DailyChallengeScreen}
           options={{ animation: 'slide_from_right' }}
@@ -100,5 +121,12 @@ export const RootNavigator: React.FC = () => {
         />
       </Stack.Navigator>
     </NavigationContainer>
+      {/* Left navigation drawer overlays the whole app; opened from the Home logo. */}
+      <AppDrawer />
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  flex: { flex: 1 },
+});

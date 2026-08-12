@@ -4,3 +4,4 @@ export { useSettingsStore } from './settingsStore';
 export { usePreferencesStore } from './preferencesStore';
 export { useProgressStore } from './progressStore';
 export { useAchievementsStore } from './achievementsStore';
+export { useDrawerStore } from './drawerStore';

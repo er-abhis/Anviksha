@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  Alert,
-  Linking,
-  Pressable,
-  Share,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Card, Header, Screen, SectionTitle, Text } from '../../../components';
@@ -18,37 +11,8 @@ import {
 } from '../../../store';
 import { ThemePreference } from '../../../store';
 import { SettingRow } from '../components/SettingRow';
-import { APP, SHARE_MESSAGE } from '../../../constants/app';
-
-/** Web Play Store listing (works in a browser even before the app is live). */
-const webStoreUrl = () =>
-  APP.playStoreUrl ||
-  `https://play.google.com/store/apps/details?id=${APP.androidPackageId}`;
-
-const shareApp = async () => {
-  try {
-    await Share.share({ message: `${SHARE_MESSAGE} ${webStoreUrl()}`.trim() });
-  } catch {
-    // User dismissed the sheet, or sharing is unavailable — nothing to do.
-  }
-};
-
-const rateApp = async () => {
-  // Prefer the native Play Store app; fall back to the web listing.
-  const marketUrl = `market://details?id=${APP.androidPackageId}`;
-  try {
-    if (await Linking.canOpenURL(marketUrl)) {
-      await Linking.openURL(marketUrl);
-      return;
-    }
-    await Linking.openURL(webStoreUrl());
-  } catch {
-    Alert.alert(
-      'Not available yet',
-      `${APP.name} isn’t on the Play Store yet. Thanks for wanting to rate it!`,
-    );
-  }
-};
+import { APP } from '../../../constants/app';
+import { rateApp, shareApp } from '../../../utils/appLinks';
 
 const ActionRow: React.FC<{
   icon: string;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -17,7 +17,7 @@ import {
   XPBadge,
 } from '../../../components';
 import { RootStackParamList } from '../../../navigation/types';
-import { useAchievementsStore, useProgressStore } from '../../../store';
+import { useAchievementsStore, useDrawerStore, useProgressStore } from '../../../store';
 import {
   BADGES,
   buildDailyChallenge,
@@ -35,6 +35,7 @@ import { ActivityRow } from '../components/ActivityRow';
 export const HomeScreen: React.FC = () => {
   const { colors, spacing } = useTheme();
   const { isTablet } = useResponsive();
+  const openDrawer = useDrawerStore(s => s.show);
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
@@ -75,7 +76,14 @@ export const HomeScreen: React.FC = () => {
       >
         {/* Greeting + stats */}
         <View style={styles.headerRow}>
-          <Logo size={36} style={styles.brandMark} />
+          <Pressable
+            onPress={() => openDrawer()}
+            accessibilityRole="button"
+            accessibilityLabel="Open menu"
+            hitSlop={8}
+          >
+            <Logo size={36} style={styles.brandMark} />
+          </Pressable>
           <View style={styles.flex}>
             <Text variant="label" color="textSecondary">
               Welcome back

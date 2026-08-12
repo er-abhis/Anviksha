@@ -38,6 +38,7 @@ export const ProfileScreen: React.FC = () => {
   const menu: { icon: string; label: string; onPress: () => void }[] = [
     { icon: 'map-outline', label: 'My Worlds', onPress: () => navigation.navigate('Worlds') },
     { icon: 'book-outline', label: 'AI Glossary', onPress: () => navigation.navigate('Glossary') },
+    { icon: 'cafe-outline', label: '☕ Buy Me a Coffee', onPress: () => navigation.navigate('Coffee') },
     { icon: 'settings-outline', label: 'Settings', onPress: () => navigation.navigate('Settings') },
   ];
 
