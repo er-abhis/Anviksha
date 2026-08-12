@@ -27,7 +27,9 @@ export const Gradient: React.FC<GradientProps> = ({
   style,
   children,
 }) => {
-  const id = `grad-${colors.join('-')}`;
+  // Strip '#' from hex colors — a '#' inside an SVG id / url(#…) reference is
+  // invalid and can make the gradient fill fail to resolve on some renderers.
+  const id = `grad-${colors.map(c => c.replace(/#/g, '')).join('-')}`;
   return (
     <View style={[styles.container, style]}>
       <Svg style={StyleSheet.absoluteFill}>

@@ -2,9 +2,10 @@
 export const APP = {
   name: 'Anviksha',
   tagline: 'Learn AI by playing with it',
-  version: '0.0.1',
+  // Keep in sync with android/app/build.gradle versionName.
+  version: '1.0',
   // TODO: set to the real Play Store package id once the app is published.
-  androidPackageId: 'com.anviksha',
+  androidPackageId: 'com.abhishek.anviksha',
   // Filled in once the store listing goes live; until then Share/Rate fall back gracefully.
   playStoreUrl: '',
 } as const;

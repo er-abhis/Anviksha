@@ -6,9 +6,9 @@ export const webStoreUrl = (): string =>
   APP.playStoreUrl ||
   `https://play.google.com/store/apps/details?id=${APP.androidPackageId}`;
 
-/** Pre-filled Contact form. Kept as a single exact string (no escaping). */
+/** Contact form. Opens blank so the user fills in their own details. */
 export const CONTACT_FORM_URL =
-  'https://docs.google.com/forms/d/e/1FAIpQLSegGLSx_D7qSQbZePAeZlBfF42d-0f-sq3zPOFJ5GfUFZKHcA/viewform?usp=pp_url&entry.2005620554=Abhishek&entry.1045781291=abhi@gmail.com&entry.1065046570=Mohali&entry.1166974658=7986140543&entry.839337160=Hey+There';
+  'https://docs.google.com/forms/d/e/1FAIpQLSegGLSx_D7qSQbZePAeZlBfF42d-0f-sq3zPOFJ5GfUFZKHcA/viewform';
 
 export const DEVELOPER_LINKEDIN =
   'https://www.linkedin.com/in/er-abhishek-choudhary/';
