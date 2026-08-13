@@ -107,3 +107,7 @@ coverage/
 # ==========================
 *.jsbundle
 dist/
+
+android/key.properties
+android/keys/*.jks
+android/keys/*.keystore
