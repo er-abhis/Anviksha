@@ -30,10 +30,15 @@ export const LessonCard: React.FC<{ data: LessonCardData; onPress?: () => void }
       : { icon: 'play-circle', label: 'Start', color: colors.primary };
 
   return (
-    <Card onPress={onPress} elevation="sm" style={styles.card}>
+    <Card
+      onPress={onPress}
+      elevation="md"
+      glow={data.status === 'open'}
+      style={styles.card}
+    >
       <View style={styles.headRow}>
-        <View style={[styles.chapterPill, { backgroundColor: colors.surfaceAlt, borderRadius: radius.sm }]}>
-          <Text variant="caption" color="textSecondary">{`Chapter ${data.chapter}`}</Text>
+        <View style={[styles.chapterPill, { backgroundColor: colors.primaryMuted, borderRadius: radius.pill }]}>
+          <Text variant="caption" color="primary">{`Chapter ${data.chapter}`}</Text>
         </View>
         <Icon name={meta.icon} size={18} color={meta.color} />
       </View>

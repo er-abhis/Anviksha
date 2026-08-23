@@ -1,11 +1,13 @@
 import React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Animated, { FadeInDown, ZoomIn } from 'react-native-reanimated';
 import {
-  Card,
+  GlassCard,
+  Gradient,
   Header,
   IconButton,
   Screen,
@@ -18,7 +20,7 @@ import { useAchievementsStore, useProgressStore } from '../../../store';
 import { BADGES, LESSONS, WORLDS, isWorldUnlocked } from '../../../content';
 
 export const ProfileScreen: React.FC = () => {
-  const { colors, radius, spacing } = useTheme();
+  const { colors, radius, spacing, gradients, elevation } = useTheme();
   const tabBarHeight = useBottomTabBarHeight();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -59,25 +61,43 @@ export const ProfileScreen: React.FC = () => {
         }
       />
 
-      <Card elevation="sm">
-        <View style={[styles.identity, { gap: spacing.md }]}>
-          <View style={[styles.avatar, { backgroundColor: colors.primaryMuted }]}>
-            <Icon name="person" size={30} color={colors.primary} />
+      {/* Gradient hero */}
+      <Animated.View entering={FadeInDown.duration(420)}>
+        <Gradient
+          colors={gradients.brand}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          borderRadius={radius.xl}
+          style={[styles.hero, { padding: spacing.xl, ...elevation.glow }]}
+        >
+          <View style={[styles.identity, { gap: spacing.md }]}>
+            <Animated.View
+              entering={ZoomIn.duration(360).delay(120)}
+              style={[
+                styles.avatar,
+                { borderColor: 'rgba(255,255,255,0.35)' },
+              ]}
+            >
+              <Icon name="person" size={34} color={colors.onPrimary} />
+            </Animated.View>
+            <View style={styles.flex}>
+              <Text variant="h2" color="onPrimary">Explorer</Text>
+              <View style={[styles.levelPill, { borderRadius: radius.pill, backgroundColor: 'rgba(0,0,0,0.22)' }]}>
+                <Icon name="star" size={13} color={colors.onPrimary} />
+                <Text variant="label" color="onPrimary">
+                  {`Level ${level} · ${xp.toLocaleString()} XP`}
+                </Text>
+              </View>
+            </View>
           </View>
-          <View style={styles.flex}>
-            <Text variant="h3">Explorer</Text>
-            <Text variant="label" color="textSecondary">
-              {`Level ${level} · ${xp.toLocaleString()} XP`}
-            </Text>
-          </View>
-        </View>
-      </Card>
 
-      <View style={[styles.badges, { gap: spacing.sm }]}>
-        <XPBadge value={xp} kind="xp" />
-        <XPBadge value={coins} kind="coins" />
-        <XPBadge value={streakDays} kind="streak" />
-      </View>
+          <View style={[styles.badges, { gap: spacing.sm, marginTop: spacing.lg }]}>
+            <XPBadge value={xp} kind="xp" />
+            <XPBadge value={coins} kind="coins" />
+            <XPBadge value={streakDays} kind="streak" />
+          </View>
+        </Gradient>
+      </Animated.View>
 
       {fresh && (
         <Text variant="body" color="textSecondary" center>
@@ -85,53 +105,82 @@ export const ProfileScreen: React.FC = () => {
         </Text>
       )}
 
-      <Card elevation="sm" padded={false}>
-        <View style={styles.statsRow}>
-          {stats.map((s, i) => (
-            <View
-              key={s.label}
+      <Animated.View entering={FadeInDown.duration(400).delay(80)}>
+        <GlassCard padded={false}>
+          <View style={styles.statsRow}>
+            {stats.map((s, i) => (
+              <Animated.View
+                key={s.label}
+                entering={FadeInDown.duration(360).delay(140 + i * 90)}
+                style={[
+                  styles.stat,
+                  i < stats.length - 1 && { borderRightWidth: StyleSheet.hairlineWidth, borderRightColor: colors.glassBorder },
+                ]}
+              >
+                <View style={[styles.statIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.md }]}>
+                  <Icon name={s.icon} size={18} color={colors.primary} />
+                </View>
+                <Text variant="h3">{s.value}</Text>
+                <Text variant="caption" color="textSecondary">{s.label}</Text>
+              </Animated.View>
+            ))}
+          </View>
+        </GlassCard>
+      </Animated.View>
+
+      <Animated.View entering={FadeInDown.duration(400).delay(160)}>
+        <GlassCard padded={false} style={{ paddingHorizontal: spacing.lg }}>
+          {menu.map((m, i) => (
+            <GlassCard
+              key={m.label}
+              padded={false}
+              sheen={false}
+              onPress={m.onPress}
               style={[
-                styles.stat,
-                i < stats.length - 1 && { borderRightWidth: StyleSheet.hairlineWidth, borderRightColor: colors.border },
+                styles.menuRow,
+                { backgroundColor: 'transparent', borderWidth: 0 },
+                i < menu.length - 1 && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.glassBorder },
               ]}
             >
-              <Icon name={s.icon} size={18} color={colors.primary} />
-              <Text variant="h3">{s.value}</Text>
-              <Text variant="caption" color="textSecondary">{s.label}</Text>
-            </View>
+              <View style={[styles.menuIcon, { backgroundColor: colors.surfaceAlt, borderRadius: radius.md }]}>
+                <Icon name={m.icon} size={18} color={colors.text} />
+              </View>
+              <Text variant="body" style={styles.flex}>{m.label}</Text>
+              <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
+            </GlassCard>
           ))}
-        </View>
-      </Card>
-
-      <Card elevation="sm" padded={false} style={{ paddingHorizontal: spacing.lg }}>
-        {menu.map((m, i) => (
-          <Pressable
-            key={m.label}
-            onPress={m.onPress}
-            style={[
-              styles.menuRow,
-              i < menu.length - 1 && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border },
-            ]}
-          >
-            <View style={[styles.menuIcon, { backgroundColor: colors.surfaceAlt, borderRadius: radius.sm }]}>
-              <Icon name={m.icon} size={18} color={colors.text} />
-            </View>
-            <Text variant="body" style={styles.flex}>{m.label}</Text>
-            <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
-          </Pressable>
-        ))}
-      </Card>
+        </GlassCard>
+      </Animated.View>
     </Screen>
   );
 };
 
 const styles = StyleSheet.create({
+  hero: { overflow: 'hidden' },
   identity: { flexDirection: 'row', alignItems: 'center' },
   flex: { flex: 1 },
   badges: { flexDirection: 'row' },
-  avatar: { width: 56, height: 56, borderRadius: 28, alignItems: 'center', justifyContent: 'center' },
+  levelPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    alignSelf: 'flex-start',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    marginTop: 6,
+  },
+  avatar: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    borderWidth: 2,
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   statsRow: { flexDirection: 'row' },
-  stat: { flex: 1, alignItems: 'center', gap: 4, paddingVertical: 18 },
+  stat: { flex: 1, alignItems: 'center', gap: 6, paddingVertical: 20 },
+  statIcon: { width: 38, height: 38, alignItems: 'center', justifyContent: 'center' },
   menuRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 14 },
-  menuIcon: { width: 34, height: 34, alignItems: 'center', justifyContent: 'center' },
+  menuIcon: { width: 36, height: 36, alignItems: 'center', justifyContent: 'center' },
 });

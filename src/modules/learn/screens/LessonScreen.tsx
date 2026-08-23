@@ -2,11 +2,12 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {
   Button,
-  Card,
   EmptyState,
+  GlassCard,
   Header,
   Screen,
   Text,
@@ -88,7 +89,7 @@ export const LessonScreen: React.FC = () => {
 
       {!!lesson.commonMistakes?.length && (
         <Section icon="warning-outline" title="Common mistakes">
-          <Card elevation="sm">
+          <GlassCard elevation="md">
             <View style={{ gap: spacing.sm }}>
               {lesson.commonMistakes.map(m => (
                 <View key={m} style={styles.bullet}>
@@ -97,12 +98,12 @@ export const LessonScreen: React.FC = () => {
                 </View>
               ))}
             </View>
-          </Card>
+          </GlassCard>
         </Section>
       )}
 
       <Section icon="key-outline" title="Key takeaways">
-        <Card elevation="sm">
+        <GlassCard elevation="md">
           <View style={{ gap: spacing.sm }}>
             {lesson.keyTakeaways.map(k => (
               <View key={k} style={styles.bullet}>
@@ -111,7 +112,7 @@ export const LessonScreen: React.FC = () => {
               </View>
             ))}
           </View>
-        </Card>
+        </GlassCard>
       </Section>
 
       <View style={{ gap: spacing.sm }}>
@@ -149,13 +150,13 @@ const Section: React.FC<{ icon: string; title: string; children: React.ReactNode
 }) => {
   const { colors, spacing } = useTheme();
   return (
-    <View style={{ gap: spacing.sm }}>
+    <Animated.View entering={FadeInDown.duration(400)} style={{ gap: spacing.sm }}>
       <View style={styles.sectionHead}>
         <Icon name={icon} size={16} color={colors.primary} />
         <Text variant="label" color="primary">{title.toUpperCase()}</Text>
       </View>
       {children}
-    </View>
+    </Animated.View>
   );
 };
 

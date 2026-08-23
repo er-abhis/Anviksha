@@ -1,9 +1,18 @@
 import React, { useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
+import Animated, { FadeInDown, ZoomIn } from 'react-native-reanimated';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ViewShot from 'react-native-view-shot';
-import { Button, Card, Confetti, Header, Screen, Text } from '../../../components';
+import {
+  Button,
+  Confetti,
+  Gradient,
+  GlassCard,
+  Header,
+  Screen,
+  Text,
+} from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { RootStackParamList } from '../../../navigation/types';
 import { getComponent } from '../data/components';
@@ -18,7 +27,7 @@ const Stat: React.FC<{ icon: string; label: string; value: string }> = ({
 }) => {
   const { colors, spacing, radius } = useTheme();
   return (
-    <Card elevation="sm" style={StyleSheet.flatten([styles.stat, { borderRadius: radius.md }])}>
+    <GlassCard elevation="sm" style={StyleSheet.flatten([styles.stat, { borderRadius: radius.md }])}>
       <Icon name={icon} size={18} color={colors.primary} />
       <Text variant="h3" style={{ marginTop: spacing.xs }}>
         {value}
@@ -26,12 +35,12 @@ const Stat: React.FC<{ icon: string; label: string; value: string }> = ({
       <Text variant="caption" color="textSecondary">
         {label}
       </Text>
-    </Card>
+    </GlassCard>
   );
 };
 
 export const AILabShowcaseScreen: React.FC = () => {
-  const { colors, spacing, radius } = useTheme();
+  const { colors, spacing, radius, gradients } = useTheme();
   const navigation = useNavigation();
   const route = useRoute<RouteProp<RootStackParamList, 'AILabShowcase'>>();
   const {
@@ -82,15 +91,30 @@ export const AILabShowcaseScreen: React.FC = () => {
           ]}
         >
       {/* Hero */}
-      <View style={styles.hero}>
-        <Text style={styles.heroEmoji}>{emoji}</Text>
+      <Animated.View entering={FadeInDown.springify().damping(16)} style={styles.hero}>
+        <Animated.View
+          entering={ZoomIn.springify().damping(12)}
+          style={[
+            styles.heroBadge,
+            { borderRadius: radius.xl, borderColor: colors.glassBorder },
+          ]}
+        >
+          <Gradient
+            colors={gradients.brand}
+            opacities={[0.35, 0.12]}
+            borderRadius={radius.xl}
+            style={StyleSheet.absoluteFill}
+            pointerEvents="none"
+          />
+          <Text style={styles.heroEmoji}>{emoji}</Text>
+        </Animated.View>
         <Text variant="h1" center>
           {title}
         </Text>
         <Text variant="body" color="textSecondary" center>
           Built by you
         </Text>
-      </View>
+      </Animated.View>
 
       {/* Architecture visual */}
       <View style={{ gap: spacing.sm }}>
@@ -114,7 +138,7 @@ export const AILabShowcaseScreen: React.FC = () => {
       </View>
 
       {/* Concepts learned — derived from the real build. */}
-      <Card elevation="sm">
+      <GlassCard elevation="sm">
         <Text variant="label" color="textSecondary">
           CONCEPTS LEARNED
         </Text>
@@ -142,7 +166,7 @@ export const AILabShowcaseScreen: React.FC = () => {
             );
           })}
         </View>
-      </Card>
+      </GlassCard>
 
           {/* Branding footer — makes the shared image self-explanatory. */}
           <Text variant="caption" color="textTertiary" center>
@@ -167,6 +191,15 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   capture: {},
   hero: { alignItems: 'center', gap: 4 },
+  heroBadge: {
+    width: 96,
+    height: 96,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: StyleSheet.hairlineWidth,
+    overflow: 'hidden',
+    marginBottom: 4,
+  },
   heroEmoji: { fontSize: 48 },
   statsRow: { flexDirection: 'row' },
   stat: { flex: 1, alignItems: 'center' },

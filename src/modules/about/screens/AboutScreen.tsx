@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Card, Header, Logo, Screen, Text } from '../../../components';
+import { Gradient, GlassCard, Header, Logo, Screen, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { APP } from '../../../constants/app';
 
@@ -19,50 +19,52 @@ const FEATURES = [
 ];
 
 export const AboutScreen: React.FC = () => {
-  const { colors, radius, spacing } = useTheme();
+  const { colors, radius, spacing, gradients, elevation } = useTheme();
   const navigation = useNavigation();
 
   return (
     <Screen scroll contentContainerStyle={{ gap: spacing.xl }}>
       <Header title="About App" onBack={() => navigation.goBack()} />
 
-      <Animated.View entering={FadeInDown.duration(400)} style={styles.hero}>
-        <View style={[styles.logoWrap, { backgroundColor: colors.surfaceAlt, borderRadius: radius.xl }]}>
-          <Logo size={72} />
-        </View>
-        <Text variant="h1">{APP.name}</Text>
-        <Text variant="label" color="textSecondary">{`Version ${APP.version}`}</Text>
-        <Text variant="body" color="primary" center style={{ marginTop: spacing.xs }}>
-          Learn AI through interactive visual simulations.
-        </Text>
+      <Animated.View entering={FadeInDown.duration(400)}>
+        <Gradient colors={gradients.brand} style={{ ...styles.hero, borderRadius: radius.xl, ...elevation.glow }}>
+          <View style={[styles.logoWrap, { backgroundColor: 'rgba(255,255,255,0.14)', borderRadius: radius.xl }]}>
+            <Logo size={72} />
+          </View>
+          <Text variant="h1" color="textInverse">{APP.name}</Text>
+          <Text variant="label" color="textInverse" style={styles.dim}>{`Version ${APP.version}`}</Text>
+          <Text variant="body" color="textInverse" center style={{ marginTop: spacing.xs }}>
+            Learn AI through interactive visual simulations.
+          </Text>
+        </Gradient>
       </Animated.View>
 
       <Animated.View entering={FadeInDown.delay(120).duration(400)}>
-        <Card elevation="sm">
+        <GlassCard>
           <Text variant="body" color="textSecondary" style={styles.desc}>{DESCRIPTION}</Text>
-        </Card>
+        </GlassCard>
       </Animated.View>
 
       <Animated.View entering={FadeInDown.delay(200).duration(400)} style={{ gap: spacing.md }}>
         <Text variant="h3">What’s inside</Text>
-        <Card elevation="sm" padded={false} style={{ paddingHorizontal: spacing.lg }}>
+        <GlassCard padded={false} style={{ paddingHorizontal: spacing.lg }}>
           {FEATURES.map((f, i) => (
             <View
               key={f.label}
               style={[
                 styles.feature,
                 { gap: spacing.md, paddingVertical: spacing.md },
-                i < FEATURES.length - 1 && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border },
+                i < FEATURES.length - 1 && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.glassBorder },
               ]}
             >
-              <View style={[styles.featureIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.sm }]}>
-                <Icon name={f.icon} size={18} color={colors.primary} />
+              <View style={[styles.featureIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.md, borderColor: colors.glassBorder }]}>
+                <Icon name={f.icon} size={19} color={colors.accent} />
               </View>
               <Text variant="body" style={styles.flex}>{f.label}</Text>
-              <Icon name="checkmark-circle" size={18} color={colors.success} />
+              <Icon name="checkmark-circle" size={19} color={colors.success} />
             </View>
           ))}
-        </Card>
+        </GlassCard>
       </Animated.View>
 
       <Text variant="label" color="textSecondary" center style={{ marginTop: spacing.sm }}>
@@ -74,9 +76,10 @@ export const AboutScreen: React.FC = () => {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  hero: { alignItems: 'center', gap: 6 },
+  hero: { alignItems: 'center', gap: 6, padding: 28, overflow: 'hidden' },
   logoWrap: { padding: 20, marginBottom: 6 },
+  dim: { opacity: 0.9 },
   desc: { lineHeight: 24 },
   feature: { flexDirection: 'row', alignItems: 'center' },
-  featureIcon: { width: 36, height: 36, alignItems: 'center', justifyContent: 'center' },
+  featureIcon: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center', borderWidth: StyleSheet.hairlineWidth },
 });

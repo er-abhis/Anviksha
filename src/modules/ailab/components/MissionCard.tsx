@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Card, Text } from '../../../components';
+import { Gradient, GlassCard, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { Mission } from '../types';
 
@@ -21,22 +21,32 @@ export const MissionCard: React.FC<MissionCardProps> = ({
   const accent = colors[mission.accent];
 
   return (
-    <Card
-      elevation="md"
+    <GlassCard
+      elevation="glow"
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={`${mission.title}. ${mission.difficulty}. ${mission.tagline}`}
       style={{ overflow: 'hidden' }}
     >
       {/* Accent rail down the left edge for a designed, non-generic feel. */}
-      <View style={[styles.rail, { backgroundColor: accent }]} />
+      <Gradient
+        colors={[accent, accent + '00']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        style={styles.rail}
+      />
       <View style={[styles.row, { gap: spacing.md }]}>
         <View
           style={[
             styles.emojiChip,
-            { backgroundColor: accent + '22', borderRadius: radius.md },
+            { borderRadius: radius.md, overflow: 'hidden' },
           ]}
         >
+          <Gradient
+            colors={[accent + '44', accent + '18']}
+            borderRadius={radius.md}
+            style={StyleSheet.absoluteFill}
+          />
           <Text style={styles.emoji}>{mission.emoji}</Text>
         </View>
 
@@ -70,9 +80,9 @@ export const MissionCard: React.FC<MissionCardProps> = ({
           </View>
         </View>
 
-        <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
+        <Icon name="chevron-forward" size={18} color={colors.accent} />
       </View>
-    </Card>
+    </GlassCard>
   );
 };
 

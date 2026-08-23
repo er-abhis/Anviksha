@@ -13,7 +13,7 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {
   Button,
-  Card,
+  GlassCard,
   Gradient,
   Header,
   Screen,
@@ -52,7 +52,7 @@ const REASONS = [
 ];
 
 export const CoffeeScreen: React.FC = () => {
-  const { colors, radius, spacing, elevation } = useTheme();
+  const { colors, radius, spacing, elevation, gradients } = useTheme();
   const navigation = useNavigation();
   const [tab, setTab] = useState<Tab>('paypal');
   const [copied, setCopied] = useState(false);
@@ -81,7 +81,7 @@ export const CoffeeScreen: React.FC = () => {
 
       {/* Hero */}
       <Animated.View entering={FadeInDown.duration(400)}>
-        <Gradient colors={[colors.primary, colors.accent]} style={{ ...styles.hero, borderRadius: radius.lg }}>
+        <Gradient colors={gradients.brand} style={{ ...styles.hero, borderRadius: radius.xl, ...elevation.glow }}>
           <View style={styles.heroBadge}>
             <Icon name="cafe" size={30} color="#FFFFFF" />
           </View>
@@ -95,17 +95,17 @@ export const CoffeeScreen: React.FC = () => {
       {/* Why support */}
       <Animated.View entering={FadeInDown.delay(120).duration(400)} style={{ gap: spacing.md }}>
         {REASONS.map(r => (
-          <Card key={r.title} elevation="sm">
+          <GlassCard key={r.title}>
             <View style={[styles.reason, { gap: spacing.md }]}>
-              <View style={[styles.reasonIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.md }]}>
-                <Icon name={r.icon} size={22} color={colors.primary} />
+              <View style={[styles.reasonIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.md, borderColor: colors.glassBorder }]}>
+                <Icon name={r.icon} size={22} color={colors.accent} />
               </View>
               <View style={styles.flex}>
                 <Text variant="bodyStrong">{r.title}</Text>
                 <Text variant="caption" color="textSecondary">{r.desc}</Text>
               </View>
             </View>
-          </Card>
+          </GlassCard>
         ))}
       </Animated.View>
 
@@ -138,22 +138,22 @@ export const CoffeeScreen: React.FC = () => {
         {tab === 'paypal' ? (
           <View style={{ gap: spacing.sm }}>
             {PAYPAL_TIERS.map(tier => (
-              <Card key={tier.url} elevation="sm" onPress={() => openUrl(tier.url)}>
+              <GlassCard key={tier.url} onPress={() => openUrl(tier.url)}>
                 <View style={styles.tierRow}>
                   <Text variant="h3">{tier.emoji}</Text>
                   <View style={styles.flex}>
                     <Text variant="bodyStrong">{tier.label}</Text>
                     <Text variant="caption" color="textSecondary">via PayPal</Text>
                   </View>
-                  <View style={[styles.amount, { backgroundColor: colors.primaryMuted, borderRadius: radius.pill }]}>
-                    <Text variant="label" color="primary">{tier.amount}</Text>
+                  <View style={[styles.amount, { backgroundColor: colors.primaryMuted, borderRadius: radius.pill, borderColor: colors.glassBorder, borderWidth: StyleSheet.hairlineWidth }]}>
+                    <Text variant="label" color="accent">{tier.amount}</Text>
                   </View>
                 </View>
-              </Card>
+              </GlassCard>
             ))}
           </View>
         ) : (
-          <Card elevation="sm">
+          <GlassCard>
             <View style={styles.upiWrap}>
               <View style={[styles.qrCard, { borderRadius: radius.md }]}>
                 <Image source={require('../../../assets/upi.png')} style={styles.qr} resizeMode="contain" />
@@ -181,7 +181,7 @@ export const CoffeeScreen: React.FC = () => {
                 />
               </View>
             </View>
-          </Card>
+          </GlassCard>
         )}
       </Animated.View>
 

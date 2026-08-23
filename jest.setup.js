@@ -14,7 +14,15 @@ jest.mock('react-native-reanimated', () => {
     cubic: easingFn,
     linear: easingFn,
   };
-  const entering = { duration: () => entering, delay: () => entering };
+  // Entering/exiting/layout builders are fluent: every modifier (.duration,
+  // .delay, .springify, .damping, .stiffness, .withInitialValues…) returns the
+  // same builder. A Proxy makes ANY method chainable so we never have to
+  // enumerate Reanimated's fluent API in the mock.
+  const makeChainable = () =>
+    new Proxy(function () {}, {
+      get: () => makeChainable(),
+      apply: () => makeChainable(),
+    });
   return {
     __esModule: true,
     default: { View, Text, ScrollView, createAnimatedComponent: c => c },
@@ -22,28 +30,45 @@ jest.mock('react-native-reanimated', () => {
     Text,
     ScrollView,
     Easing,
-    FadeIn: entering,
-    FadeOut: entering,
-    FadeInDown: entering,
-    FadeInUp: entering,
-    FadeInLeft: entering,
-    FadeInRight: entering,
-    FadeOutDown: entering,
-    FadeOutUp: entering,
-    SlideInDown: entering,
-    SlideInUp: entering,
-    ZoomIn: entering,
-    ZoomOut: entering,
+    // Layout / entering / exiting presets — all chainable builders.
+    FadeIn: makeChainable(),
+    FadeOut: makeChainable(),
+    FadeInDown: makeChainable(),
+    FadeInUp: makeChainable(),
+    FadeInLeft: makeChainable(),
+    FadeInRight: makeChainable(),
+    FadeOutDown: makeChainable(),
+    FadeOutUp: makeChainable(),
+    SlideInDown: makeChainable(),
+    SlideInUp: makeChainable(),
+    SlideInLeft: makeChainable(),
+    SlideInRight: makeChainable(),
+    SlideOutLeft: makeChainable(),
+    SlideOutRight: makeChainable(),
+    ZoomIn: makeChainable(),
+    ZoomOut: makeChainable(),
+    Layout: makeChainable(),
+    LinearTransition: makeChainable(),
+    Keyframe: function () { return makeChainable(); },
+    // Worklet-thread helpers — no-op / pass-through in tests.
     useSharedValue: initial => ({ value: initial }),
     useAnimatedStyle: () => ({}),
+    useAnimatedProps: () => ({}),
     useAnimatedReaction: () => {},
+    useAnimatedScrollHandler: () => () => {},
     useDerivedValue: fn => ({ value: fn() }),
     runOnJS: fn => (...args) => fn(...args),
+    runOnUI: fn => fn,
     withTiming: identity,
     withDelay: (_d, v) => v,
     withSpring: identity,
     withRepeat: identity,
+    withSequence: (...vs) => vs[vs.length - 1],
     cancelAnimation: () => {},
+    interpolate: () => 0,
+    interpolateColor: () => 'rgba(0,0,0,0)',
+    Extrapolation: { CLAMP: 'clamp', EXTEND: 'extend', IDENTITY: 'identity' },
+    Extrapolate: { CLAMP: 'clamp', EXTEND: 'extend', IDENTITY: 'identity' },
   };
 });
 

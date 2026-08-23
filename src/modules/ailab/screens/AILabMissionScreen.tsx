@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -9,6 +10,8 @@ import {
   Confetti,
   DraggableList,
   EmptyState,
+  Gradient,
+  GlassCard,
   Header,
   IconButton,
   Screen,
@@ -46,7 +49,7 @@ import {
 } from '../builder/architecture';
 
 export const AILabMissionScreen: React.FC = () => {
-  const { colors, spacing, radius } = useTheme();
+  const { colors, spacing, radius, gradients } = useTheme();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'AILabMission'>>();
@@ -214,28 +217,35 @@ export const AILabMissionScreen: React.FC = () => {
       />
 
       {/* Hero + objective */}
-      <Card elevation="md" style={styles.overflowHidden}>
-        <View style={[styles.rail, { backgroundColor: accent }]} />
-        <View style={[styles.heroRow, { gap: spacing.md }]}>
-          <View
-            style={[
-              styles.emojiChip,
-              { backgroundColor: accent + '22', borderRadius: radius.lg },
-            ]}
-          >
-            <Text style={styles.heroEmoji}>{mission.emoji}</Text>
+      <Animated.View entering={FadeInDown.springify().damping(16)}>
+        <Card elevation="glow" style={styles.overflowHidden}>
+          <Gradient
+            colors={[accent + '2E', accent + '08']}
+            style={StyleSheet.absoluteFill}
+            pointerEvents="none"
+          />
+          <View style={[styles.rail, { backgroundColor: accent }]} />
+          <View style={[styles.heroRow, { gap: spacing.md }]}>
+            <View
+              style={[
+                styles.emojiChip,
+                { backgroundColor: accent + '2E', borderRadius: radius.lg },
+              ]}
+            >
+              <Text style={styles.heroEmoji}>{mission.emoji}</Text>
+            </View>
+            <View style={styles.flex}>
+              <Text variant="h3">{mission.title}</Text>
+              <Text variant="caption" color="textSecondary">
+                {mission.concept}
+              </Text>
+            </View>
           </View>
-          <View style={styles.flex}>
-            <Text variant="h3">{mission.title}</Text>
-            <Text variant="caption" color="textSecondary">
-              {mission.concept}
-            </Text>
-          </View>
-        </View>
-        <Text variant="body" style={{ marginTop: spacing.md }}>
-          {mission.objective}
-        </Text>
-      </Card>
+          <Text variant="body" style={{ marginTop: spacing.md }}>
+            {mission.objective}
+          </Text>
+        </Card>
+      </Animated.View>
 
       {/* Builder header */}
       <View>
@@ -260,13 +270,13 @@ export const AILabMissionScreen: React.FC = () => {
           YOUR PIPELINE
         </Text>
         {isEmpty(arch) ? (
-          <Card elevation="sm" style={styles.dropHint}>
+          <GlassCard elevation="sm" style={styles.dropHint}>
             <Icon name="add-circle-outline" size={26} color={colors.textTertiary} />
             <Text variant="caption" color="textTertiary" center>
               Add components above to start building. They stack into a pipeline
               here.
             </Text>
-          </Card>
+          </GlassCard>
         ) : (
           <DraggableList
             items={arch.components}
@@ -285,7 +295,14 @@ export const AILabMissionScreen: React.FC = () => {
 
       {/* Mission complete — build valid AND all challenges solved. */}
       {complete && score && (
-        <Card elevation="md" style={{ borderColor: colors.success }}>
+        <Animated.View entering={FadeInDown.springify().damping(16)}>
+        <Card elevation="glow" style={{ overflow: 'hidden', borderColor: colors.success }}>
+          <Gradient
+            colors={gradients.success}
+            opacities={[0.16, 0.04]}
+            style={StyleSheet.absoluteFill}
+            pointerEvents="none"
+          />
           <View style={[styles.completeHeader, { gap: spacing.sm }]}>
             <Icon name="trophy" size={20} color={colors.success} />
             <Text variant="h3" style={styles.flex} color="success">
@@ -345,11 +362,19 @@ export const AILabMissionScreen: React.FC = () => {
             left={<Icon name="refresh" size={18} color={colors.text} />}
           />
         </Card>
+        </Animated.View>
       )}
 
       {/* Completion criteria — architecture valid but challenges outstanding. */}
       {validation?.ok && !complete && (
-        <Card elevation="md" style={{ borderColor: colors.success }}>
+        <Animated.View entering={FadeInDown.springify().damping(16)}>
+        <Card elevation="glow" style={{ overflow: 'hidden', borderColor: colors.success }}>
+          <Gradient
+            colors={gradients.success}
+            opacities={[0.12, 0.03]}
+            style={StyleSheet.absoluteFill}
+            pointerEvents="none"
+          />
           <View style={[styles.completeHeader, { gap: spacing.sm }]}>
             <Icon name="ribbon" size={20} color={colors.success} />
             <Text variant="bodyStrong" style={styles.flex}>
@@ -382,6 +407,7 @@ export const AILabMissionScreen: React.FC = () => {
             </Text>
           )}
         </Card>
+        </Animated.View>
       )}
 
       {/* Offline simulation playground. */}

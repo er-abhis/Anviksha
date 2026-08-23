@@ -1,19 +1,16 @@
 import React from 'react';
-import {
-  Pressable,
-  StyleSheet,
-  View,
-  ViewProps,
-  ViewStyle,
-} from 'react-native';
+import { StyleProp, StyleSheet, View, ViewProps, ViewStyle } from 'react-native';
 import { useTheme } from '../theme/ThemeProvider';
 import { ElevationLevel } from '../theme/elevation';
+import { PressableScale } from './PressableScale';
 
 export interface CardProps extends ViewProps {
   elevation?: ElevationLevel;
   padded?: boolean;
   onPress?: () => void;
-  style?: ViewStyle;
+  /** Neon glow shadow for hero cards. */
+  glow?: boolean;
+  style?: StyleProp<ViewStyle>;
 }
 
 /** Surface container with themed background, radius and optional elevation. */
@@ -21,6 +18,7 @@ export const Card: React.FC<CardProps> = ({
   elevation = 'sm',
   padded = true,
   onPress,
+  glow = false,
   style,
   children,
   ...rest
@@ -33,18 +31,14 @@ export const Card: React.FC<CardProps> = ({
     padding: padded ? spacing.lg : 0,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.border,
-    ...shadows[elevation],
+    ...shadows[glow ? 'glow' : elevation],
   };
 
   if (onPress) {
     return (
-      <Pressable
-        onPress={onPress}
-        style={({ pressed }) => [cardStyle, pressed && styles.pressed, style]}
-        {...rest}
-      >
+      <PressableScale onPress={onPress} style={[cardStyle, style]} {...rest}>
         {children}
-      </Pressable>
+      </PressableScale>
     );
   }
 
@@ -54,7 +48,3 @@ export const Card: React.FC<CardProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  pressed: { opacity: 0.9, transform: [{ scale: 0.99 }] },
-});

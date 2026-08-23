@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
+import Animated, { FadeInDown, LinearTransition } from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Card, Text } from '../../../components';
+import { Gradient, GlassCard, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { LabArchitecture } from '../types';
 import { localProvider } from '../provider/LocalSimulationProvider';
@@ -16,7 +17,7 @@ interface SimulationPanelProps {
 export const SimulationPanel: React.FC<SimulationPanelProps> = ({
   architecture,
 }) => {
-  const { colors, radius, spacing } = useTheme();
+  const { colors, radius, spacing, gradients } = useTheme();
   const [turn, setTurn] = useState<SimTurn | null>(null);
   const samples = samplesFor(architecture.missionId);
 
@@ -25,7 +26,7 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
   };
 
   return (
-    <Card elevation="sm">
+    <GlassCard elevation="md">
       <View style={{ gap: spacing.md }}>
         <View style={[styles.headerRow, { gap: spacing.sm }]}>
           <Icon name="play-circle" size={20} color={colors.primary} />
@@ -62,11 +63,12 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
                 styles.chip,
                 {
                   borderRadius: radius.pill,
-                  borderColor: colors.border,
-                  backgroundColor: colors.surfaceAlt,
+                  borderColor: colors.glassBorder,
+                  backgroundColor: colors.glass,
                   paddingHorizontal: spacing.md,
                   paddingVertical: spacing.xs,
-                  opacity: pressed ? 0.7 : 1,
+                  transform: [{ scale: pressed ? 0.96 : 1 }],
+                  opacity: pressed ? 0.85 : 1,
                 },
               ]}
             >
@@ -83,14 +85,22 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
           <View style={{ gap: spacing.sm }}>
             {/* Pipeline trace */}
             {turn.trace.length > 0 && (
-              <View style={[styles.trace, { gap: spacing.xs }]}>
+              <Animated.View
+                layout={LinearTransition}
+                style={[styles.trace, { gap: spacing.xs }]}
+              >
                 {turn.trace.map((stage, i) => (
-                  <View key={`${stage}-${i}`} style={styles.traceItem}>
+                  <Animated.View
+                    key={`${stage}-${i}`}
+                    entering={FadeInDown.delay(i * 50).springify().damping(16)}
+                    style={styles.traceItem}
+                  >
                     <View
                       style={[
                         styles.stage,
                         {
                           backgroundColor: colors.primaryMuted,
+                          borderColor: colors.accent + '55',
                           borderRadius: radius.sm,
                         },
                       ]}
@@ -103,44 +113,51 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
                       <Icon
                         name="arrow-forward"
                         size={12}
-                        color={colors.textTertiary}
+                        color={colors.accent}
                       />
                     )}
-                  </View>
+                  </Animated.View>
                 ))}
-              </View>
+              </Animated.View>
             )}
 
             {/* User input bubble */}
-            <View
-              style={[
-                styles.userBubble,
-                { backgroundColor: colors.primary, borderRadius: radius.lg },
-              ]}
+            <Animated.View
+              entering={FadeInDown.delay(turn.trace.length * 50).springify().damping(16)}
+              style={[styles.userBubble, { borderRadius: radius.lg }]}
             >
-              <Text variant="caption" style={{ color: colors.onPrimary }}>
-                {turn.input}
-              </Text>
-            </View>
+              <Gradient
+                colors={gradients.brand}
+                borderRadius={radius.lg}
+                style={styles.bubbleFill}
+              >
+                <Text variant="caption" style={{ color: colors.onPrimary }}>
+                  {turn.input}
+                </Text>
+              </Gradient>
+            </Animated.View>
 
             {/* AI response bubble */}
-            <View
+            <Animated.View
+              entering={FadeInDown.delay(turn.trace.length * 50 + 80).springify().damping(16)}
               style={[
                 styles.aiBubble,
                 {
                   backgroundColor: turn.degraded
-                    ? colors.warning + '18'
-                    : colors.surfaceAlt,
+                    ? colors.warning + '20'
+                    : colors.glass,
+                  borderColor: turn.degraded ? colors.warning + '55' : colors.glassBorder,
+                  borderWidth: StyleSheet.hairlineWidth,
                   borderRadius: radius.lg,
                 },
               ]}
             >
               <Text variant="body">{turn.output}</Text>
-            </View>
+            </Animated.View>
           </View>
         )}
       </View>
-    </Card>
+    </GlassCard>
   );
 };
 
@@ -162,7 +179,8 @@ const styles = StyleSheet.create({
   },
   trace: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' },
   traceItem: { flexDirection: 'row', alignItems: 'center' },
-  stage: { paddingHorizontal: 8, paddingVertical: 4 },
-  userBubble: { alignSelf: 'flex-end', maxWidth: '85%', padding: 10 },
+  stage: { paddingHorizontal: 8, paddingVertical: 4, borderWidth: StyleSheet.hairlineWidth },
+  userBubble: { alignSelf: 'flex-end', maxWidth: '85%', overflow: 'hidden' },
+  bubbleFill: { padding: 10 },
   aiBubble: { alignSelf: 'flex-start', maxWidth: '90%', padding: 10 },
 });

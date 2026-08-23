@@ -1,11 +1,12 @@
 import React, { useMemo, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {
   Button,
-  Card,
+  GlassCard,
   DraggableList,
   Header,
   IconButton,
@@ -117,22 +118,26 @@ export const AILabFreeBuildScreen: React.FC = () => {
           Lab will tell you what works and what could be better.
         </Text>
         <View style={[styles.grid, { gap: spacing.md }]}>
-          {FREE_CATEGORIES.map(cat => (
-            <Pressable
+          {FREE_CATEGORIES.map((cat, i) => (
+            <Animated.View
               key={cat.id}
-              onPress={() => chooseCategory(cat)}
-              accessibilityRole="button"
-              accessibilityLabel={`${cat.label}: ${cat.description}`}
-              style={({ pressed }) => [styles.gridItem, { opacity: pressed ? 0.7 : 1 }]}
+              entering={FadeInDown.delay(i * 60).springify().damping(16)}
+              style={styles.gridItem}
             >
-              <Card elevation="sm" style={styles.catCard}>
+              <GlassCard
+                elevation="md"
+                onPress={() => chooseCategory(cat)}
+                accessibilityRole="button"
+                accessibilityLabel={`${cat.label}: ${cat.description}`}
+                style={styles.catCard}
+              >
                 <Text style={styles.catEmoji}>{cat.emoji}</Text>
                 <Text variant="bodyStrong">{cat.label}</Text>
                 <Text variant="caption" color="textSecondary" numberOfLines={2}>
                   {cat.description}
                 </Text>
-              </Card>
-            </Pressable>
+              </GlassCard>
+            </Animated.View>
           ))}
         </View>
       </Screen>
@@ -180,12 +185,12 @@ export const AILabFreeBuildScreen: React.FC = () => {
           YOUR PIPELINE
         </Text>
         {components.length === 0 ? (
-          <Card elevation="sm" style={styles.dropHint}>
+          <GlassCard elevation="sm" style={styles.dropHint}>
             <Icon name="add-circle-outline" size={26} color={colors.textTertiary} />
             <Text variant="caption" color="textTertiary" center>
               Add components above to start building your {category.label} AI.
             </Text>
-          </Card>
+          </GlassCard>
         ) : (
           <DraggableList
             items={components}

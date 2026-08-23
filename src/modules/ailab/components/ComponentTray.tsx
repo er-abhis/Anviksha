@@ -1,10 +1,13 @@
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
+import Animated, { LinearTransition } from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { getComponent } from '../data/components';
 import { LabComponentId } from '../types';
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 interface ComponentTrayProps {
   /** The components offered for this mission (solution + distractors). */
@@ -28,24 +31,26 @@ export const ComponentTray: React.FC<ComponentTrayProps> = ({
         const c = getComponent(id);
         const isPlaced = placed.includes(id);
         return (
-          <Pressable
+          <AnimatedPressable
             key={id}
+            layout={LinearTransition}
             disabled={isPlaced}
             onPress={() => onAdd(id)}
             hitSlop={6}
             accessibilityRole="button"
             accessibilityState={{ disabled: isPlaced }}
             accessibilityLabel={`Add ${c.label}. ${c.blurb}`}
-            style={({ pressed }) => [
+            style={({ pressed }: { pressed: boolean }) => [
               styles.chip,
               {
-                borderRadius: radius.md,
-                borderColor: colors.border,
-                backgroundColor: isPlaced ? colors.surfaceAlt : colors.surface,
+                borderRadius: radius.lg,
+                borderColor: isPlaced ? colors.success + '55' : colors.glassBorder,
+                backgroundColor: isPlaced ? colors.success + '14' : colors.glass,
                 paddingHorizontal: spacing.md,
                 paddingVertical: spacing.sm,
                 gap: spacing.xs,
-                opacity: pressed ? 0.7 : isPlaced ? 0.55 : 1,
+                transform: [{ scale: pressed ? 0.95 : 1 }],
+                opacity: pressed ? 0.85 : isPlaced ? 0.7 : 1,
               },
             ]}
           >
@@ -56,9 +61,9 @@ export const ComponentTray: React.FC<ComponentTrayProps> = ({
             <Icon
               name={isPlaced ? 'checkmark-circle' : 'add-circle-outline'}
               size={16}
-              color={isPlaced ? colors.success : colors.primary}
+              color={isPlaced ? colors.success : colors.accent}
             />
-          </Pressable>
+          </AnimatedPressable>
         );
       })}
     </View>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Card, Text } from '../../../components';
+import { GlassCard, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { Spotlight } from '../../../content';
 
@@ -26,7 +26,7 @@ export const SpotlightCard: React.FC<{ item: Spotlight; onPress?: () => void }> 
   const cta = item.kind === 'tryThis' ? 'Start chapter' : 'Open glossary';
 
   return (
-    <Card elevation="md" onPress={onPress}>
+    <GlassCard elevation="lg" onPress={onPress}>
       <View style={styles.head}>
         <View style={[styles.icon, { backgroundColor: colors.primaryMuted }]}>
           <Icon name={icon} size={22} color={colors.primary} />
@@ -40,13 +40,13 @@ export const SpotlightCard: React.FC<{ item: Spotlight; onPress?: () => void }> 
         <Text variant="label" color="primary">{cta}</Text>
         <Icon name="arrow-forward" size={16} color={colors.primary} />
       </View>
-    </Card>
+    </GlassCard>
   );
 };
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   head: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  icon: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  icon: { width: 46, height: 46, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
   ctaRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
 });

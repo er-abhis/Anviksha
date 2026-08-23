@@ -8,10 +8,14 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Animated, { FadeIn } from 'react-native-reanimated';
+import Animated, {
+  FadeInDown,
+  FadeInUp,
+  ZoomIn,
+} from 'react-native-reanimated';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../navigation/types';
-import { Button, Gradient, Text } from '../../../components';
+import { AnimatedBlobs, Button, Gradient, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { usePreferencesStore } from '../../../store';
 import { OnboardingSlide, SLIDES } from '../data';
@@ -55,12 +59,17 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
         onMomentumScrollEnd={onScroll}
         renderItem={({ item }) => (
           <Gradient colors={item.gradient} style={{ width }}>
+            {/* Signature neon blobs drift behind every slide. */}
+            <AnimatedBlobs intensity={0.9} />
             <SafeAreaView style={styles.slide}>
-              <View style={styles.artWrap}>
-                <AbstractArt variant={item.art} size={width * 0.6} />
-              </View>
               <Animated.View
-                entering={FadeIn.duration(400)}
+                entering={ZoomIn.duration(600).springify()}
+                style={styles.artWrap}
+              >
+                <AbstractArt variant={item.art} size={width * 0.6} />
+              </Animated.View>
+              <Animated.View
+                entering={FadeInUp.duration(500).delay(120)}
                 style={[styles.copy, { paddingHorizontal: spacing.xxl }]}
               >
                 <Text variant="h1" color="textInverse">
@@ -80,7 +89,10 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
       />
 
       <SafeAreaView edges={['bottom']} style={styles.footer}>
-        <View style={[styles.footerInner, { padding: spacing.xl }]}>
+        <Animated.View
+          entering={FadeInDown.duration(500).delay(200)}
+          style={[styles.footerInner, { padding: spacing.xl }]}
+        >
           <View style={styles.dots}>
             {SLIDES.map((s, i) => (
               <View
@@ -88,9 +100,9 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
                 style={[
                   styles.dot,
                   {
-                    width: i === index ? 22 : 8,
+                    width: i === index ? 24 : 8,
                     backgroundColor:
-                      i === index ? '#FFFFFF' : 'rgba(255,255,255,0.5)',
+                      i === index ? '#FFFFFF' : 'rgba(255,255,255,0.45)',
                   },
                 ]}
               />
@@ -114,7 +126,7 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
               style={styles.grow}
             />
           </View>
-        </View>
+        </Animated.View>
       </SafeAreaView>
     </View>
   );

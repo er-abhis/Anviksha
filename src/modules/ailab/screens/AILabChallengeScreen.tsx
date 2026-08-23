@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {
@@ -8,6 +9,8 @@ import {
   Confetti,
   DraggableList,
   EmptyState,
+  Gradient,
+  GlassCard,
   Header,
   ProgressBar,
   Screen,
@@ -43,7 +46,7 @@ const TYPE_LABEL: Record<string, string> = {
 };
 
 export const AILabChallengeScreen: React.FC = () => {
-  const { colors, spacing, radius } = useTheme();
+  const { colors, spacing, radius, gradients } = useTheme();
   const navigation = useNavigation();
   const route = useRoute<RouteProp<RootStackParamList, 'AILabChallenge'>>();
   const missionId = route.params.missionId;
@@ -139,7 +142,13 @@ export const AILabChallengeScreen: React.FC = () => {
       <ProgressBar progress={(index + (solved ? 1 : 0)) / challenges.length} />
 
       {/* Scenario */}
-      <Card elevation="md">
+      <Animated.View entering={FadeInDown.springify().damping(16)}>
+      <Card elevation="glow" style={styles.overflowHidden}>
+        <Gradient
+          colors={[colors.warning + '26', colors.warning + '05']}
+          style={StyleSheet.absoluteFill}
+          pointerEvents="none"
+        />
         <View style={[styles.badgeRow, { gap: spacing.sm }]}>
           <View
             style={[
@@ -163,6 +172,7 @@ export const AILabChallengeScreen: React.FC = () => {
           </Text>
         )}
       </Card>
+      </Animated.View>
 
       {/* Fix surface */}
       {challenge.options.length > 0 && !solved && (
@@ -194,15 +204,24 @@ export const AILabChallengeScreen: React.FC = () => {
       </View>
 
       {tried && !solved && (
-        <Card elevation="sm" style={{ borderColor: colors.error }}>
-          <Text variant="body" color="error">
-            Not quite yet — {challenge.hint.toLowerCase()}
-          </Text>
-        </Card>
+        <Animated.View entering={FadeInDown.springify().damping(16)}>
+          <GlassCard elevation="sm" style={{ borderColor: colors.error }}>
+            <Text variant="body" color="error">
+              Not quite yet — {challenge.hint.toLowerCase()}
+            </Text>
+          </GlassCard>
+        </Animated.View>
       )}
 
       {solved ? (
-        <Card elevation="md" style={{ borderColor: colors.success }}>
+        <Animated.View entering={FadeInDown.springify().damping(16)}>
+        <Card elevation="glow" style={{ overflow: 'hidden', borderColor: colors.success }}>
+          <Gradient
+            colors={gradients.success}
+            opacities={[0.16, 0.04]}
+            style={StyleSheet.absoluteFill}
+            pointerEvents="none"
+          />
           <Text variant="h3" color="success">
             🎉 Problem solved!
           </Text>
@@ -217,6 +236,7 @@ export const AILabChallengeScreen: React.FC = () => {
             right={<Icon name="arrow-forward" size={18} color={colors.onPrimary} />}
           />
         </Card>
+        </Animated.View>
       ) : (
         <Button label="Check my fix" onPress={check} fullWidth />
       )}
@@ -227,6 +247,7 @@ export const AILabChallengeScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  overflowHidden: { overflow: 'hidden' },
   badgeRow: { flexDirection: 'row', alignItems: 'center' },
   pill: {
     flexDirection: 'row',

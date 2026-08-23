@@ -22,9 +22,9 @@ export const fontSize = {
   md: 15,
   lg: 17,
   xl: 20,
-  xxl: 24,
-  xxxl: 30,
-  display: 38,
+  xxl: 25,
+  xxxl: 32,
+  display: 42,
 } as const;
 
 type Variant =
@@ -43,22 +43,22 @@ export const typography: Record<Variant, TextStyle> = {
     fontFamily,
     fontSize: fontSize.display,
     fontWeight: fontWeight.bold,
-    letterSpacing: -0.5,
-    lineHeight: 44,
+    letterSpacing: -1,
+    lineHeight: 48,
   },
   h1: {
     fontFamily,
     fontSize: fontSize.xxxl,
     fontWeight: fontWeight.bold,
-    letterSpacing: -0.4,
-    lineHeight: 36,
+    letterSpacing: -0.6,
+    lineHeight: 38,
   },
   h2: {
     fontFamily,
     fontSize: fontSize.xxl,
-    fontWeight: fontWeight.semibold,
-    letterSpacing: -0.3,
-    lineHeight: 30,
+    fontWeight: fontWeight.bold,
+    letterSpacing: -0.4,
+    lineHeight: 31,
   },
   h3: {
     fontFamily,

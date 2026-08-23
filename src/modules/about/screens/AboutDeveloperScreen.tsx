@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Button, Card, Gradient, Header, Screen, Text } from '../../../components';
+import { Button, GlassCard, Gradient, Header, Screen, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { DEVELOPER_LINKEDIN, openExternal } from '../../../utils/appLinks';
 
@@ -11,7 +11,7 @@ const BIO =
   'Passionate about building educational products, AI-powered experiences, and developer tools that simplify complex concepts into enjoyable learning experiences.';
 
 export const AboutDeveloperScreen: React.FC = () => {
-  const { colors, radius, spacing } = useTheme();
+  const { colors, radius, spacing, gradients, elevation } = useTheme();
   const navigation = useNavigation();
 
   return (
@@ -19,7 +19,7 @@ export const AboutDeveloperScreen: React.FC = () => {
       <Header title="About Developer" onBack={() => navigation.goBack()} />
 
       <Animated.View entering={FadeInDown.duration(400)}>
-        <Gradient colors={[colors.primary, colors.accent]} style={{ ...styles.hero, borderRadius: radius.lg }}>
+        <Gradient colors={gradients.brand} style={{ ...styles.hero, borderRadius: radius.xl, ...elevation.glow }}>
           <View style={styles.avatar}>
             <Icon name="person" size={40} color="#FFFFFF" />
           </View>
@@ -31,9 +31,9 @@ export const AboutDeveloperScreen: React.FC = () => {
       </Animated.View>
 
       <Animated.View entering={FadeInDown.delay(120).duration(400)}>
-        <Card elevation="sm">
+        <GlassCard>
           <Text variant="body" color="textSecondary" style={styles.bio}>{BIO}</Text>
-        </Card>
+        </GlassCard>
       </Animated.View>
 
       <Animated.View entering={FadeInDown.delay(200).duration(400)} style={{ gap: spacing.sm }}>
@@ -55,8 +55,8 @@ export const AboutDeveloperScreen: React.FC = () => {
 const Tag: React.FC<{ icon: string; label: string }> = ({ icon, label }) => {
   const { colors, radius, spacing } = useTheme();
   return (
-    <View style={[styles.tag, { backgroundColor: colors.surfaceAlt, borderRadius: radius.pill, paddingHorizontal: spacing.md }]}>
-      <Icon name={icon} size={14} color={colors.textSecondary} />
+    <View style={[styles.tag, { backgroundColor: colors.primaryMuted, borderColor: colors.glassBorder, borderWidth: StyleSheet.hairlineWidth, borderRadius: radius.pill, paddingHorizontal: spacing.md }]}>
+      <Icon name={icon} size={14} color={colors.accent} />
       <Text variant="caption" color="textSecondary">{label}</Text>
     </View>
   );

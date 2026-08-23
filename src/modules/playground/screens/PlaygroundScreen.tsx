@@ -1,12 +1,13 @@
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {
   Card,
-  Header,
+  Gradient,
   Screen,
   SectionTitle,
   Text,
@@ -30,7 +31,7 @@ const KIND_META: Record<Activity['kind'], { icon: string; tag: string }> = {
 };
 
 export const PlaygroundScreen: React.FC = () => {
-  const { colors, spacing, radius } = useTheme();
+  const { colors, spacing, radius, gradients } = useTheme();
   const tabBarHeight = useBottomTabBarHeight();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -40,47 +41,64 @@ export const PlaygroundScreen: React.FC = () => {
 
   return (
     <Screen scroll contentContainerStyle={{ gap: spacing.xl, paddingBottom: tabBarHeight + spacing.lg }}>
-      <Header title="Playground" large />
-
-      <Text variant="body" color="textSecondary">
-        Hands-on mini-sims for every idea in the course. Tap one to experiment —
-        no scores, no pressure. {unlockedCount} unlocked so far.
-      </Text>
+      {/* Gradient hero */}
+      <Animated.View entering={FadeInDown.duration(450)}>
+        <Gradient
+          colors={gradients.cool}
+          borderRadius={radius.xl}
+          style={{ overflow: 'hidden', padding: spacing.xl }}
+        >
+          <Text variant="h1" color="textInverse">
+            Playground
+          </Text>
+          <Text variant="body" color="textInverse" style={styles.heroCopy}>
+            Hands-on mini-sims for every idea in the course. Tap one to
+            experiment — no scores, no pressure. {unlockedCount} unlocked so far.
+          </Text>
+        </Gradient>
+      </Animated.View>
 
       {/* Featured: Build the AI game */}
-      <Card elevation="md" onPress={() => navigation.navigate('BuildAI')}>
-        <View style={styles.simRow}>
-          <View style={[styles.simIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.md }]}>
-            <Icon name="construct" size={20} color={colors.primary} />
+      <Animated.View entering={FadeInDown.duration(450).delay(80)}>
+        <Card glow onPress={() => navigation.navigate('BuildAI')}>
+          <View style={styles.simRow}>
+            <View style={[styles.simIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.md }]}>
+              <Icon name="construct" size={20} color={colors.primary} />
+            </View>
+            <View style={styles.flex}>
+              <Text variant="bodyStrong">Build the AI</Text>
+              <Text variant="caption" color="textSecondary">
+                Assemble real AI architectures from components.
+              </Text>
+            </View>
+            <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
           </View>
-          <View style={styles.flex}>
-            <Text variant="bodyStrong">Build the AI</Text>
-            <Text variant="caption" color="textSecondary">
-              Assemble real AI architectures from components.
-            </Text>
-          </View>
-          <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
-        </View>
-      </Card>
+        </Card>
+      </Animated.View>
 
       {/* Featured: What Would You Build? */}
-      <Card elevation="md" onPress={() => navigation.navigate('WhatToBuild')}>
-        <View style={styles.simRow}>
-          <View style={[styles.simIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.md }]}>
-            <Icon name="bulb" size={20} color={colors.primary} />
+      <Animated.View entering={FadeInDown.duration(450).delay(160)}>
+        <Card glow onPress={() => navigation.navigate('WhatToBuild')}>
+          <View style={styles.simRow}>
+            <View style={[styles.simIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.md }]}>
+              <Icon name="bulb" size={20} color={colors.primary} />
+            </View>
+            <View style={styles.flex}>
+              <Text variant="bodyStrong">What Would You Build?</Text>
+              <Text variant="caption" color="textSecondary">
+                Pick components for a goal and reveal the AI stack.
+              </Text>
+            </View>
+            <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
           </View>
-          <View style={styles.flex}>
-            <Text variant="bodyStrong">What Would You Build?</Text>
-            <Text variant="caption" color="textSecondary">
-              Pick components for a goal and reveal the AI stack.
-            </Text>
-          </View>
-          <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
-        </View>
-      </Card>
+        </Card>
+      </Animated.View>
 
       {/* Quick actions */}
-      <View style={[styles.quickRow, { gap: spacing.md }]}>
+      <Animated.View
+        entering={FadeInDown.duration(450).delay(240)}
+        style={[styles.quickRow, { gap: spacing.md }]}
+      >
         <QuickCard
           icon="sparkles"
           label="Daily Challenge"
@@ -91,13 +109,16 @@ export const PlaygroundScreen: React.FC = () => {
           label="AI Glossary"
           onPress={() => navigation.navigate('Glossary')}
         />
-      </View>
+      </Animated.View>
 
-      {WORLDS.map(world => {
+      {WORLDS.map((world, wi) => {
         const sims = LESSONS.filter(l => l.worldId === world.id);
         if (sims.length === 0) return null;
         return (
-          <View key={world.id}>
+          <Animated.View
+            key={world.id}
+            entering={FadeInDown.duration(450).delay(300 + wi * 80)}
+          >
             <SectionTitle title={world.title} />
             <View style={{ gap: spacing.sm }}>
               {sims.map(lesson => {
@@ -154,7 +175,7 @@ export const PlaygroundScreen: React.FC = () => {
                 );
               })}
             </View>
-          </View>
+          </Animated.View>
         );
       })}
     </Screen>
@@ -188,6 +209,7 @@ const QuickCard: React.FC<{ icon: string; label: string; onPress: () => void }> 
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
+  heroCopy: { opacity: 0.92, marginTop: 8 },
   quickRow: { flexDirection: 'row' },
   quickInner: { gap: 8 },
   quickIcon: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },

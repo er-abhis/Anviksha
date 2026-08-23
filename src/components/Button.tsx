@@ -1,14 +1,16 @@
 import React from 'react';
 import {
   ActivityIndicator,
-  Pressable,
-  PressableProps,
+  StyleProp,
   StyleSheet,
   View,
   ViewStyle,
+  PressableProps,
 } from 'react-native';
 import { useTheme } from '../theme/ThemeProvider';
 import { Text } from './Text';
+import { Gradient } from './Gradient';
+import { PressableScale } from './PressableScale';
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'destructive';
 type Size = 'sm' | 'md' | 'lg';
@@ -19,9 +21,11 @@ export interface ButtonProps extends Omit<PressableProps, 'style'> {
   size?: Size;
   loading?: boolean;
   fullWidth?: boolean;
+  /** Neon glow under the button. Defaults to true for the primary variant. */
+  glow?: boolean;
   left?: React.ReactNode;
   right?: React.ReactNode;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -30,6 +34,7 @@ export const Button: React.FC<ButtonProps> = ({
   size = 'md',
   loading = false,
   fullWidth = false,
+  glow,
   disabled,
   left,
   right,
@@ -37,20 +42,24 @@ export const Button: React.FC<ButtonProps> = ({
   ...rest
 }) => {
   const theme = useTheme();
-  const { colors, radius, spacing } = theme;
+  const { colors, radius, spacing, gradients, elevation } = theme;
 
-  const heights: Record<Size, number> = { sm: 40, md: 48, lg: 56 };
+  const heights: Record<Size, number> = { sm: 44, md: 52, lg: 58 };
   const paddings: Record<Size, number> = {
     sm: spacing.lg,
     md: spacing.xl,
     lg: spacing.xxl,
   };
 
+  const isPrimary = variant === 'primary';
+  const isDestructive = variant === 'destructive';
+  const showGlow = (glow ?? isPrimary) && !disabled && !loading;
+
   const bg: Record<Variant, string> = {
-    primary: colors.primary,
+    primary: 'transparent', // painted by gradient
     secondary: colors.surfaceAlt,
     ghost: 'transparent',
-    destructive: colors.error,
+    destructive: 'transparent',
   };
   const fg: Record<Variant, keyof typeof colors> = {
     primary: 'onPrimary',
@@ -62,28 +71,39 @@ export const Button: React.FC<ButtonProps> = ({
   const isDisabled = disabled || loading;
 
   return (
-    <Pressable
+    <PressableScale
       accessibilityRole="button"
       accessibilityState={{ disabled: isDisabled, busy: loading }}
       disabled={isDisabled}
-      style={({ pressed }) => [
+      style={[
         styles.base,
         {
           height: heights[size],
           paddingHorizontal: paddings[size],
-          borderRadius: radius.md,
+          borderRadius: radius.pill,
           backgroundColor: bg[variant],
-          opacity: isDisabled ? 0.5 : pressed ? 0.85 : 1,
+          opacity: isDisabled ? 0.5 : 1,
         },
         variant === 'ghost' && {
           borderWidth: StyleSheet.hairlineWidth,
-          borderColor: colors.border,
+          borderColor: colors.borderStrong,
         },
+        showGlow && elevation.glow,
         fullWidth && styles.fullWidth,
         style,
       ]}
       {...rest}
     >
+      {(isPrimary || isDestructive) && (
+        <Gradient
+          colors={isDestructive ? gradients.warm : gradients.brand}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          borderRadius={radius.pill}
+          style={StyleSheet.absoluteFill}
+          pointerEvents="none"
+        />
+      )}
       {loading ? (
         <ActivityIndicator color={colors[fg[variant]]} />
       ) : (
@@ -95,7 +115,7 @@ export const Button: React.FC<ButtonProps> = ({
           {right}
         </View>
       )}
-    </Pressable>
+    </PressableScale>
   );
 };
 

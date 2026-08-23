@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Button, Card, Header, Screen, Text, XPBadge } from '../../../components';
+import { Button, GlassCard, Header, Screen, Text, XPBadge } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { useAchievementsStore, useProgressStore } from '../../../store';
 import {
@@ -68,7 +69,8 @@ export const DailyChallengeScreen: React.FC = () => {
     <Screen scroll contentContainerStyle={{ gap: spacing.xl }}>
       <Header title="Daily Challenge" onBack={() => navigation.goBack()} />
 
-      <Card elevation="md">
+      <Animated.View entering={FadeInDown.duration(400)}>
+      <GlassCard elevation="lg">
         <View style={[styles.head, { marginBottom: spacing.md }]}>
           <View style={[styles.icon, { backgroundColor: colors.primaryMuted }]}>
             <Icon name="sparkles" size={26} color={colors.primary} />
@@ -82,7 +84,7 @@ export const DailyChallengeScreen: React.FC = () => {
         </View>
 
         {doneToday ? (
-          <View style={[styles.doneBanner, { backgroundColor: colors.surfaceAlt }]}>
+          <View style={[styles.doneBanner, { backgroundColor: colors.glass, borderColor: colors.glassBorder, borderWidth: StyleSheet.hairlineWidth }]}>
             <Icon name="checkmark-done-circle" size={20} color={colors.success} />
             <Text variant="body" color="textSecondary" style={styles.flex}>
               Completed today. Come back tomorrow for a fresh set — or practise now (no rewards).
@@ -97,7 +99,8 @@ export const DailyChallengeScreen: React.FC = () => {
             </Text>
           </View>
         )}
-      </Card>
+      </GlassCard>
+      </Animated.View>
 
       <View style={{ gap: spacing.sm }}>
         {!doneToday && (

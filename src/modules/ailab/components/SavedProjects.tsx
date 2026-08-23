@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Alert, Pressable, StyleSheet, TextInput, View } from 'react-native';
-import { Card, IconButton, Text } from '../../../components';
+import Animated, { FadeInDown, LinearTransition } from 'react-native-reanimated';
+import { Gradient, GlassCard, IconButton, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { useAILabStore } from '../../../store';
 import { getMission } from '../data/missions';
@@ -12,7 +13,7 @@ interface SavedProjectsProps {
 
 /** Saved-build list with Resume / Rename / Duplicate / Delete. */
 export const SavedProjects: React.FC<SavedProjectsProps> = ({ onResume }) => {
-  const { colors, spacing, radius } = useTheme();
+  const { colors, spacing, radius, gradients } = useTheme();
   const projects = useAILabStore(s => s.projects);
   const renameProject = useAILabStore(s => s.renameProject);
   const duplicateProject = useAILabStore(s => s.duplicateProject);
@@ -43,18 +44,28 @@ export const SavedProjects: React.FC<SavedProjectsProps> = ({ onResume }) => {
       <Text variant="label" color="textSecondary">
         SAVED BUILDS
       </Text>
-      {list.map(p => {
+      {list.map((p, i) => {
         const mission = getMission(p.missionId);
         const editing = editingId === p.id;
         return (
-          <Card key={p.id} elevation="sm">
+          <Animated.View
+            key={p.id}
+            layout={LinearTransition}
+            entering={FadeInDown.delay(i * 50).springify().damping(16)}
+          >
+          <GlassCard elevation="md">
             <View style={[styles.row, { gap: spacing.sm }]}>
               <View
                 style={[
                   styles.emoji,
-                  { backgroundColor: colors.primaryMuted, borderRadius: radius.md },
+                  { borderRadius: radius.md, overflow: 'hidden' },
                 ]}
               >
+                <Gradient
+                  colors={gradients.brand}
+                  borderRadius={radius.md}
+                  style={StyleSheet.absoluteFill}
+                />
                 <Text style={styles.emojiText}>{mission?.emoji ?? '🧪'}</Text>
               </View>
 
@@ -127,7 +138,8 @@ export const SavedProjects: React.FC<SavedProjectsProps> = ({ onResume }) => {
                 </View>
               )}
             </View>
-          </Card>
+          </GlassCard>
+          </Animated.View>
         );
       })}
     </View>

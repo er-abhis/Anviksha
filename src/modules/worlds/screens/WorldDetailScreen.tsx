@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import {
   useNavigation,
   useRoute,
@@ -8,8 +9,8 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {
-  Card,
   EmptyState,
+  GlassCard,
   Gradient,
   Header,
   Screen,
@@ -21,7 +22,7 @@ import { useProgressStore } from '../../../store';
 import { WORLDS, isLessonUnlocked, lessonsForWorld } from '../../../content';
 
 export const WorldDetailScreen: React.FC = () => {
-  const { colors, radius, spacing } = useTheme();
+  const { colors, radius, spacing, gradients, elevation } = useTheme();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'WorldDetail'>>();
@@ -43,7 +44,10 @@ export const WorldDetailScreen: React.FC = () => {
     <Screen scroll contentContainerStyle={{ gap: spacing.lg }}>
       <Header title={world.title} onBack={() => navigation.goBack()} />
 
-      <Gradient colors={world.gradient} style={{ borderRadius: radius.lg }}>
+      <Gradient
+        colors={world.gradient ?? gradients.cool}
+        style={{ borderRadius: radius.lg, ...elevation.glow }}
+      >
         <View style={{ padding: spacing.xl }}>
           <Icon name={world.icon} size={28} color="#FFFFFF" />
           <Text
@@ -72,7 +76,7 @@ export const WorldDetailScreen: React.FC = () => {
           message="Keep progressing through the earlier worlds to continue your journey."
         />
       ) : (
-        lessons.map(lesson => {
+        lessons.map((lesson, i) => {
           const done = lesson.id in completed;
           const unlocked = isLessonUnlocked(lesson, completed);
           const bg = done ? colors.success : unlocked ? colors.primaryMuted : colors.surfaceAlt;
@@ -80,28 +84,32 @@ export const WorldDetailScreen: React.FC = () => {
           const iconName = done ? 'checkmark' : unlocked ? 'play' : 'book-outline';
           const iconColor = done ? '#FFFFFF' : unlocked ? colors.primary : colors.textSecondary;
           return (
-            <Card
+            <Animated.View
               key={lesson.id}
-              elevation="sm"
-              onPress={() => navigation.navigate('LessonIntro', { lessonId: lesson.id })}
+              entering={FadeInDown.delay(i * 50).springify().damping(16)}
             >
-              <View style={[styles.row, { gap: spacing.md }]}>
-                <View style={[styles.badge, { backgroundColor: bg, borderRadius: radius.sm }]}>
-                  <Icon name={iconName} size={18} color={iconColor} />
+              <GlassCard
+                elevation="sm"
+                onPress={() => navigation.navigate('LessonIntro', { lessonId: lesson.id })}
+              >
+                <View style={[styles.row, { gap: spacing.md }]}>
+                  <View style={[styles.badge, { backgroundColor: bg, borderRadius: radius.sm }]}>
+                    <Icon name={iconName} size={18} color={iconColor} />
+                  </View>
+                  <View style={styles.flex}>
+                    <Text variant="bodyStrong">{`${lesson.order}. ${lesson.title}`}</Text>
+                    <Text variant="caption" color="textSecondary">
+                      {done
+                        ? `Completed · ${lesson.estimatedMinutes} min`
+                        : unlocked
+                        ? `${lesson.estimatedMinutes} min · ${lesson.difficulty} · ${lesson.xp} XP`
+                        : 'Complete the previous lesson to unlock — you’re one step away'}
+                    </Text>
+                  </View>
+                  <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
                 </View>
-                <View style={styles.flex}>
-                  <Text variant="bodyStrong">{`${lesson.order}. ${lesson.title}`}</Text>
-                  <Text variant="caption" color="textSecondary">
-                    {done
-                      ? `Completed · ${lesson.estimatedMinutes} min`
-                      : unlocked
-                      ? `${lesson.estimatedMinutes} min · ${lesson.difficulty} · ${lesson.xp} XP`
-                      : 'Complete the previous lesson to unlock — you’re one step away'}
-                  </Text>
-                </View>
-                <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
-              </View>
-            </Card>
+              </GlassCard>
+            </Animated.View>
           );
         })
       )}

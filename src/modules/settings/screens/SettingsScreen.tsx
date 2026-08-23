@@ -1,8 +1,9 @@
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Card, Header, Screen, SectionTitle, Text } from '../../../components';
+import { GlassCard, Header, Screen, SectionTitle, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import {
   usePreferencesStore,
@@ -20,7 +21,7 @@ const ActionRow: React.FC<{
   description?: string;
   onPress: () => void;
 }> = ({ icon, label, description, onPress }) => {
-  const { colors, spacing } = useTheme();
+  const { colors, radius, spacing } = useTheme();
   return (
     <Pressable
       onPress={onPress}
@@ -31,8 +32,17 @@ const ActionRow: React.FC<{
         { paddingVertical: spacing.md, gap: spacing.md, opacity: pressed ? 0.6 : 1 },
       ]}
     >
-      <View style={[styles.actionIcon, { backgroundColor: colors.surfaceAlt }]}>
-        <Icon name={icon} size={18} color={colors.text} />
+      <View
+        style={[
+          styles.actionIcon,
+          {
+            backgroundColor: colors.primaryMuted,
+            borderRadius: radius.md,
+            borderColor: colors.glassBorder,
+          },
+        ]}
+      >
+        <Icon name={icon} size={19} color={colors.accent} />
       </View>
       <View style={styles.flex}>
         <Text variant="bodyStrong">{label}</Text>
@@ -69,16 +79,16 @@ export const SettingsScreen: React.FC = () => {
       <Header title="Settings" onBack={() => navigation.goBack()} />
 
       {/* Appearance */}
-      <View>
+      <Animated.View entering={FadeInDown.delay(50).duration(400)}>
         <SectionTitle title="Appearance" />
-        <Card padded>
+        <GlassCard>
           <Text variant="label" color="textSecondary" style={{ marginBottom: spacing.sm }}>
             Theme
           </Text>
           <View
             style={[
               styles.segment,
-              { backgroundColor: colors.surfaceAlt, borderRadius: radius.md },
+              { backgroundColor: colors.surfaceAlt, borderRadius: radius.lg },
             ]}
           >
             {THEME_OPTIONS.map(opt => {
@@ -90,14 +100,16 @@ export const SettingsScreen: React.FC = () => {
                   style={[
                     styles.segmentItem,
                     {
-                      borderRadius: radius.sm,
-                      backgroundColor: active ? colors.surface : 'transparent',
+                      borderRadius: radius.md,
+                      backgroundColor: active ? colors.primaryMuted : 'transparent',
+                      borderWidth: active ? StyleSheet.hairlineWidth : 0,
+                      borderColor: colors.accent,
                     },
                   ]}
                 >
                   <Text
                     variant="label"
-                    color={active ? 'text' : 'textSecondary'}
+                    color={active ? 'accent' : 'textSecondary'}
                   >
                     {opt.label}
                   </Text>
@@ -105,13 +117,13 @@ export const SettingsScreen: React.FC = () => {
               );
             })}
           </View>
-        </Card>
-      </View>
+        </GlassCard>
+      </Animated.View>
 
       {/* Preferences */}
-      <View>
+      <Animated.View entering={FadeInDown.delay(100).duration(400)}>
         <SectionTitle title="Preferences" />
-        <Card padded={false} style={{ paddingHorizontal: spacing.lg }}>
+        <GlassCard padded={false} style={{ paddingHorizontal: spacing.lg }}>
           <SettingRow
             icon="volume-high-outline"
             label="Sound"
@@ -140,13 +152,13 @@ export const SettingsScreen: React.FC = () => {
             value={reducedMotion}
             onValueChange={setReducedMotion}
           />
-        </Card>
-      </View>
+        </GlassCard>
+      </Animated.View>
 
       {/* About */}
-      <View>
+      <Animated.View entering={FadeInDown.delay(150).duration(400)}>
         <SectionTitle title="About" />
-        <Card padded={false} style={{ paddingHorizontal: spacing.lg }}>
+        <GlassCard padded={false} style={{ paddingHorizontal: spacing.lg }}>
           <ActionRow
             icon="share-social-outline"
             label={`Share ${APP.name}`}
@@ -159,8 +171,8 @@ export const SettingsScreen: React.FC = () => {
             description="Leave a rating on the Play Store"
             onPress={rateApp}
           />
-        </Card>
-      </View>
+        </GlassCard>
+      </Animated.View>
 
       <Text variant="caption" color="textTertiary" center>
         {`${APP.name} v${APP.version}`}
@@ -173,9 +185,9 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   actionRow: { flexDirection: 'row', alignItems: 'center' },
   actionIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
+    width: 40,
+    height: 40,
+    borderWidth: StyleSheet.hairlineWidth,
     alignItems: 'center',
     justifyContent: 'center',
   },

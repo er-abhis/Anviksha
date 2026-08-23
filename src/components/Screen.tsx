@@ -1,16 +1,11 @@
 import React from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  View,
-  ViewStyle,
-  StatusBar,
-} from 'react-native';
+import { ScrollView, StyleSheet, View, ViewStyle, StatusBar } from 'react-native';
 import { Edge, SafeAreaView } from 'react-native-safe-area-context';
-import { useTheme } from '../theme/ThemeProvider';
-import { useThemeMode } from '../theme/ThemeProvider';
+import Animated, { FadeIn } from 'react-native-reanimated';
+import { useTheme, useThemeMode } from '../theme/ThemeProvider';
 import { CONTENT_MAX_WIDTH } from '../constants/layout';
 import { useResponsive } from '../hooks/useResponsive';
+import { AnimatedBlobs } from './AnimatedBlobs';
 
 export interface ScreenProps {
   children: React.ReactNode;
@@ -19,6 +14,12 @@ export interface ScreenProps {
   edges?: Edge[];
   /** Constrain content width and center it on tablets. */
   constrained?: boolean;
+  /** Ambient neon blob backdrop. Default on for the branded look. */
+  backdrop?: boolean;
+  /** Backdrop intensity 0..1. Lower it on dense/reading screens. */
+  backdropIntensity?: number;
+  /** Fade content in on mount. Default on. */
+  animateIn?: boolean;
   contentContainerStyle?: ViewStyle;
 }
 
@@ -29,6 +30,9 @@ export const Screen: React.FC<ScreenProps> = ({
   padded = true,
   edges = ['top'],
   constrained = true,
+  backdrop = true,
+  backdropIntensity = 0.7,
+  animateIn = true,
   contentContainerStyle,
 }) => {
   const { colors, spacing } = useTheme();
@@ -42,6 +46,9 @@ export const Screen: React.FC<ScreenProps> = ({
     alignSelf: 'center',
   };
 
+  const Body = animateIn ? Animated.View : View;
+  const bodyProps = animateIn ? { entering: FadeIn.duration(320) } : {};
+
   return (
     <SafeAreaView
       edges={edges}
@@ -49,22 +56,22 @@ export const Screen: React.FC<ScreenProps> = ({
     >
       <StatusBar
         barStyle={mode === 'dark' ? 'light-content' : 'dark-content'}
-        backgroundColor={colors.background}
+        backgroundColor="transparent"
+        translucent
       />
+      {backdrop && <AnimatedBlobs intensity={backdropIntensity} />}
       {scroll ? (
         <ScrollView
           style={styles.flex}
-          // Default bottom room so content clears the bottom tab bar / Android
-          // gesture nav; callers can still override via contentContainerStyle.
           contentContainerStyle={[inner, { paddingBottom: spacing.giant }, contentContainerStyle]}
           showsVerticalScrollIndicator={false}
         >
-          {children}
+          <Body {...bodyProps}>{children}</Body>
         </ScrollView>
       ) : (
-        <View style={[styles.flex, inner, contentContainerStyle]}>
+        <Body {...bodyProps} style={[styles.flex, inner, contentContainerStyle]}>
           {children}
-        </View>
+        </Body>
       )}
     </SafeAreaView>
   );

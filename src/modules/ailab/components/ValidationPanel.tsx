@@ -1,7 +1,8 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Card, Text } from '../../../components';
+import { GlassCard, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { ColorPalette } from '../../../theme/colors';
 import { Diagnostic, IssueLevel, ValidationResult } from '../validation/validate';
@@ -20,11 +21,26 @@ const COLOR: Record<IssueLevel, keyof ColorPalette> = {
   success: 'success',
 };
 
-const Row: React.FC<{ issue: Diagnostic }> = ({ issue }) => {
-  const { colors, spacing } = useTheme();
+const Row: React.FC<{ issue: Diagnostic; index: number }> = ({ issue, index }) => {
+  const { colors, spacing, radius } = useTheme();
   const tint = colors[COLOR[issue.level]];
+  const toned = issue.level === 'success' || issue.level === 'error';
   return (
-    <View style={[styles.row, { gap: spacing.sm }]}>
+    <Animated.View
+      entering={FadeInDown.delay(index * 60).springify().damping(16)}
+      style={[
+        styles.row,
+        {
+          gap: spacing.sm,
+          borderRadius: radius.lg,
+          padding: toned ? spacing.sm : 0,
+          backgroundColor: toned ? tint + '14' : 'transparent',
+          borderWidth: toned ? StyleSheet.hairlineWidth : 0,
+          borderColor: toned ? tint + '44' : 'transparent',
+          ...(issue.level === 'success' ? { shadowColor: tint, shadowOpacity: 0.35, shadowRadius: 10, shadowOffset: { width: 0, height: 0 }, elevation: 2 } : null),
+        },
+      ]}
+    >
       <Icon name={ICON[issue.level]} size={18} color={tint} style={styles.icon} />
       <View style={styles.flex}>
         <Text variant="body">{issue.title}</Text>
@@ -34,7 +50,7 @@ const Row: React.FC<{ issue: Diagnostic }> = ({ issue }) => {
           </Text>
         )}
       </View>
-    </View>
+    </Animated.View>
   );
 };
 
@@ -44,13 +60,13 @@ export const ValidationPanel: React.FC<{ result: ValidationResult }> = ({
 }) => {
   const { spacing } = useTheme();
   return (
-    <Card elevation="sm">
-      <View style={{ gap: spacing.md }}>
+    <GlassCard elevation="md">
+      <View style={{ gap: spacing.sm }}>
         {result.issues.map((issue, i) => (
-          <Row key={i} issue={issue} />
+          <Row key={i} issue={issue} index={i} />
         ))}
       </View>
-    </Card>
+    </GlassCard>
   );
 };
 

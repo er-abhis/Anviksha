@@ -1,6 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Animated, {
+  FadeIn,
+  FadeInDown,
+  SlideInRight,
+  ZoomIn,
   useAnimatedStyle,
   useSharedValue,
   withDelay,
@@ -9,7 +13,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import ViewShot from 'react-native-view-shot';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { AchievementCard, Button, Card, Confetti, DraggableList, ProgressBar, QuestionMedia, Text } from '../../../components';
+import { AchievementCard, Button, Confetti, DraggableList, GlassCard, ProgressBar, QuestionMedia, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { usePreferencesStore } from '../../../store';
 import { shareAchievement } from '../../../utils/appLinks';
@@ -79,7 +83,7 @@ export const QuizSession: React.FC<Props> = ({
   onRetry,
   completion,
 }) => {
-  const { colors, spacing } = useTheme();
+  const { colors, radius, spacing } = useTheme();
   const [idx, setIdx] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [done, setDone] = useState(false);
@@ -138,15 +142,15 @@ export const QuizSession: React.FC<Props> = ({
   }
   return (
     <View style={styles.fill}>
-      <View style={{ padding: spacing.lg, gap: spacing.sm }}>
+      <Animated.View entering={FadeInDown.duration(400)} style={{ padding: spacing.lg, gap: spacing.sm }}>
         <View style={styles.progressRow}>
           <Text variant="label" color="textSecondary">{`Question ${idx + 1} of ${total}`}</Text>
-          <View style={[styles.typeTag, { backgroundColor: colors.surfaceAlt }]}>
-            <Text variant="caption" color="textSecondary">{TYPE_LABEL[q.type]}</Text>
+          <View style={[styles.typeTag, { backgroundColor: colors.glass, borderColor: colors.glassBorder, borderRadius: radius.pill }]}>
+            <Text variant="caption" color="accent">{TYPE_LABEL[q.type]}</Text>
           </View>
         </View>
         <ProgressBar progress={total === 0 ? 0 : idx / total} />
-      </View>
+      </Animated.View>
       <QuestionView key={q.id} question={q} onNext={next} />
     </View>
   );
@@ -163,8 +167,12 @@ const QuestionView: React.FC<{ question: Question; onNext: (correct: boolean) =>
       contentContainerStyle={{ padding: spacing.lg, paddingBottom: spacing.giant, gap: spacing.lg }}
       showsVerticalScrollIndicator={false}
     >
-      {question.media && <QuestionMedia media={question.media} />}
-      <Text variant="h3">{question.prompt}</Text>
+      <Animated.View entering={SlideInRight.duration(320)} style={{ gap: spacing.lg }}>
+        {question.media && <QuestionMedia media={question.media} />}
+        <GlassCard elevation="lg">
+          <Text variant="h3">{question.prompt}</Text>
+        </GlassCard>
+      </Animated.View>
       {question.type === 'match' ? (
         <MatchView question={question} onNext={onNext} />
       ) : question.type === 'order' ? (
@@ -177,9 +185,17 @@ const QuestionView: React.FC<{ question: Question; onNext: (correct: boolean) =>
 };
 
 const Explanation: React.FC<{ correct: boolean; text: string }> = ({ correct, text }) => {
-  const { colors, spacing } = useTheme();
+  const { colors, spacing, radius } = useTheme();
   return (
-    <Card elevation="sm" style={{ marginTop: spacing.md }}>
+    <Animated.View entering={FadeInDown.duration(300)}>
+    <GlassCard
+      elevation="md"
+      style={{
+        marginTop: spacing.md,
+        borderRadius: radius.lg,
+        borderColor: correct ? colors.success : colors.glassBorder,
+      }}
+    >
       <View style={styles.explRow}>
         <Icon
           name={correct ? 'checkmark-circle' : 'information-circle'}
@@ -193,7 +209,8 @@ const Explanation: React.FC<{ correct: boolean; text: string }> = ({ correct, te
       <Text variant="body" color="textSecondary" style={{ marginTop: spacing.xs }}>
         {text}
       </Text>
-    </Card>
+    </GlassCard>
+    </Animated.View>
   );
 };
 
@@ -216,29 +233,35 @@ const ChoiceView: React.FC<{ question: ChoiceQuestion; onNext: (c: boolean) => v
       {question.options.map((opt, i) => {
         const isRight = i === question.correctIndex;
         const show = answered && (i === picked || isRight);
+        const tint = show ? (isRight ? colors.success : colors.error) : colors.glassBorder;
         return (
-          <Pressable
-            key={i}
-            disabled={answered}
-            onPress={() => setPicked(i)}
-            style={[
-              styles.option,
-              {
-                borderRadius: radius.md,
-                borderColor: show ? (isRight ? colors.success : colors.error) : colors.border,
-                backgroundColor: colors.surface,
-              },
-            ]}
-          >
-            <Text variant="body" style={styles.flex}>{opt}</Text>
-            {show && (
-              <Icon
-                name={isRight ? 'checkmark-circle' : 'close-circle'}
-                size={20}
-                color={isRight ? colors.success : colors.error}
-              />
-            )}
-          </Pressable>
+          <Animated.View key={i} entering={FadeInDown.delay(i * 60).duration(320)}>
+            <Pressable
+              disabled={answered}
+              onPress={() => setPicked(i)}
+              style={[
+                styles.option,
+                {
+                  borderRadius: radius.lg,
+                  borderColor: tint,
+                  borderWidth: show ? 1.5 : 1,
+                  backgroundColor: colors.glass,
+                },
+                show && { shadowColor: tint, shadowOpacity: 0.5, shadowRadius: 14, shadowOffset: { width: 0, height: 0 }, elevation: 6 },
+              ]}
+            >
+              <Text variant="body" style={styles.flex}>{opt}</Text>
+              {show && (
+                <Animated.View entering={ZoomIn.duration(240)}>
+                  <Icon
+                    name={isRight ? 'checkmark-circle' : 'close-circle'}
+                    size={20}
+                    color={isRight ? colors.success : colors.error}
+                  />
+                </Animated.View>
+              )}
+            </Pressable>
+          </Animated.View>
         );
       })}
       {answered && <Explanation correct={correct} text={question.explanation} />}
@@ -266,7 +289,7 @@ const MatchView: React.FC<{ question: MatchQuestion; onNext: (c: boolean) => voi
       {question.pairs.map((pair, i) => {
         const isRight = checked && rights[assign[i]] === pair.right;
         return (
-          <View key={i} style={{ gap: spacing.xs }}>
+          <Animated.View key={i} entering={FadeInDown.delay(i * 60).duration(320)} style={{ gap: spacing.xs }}>
             <View style={styles.itemRow}>
               <Text variant="bodyStrong" style={styles.flex}>{pair.left}</Text>
               {checked && (
@@ -289,8 +312,8 @@ const MatchView: React.FC<{ question: MatchQuestion; onNext: (c: boolean) => voi
                       styles.matchChip,
                       {
                         borderRadius: radius.pill,
-                        borderColor: active ? colors.primary : colors.border,
-                        backgroundColor: active ? colors.primaryMuted : colors.surface,
+                        borderColor: active ? colors.accent : colors.glassBorder,
+                        backgroundColor: active ? colors.primaryMuted : colors.glass,
                       },
                     ]}
                   >
@@ -299,7 +322,7 @@ const MatchView: React.FC<{ question: MatchQuestion; onNext: (c: boolean) => voi
                 );
               })}
             </View>
-          </View>
+          </Animated.View>
         );
       })}
       {!checked ? (
@@ -408,7 +431,7 @@ const Results: React.FC<{
   return (
     <ScrollView contentContainerStyle={{ padding: spacing.lg, gap: spacing.lg }}>
       {good && <Confetti />}
-      <View style={styles.resultHead}>
+      <Animated.View entering={FadeIn.duration(400)} style={styles.resultHead}>
         <Animated.View
           style={[styles.resultRing, { borderColor: good ? colors.success : colors.error }, ringStyle]}
         >
@@ -433,18 +456,18 @@ const Results: React.FC<{
             You need 70% to pass. Review and try again — you’ve got this.
           </Text>
         )}
-      </View>
+      </Animated.View>
 
-      <Card elevation="sm">
+      <GlassCard elevation="md">
         <Row label="Correct answers" value={`${correct}`} color={colors.success} />
         <Row label="Incorrect answers" value={`${total - correct}`} color={colors.error} />
         <Row label="Accuracy" value={`${pct}%`} />
         <Row label="XP earned" value={good ? `+${xp}` : '0'} color={colors.xp} />
         <Row label="Coins earned" value={good ? `+${coins}` : '0'} color={colors.coins} />
-      </Card>
+      </GlassCard>
 
       {showNext && !!completion!.learned?.length && (
-        <Card elevation="sm">
+        <GlassCard elevation="md">
           <View style={styles.explRow}>
             <Icon name="sparkles" size={18} color={colors.primary} />
             <Text variant="bodyStrong">What you learned</Text>
@@ -457,7 +480,7 @@ const Results: React.FC<{
               </View>
             ))}
           </View>
-        </Card>
+        </GlassCard>
       )}
 
       {showNext ? (

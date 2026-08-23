@@ -2,13 +2,14 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import { Card, EmptyState, Header, Screen, Text } from '../../../components';
+import Animated, { FadeInDown, ZoomIn } from 'react-native-reanimated';
+import { EmptyState, Gradient, GlassCard, Header, Screen, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { useAchievementsStore } from '../../../store';
 import { BADGES } from '../../../content';
 
 export const AchievementsScreen: React.FC = () => {
-  const { colors, radius, spacing } = useTheme();
+  const { colors, radius, spacing, gradients, elevation } = useTheme();
   const tabBarHeight = useBottomTabBarHeight();
   const unlocked = useAchievementsStore(s => s.unlocked);
   const unlockedCount = BADGES.filter(a => unlocked[a.slug]).length;
@@ -24,52 +25,62 @@ export const AchievementsScreen: React.FC = () => {
           message="Earn badges by completing challenges, finishing lessons, and keeping streaks. Complete your first challenge to unlock one."
         />
       ) : (
-        <Text variant="label" color="textSecondary">
-          {`${unlockedCount} of ${BADGES.length} unlocked`}
-        </Text>
+        <Animated.View entering={FadeInDown.duration(360)}>
+          <Text variant="label" color="textSecondary">
+            {`${unlockedCount} of ${BADGES.length} unlocked`}
+          </Text>
+        </Animated.View>
       )}
 
-      {BADGES.map(a => {
+      {BADGES.map((a, i) => {
         const isUnlocked = Boolean(unlocked[a.slug]);
         return (
-          <Card
+          <Animated.View
             key={a.slug}
-            elevation="sm"
-            style={{ opacity: isUnlocked ? 1 : 0.65 }}
+            entering={FadeInDown.duration(360).delay(60 + i * 60)}
           >
-            <View style={[styles.row, { gap: spacing.md }]}>
-              <View
-                style={[
-                  styles.icon,
-                  {
-                    backgroundColor: isUnlocked
-                      ? colors.surfaceAlt
-                      : colors.background,
-                    borderRadius: radius.md,
-                  },
-                ]}
-              >
-                <Icon
-                  name={isUnlocked ? a.icon : 'lock-closed'}
-                  size={22}
-                  color={isUnlocked ? colors.accent : colors.textTertiary}
-                />
+            <GlassCard
+              padded={false}
+              style={[
+                { borderRadius: radius.lg, overflow: 'hidden' },
+                isUnlocked
+                  ? { borderColor: colors.accent, ...elevation.glow }
+                  : { opacity: 0.6 },
+              ]}
+            >
+              <View style={[styles.row, { gap: spacing.md, padding: spacing.lg }]}>
+                {isUnlocked ? (
+                  <Animated.View entering={ZoomIn.duration(340).delay(120 + i * 60)}>
+                    <Gradient
+                      colors={gradients.brand}
+                      borderRadius={radius.md}
+                      style={[styles.icon, { ...elevation.glow }]}
+                    >
+                      <Icon name={a.icon} size={24} color={colors.onPrimary} />
+                    </Gradient>
+                  </Animated.View>
+                ) : (
+                  <View
+                    style={[
+                      styles.icon,
+                      { backgroundColor: colors.surfaceAlt, borderRadius: radius.md },
+                    ]}
+                  >
+                    <Icon name="lock-closed" size={22} color={colors.textTertiary} />
+                  </View>
+                )}
+                <View style={styles.flex}>
+                  <Text variant="bodyStrong">{a.title}</Text>
+                  <Text variant="caption" color="textSecondary">
+                    {a.description}
+                  </Text>
+                </View>
+                {isUnlocked && (
+                  <Icon name="checkmark-circle" size={22} color={colors.success} />
+                )}
               </View>
-              <View style={styles.flex}>
-                <Text variant="bodyStrong">{a.title}</Text>
-                <Text variant="caption" color="textSecondary">
-                  {a.description}
-                </Text>
-              </View>
-              {isUnlocked && (
-                <Icon
-                  name="checkmark-circle"
-                  size={20}
-                  color={colors.success}
-                />
-              )}
-            </View>
-          </Card>
+            </GlassCard>
+          </Animated.View>
         );
       })}
     </Screen>
@@ -80,8 +91,8 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center' },
   flex: { flex: 1 },
   icon: {
-    width: 48,
-    height: 48,
+    width: 52,
+    height: 52,
     alignItems: 'center',
     justifyContent: 'center',
   },

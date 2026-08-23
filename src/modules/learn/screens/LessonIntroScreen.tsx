@@ -8,6 +8,7 @@ import {
   Button,
   Card,
   EmptyState,
+  GlassCard,
   Gradient,
   IconButton,
   ProgressBar,
@@ -148,13 +149,13 @@ export const LessonIntroScreen: React.FC = () => {
         </Intro>
 
         <Intro delay={140} icon="bulb-outline" title="Why this matters">
-          <Card elevation="sm">
+          <GlassCard elevation="md">
             <Text variant="body">{lesson.explanation ?? lesson.realWorld}</Text>
-          </Card>
+          </GlassCard>
         </Intro>
 
         <Intro delay={200} icon="map-outline" title="What you’ll learn">
-          <Card elevation="sm">
+          <GlassCard elevation="md">
             <View style={{ gap: spacing.sm }}>
               {lesson.objectives.map(o => (
                 <View key={o} style={styles.check}>
@@ -165,13 +166,13 @@ export const LessonIntroScreen: React.FC = () => {
                 </View>
               ))}
             </View>
-          </Card>
+          </GlassCard>
         </Intro>
 
         <Intro delay={260} icon="earth-outline" title="Real-world applications">
-          <Card elevation="sm">
+          <GlassCard elevation="md">
             <Text variant="body">{lesson.realWorld}</Text>
-          </Card>
+          </GlassCard>
         </Intro>
 
         <Intro delay={320} icon="ribbon-outline" title="Skills you’ll gain">

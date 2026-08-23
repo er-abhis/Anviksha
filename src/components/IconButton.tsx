@@ -1,8 +1,9 @@
 import React from 'react';
-import { Pressable, StyleSheet, ViewStyle } from 'react-native';
+import { StyleSheet, ViewStyle } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useTheme } from '../theme/ThemeProvider';
 import { ColorPalette } from '../theme/colors';
+import { PressableScale } from './PressableScale';
 
 export interface IconButtonProps {
   name: string;
@@ -29,31 +30,32 @@ export const IconButton: React.FC<IconButtonProps> = ({
   const bg = background === 'transparent' ? 'transparent' : colors[background];
 
   return (
-    <Pressable
+    <PressableScale
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       disabled={disabled}
       onPress={onPress}
       hitSlop={8}
-      style={({ pressed }) => [
+      activeScale={0.9}
+      style={[
         styles.base,
         {
           borderRadius: radius.md,
           backgroundColor: bg,
-          opacity: disabled ? 0.4 : pressed ? 0.7 : 1,
+          opacity: disabled ? 0.4 : 1,
         },
         style,
       ]}
     >
       <Icon name={name} size={size} color={colors[color]} />
-    </Pressable>
+    </PressableScale>
   );
 };
 
 const styles = StyleSheet.create({
   base: {
-    width: 40,
-    height: 40,
+    width: 42,
+    height: 42,
     alignItems: 'center',
     justifyContent: 'center',
   },

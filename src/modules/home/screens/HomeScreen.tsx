@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pressable, ScrollView, StatusBar, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
@@ -9,9 +10,11 @@ import { useTheme, useThemeMode } from '../../../theme/ThemeProvider';
 import { useResponsive } from '../../../hooks/useResponsive';
 import { CONTENT_MAX_WIDTH } from '../../../constants/layout';
 import {
-  Card,
+  AnimatedBlobs,
   Carousel,
   EmptyState,
+  GlassCard,
+  Gradient,
   IconButton,
   Logo,
   SectionTitle,
@@ -42,7 +45,7 @@ import { AchievementChip } from '../components/AchievementChip';
 import { ActivityRow } from '../components/ActivityRow';
 
 export const HomeScreen: React.FC = () => {
-  const { colors, spacing } = useTheme();
+  const { colors, spacing, radius, gradients, elevation } = useTheme();
   const mode = useThemeMode();
   const { isTablet } = useResponsive();
   const tabBarHeight = useBottomTabBarHeight();
@@ -116,8 +119,10 @@ export const HomeScreen: React.FC = () => {
     >
       <StatusBar
         barStyle={mode === 'dark' ? 'light-content' : 'dark-content'}
-        backgroundColor={colors.background}
+        backgroundColor="transparent"
+        translucent
       />
+      <AnimatedBlobs intensity={0.6} />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[
@@ -132,40 +137,62 @@ export const HomeScreen: React.FC = () => {
       >
         {/* Greeting + stats */}
         <Padded>
-          <View style={styles.headerRow}>
-            <Pressable
-              onPress={() => openDrawer()}
-              accessibilityRole="button"
-              accessibilityLabel="Open menu"
-              hitSlop={8}
-            >
-              <Logo size={36} style={styles.brandMark} />
-            </Pressable>
-            <View style={styles.flex}>
-              <Text variant="label" color="textSecondary">Welcome back</Text>
-              <Text variant="h1">Ready to explore?</Text>
-            </View>
-            <IconButton
-              name="settings-outline"
-              accessibilityLabel="Settings"
-              onPress={() => navigation.navigate('Settings')}
+          <Animated.View
+            entering={FadeInDown.springify().damping(16)}
+            style={[styles.hero, { borderRadius: radius.xl }, elevation.glow]}
+          >
+            <Gradient
+              colors={gradients.brand}
+              style={StyleSheet.absoluteFill}
+              borderRadius={radius.xl}
             />
-          </View>
+            <Gradient
+              colors={gradients.sheen}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              style={styles.heroSheen}
+              borderRadius={radius.xl}
+              pointerEvents="none"
+            />
+            <View style={[styles.heroInner, { padding: spacing.xl }]}>
+              <View style={styles.headerRow}>
+                <Pressable
+                  onPress={() => openDrawer()}
+                  accessibilityRole="button"
+                  accessibilityLabel="Open menu"
+                  hitSlop={8}
+                >
+                  <Logo size={36} style={styles.brandMark} />
+                </Pressable>
+                <View style={styles.flex}>
+                  <Text variant="label" color="textInverse" style={styles.heroEyebrow}>
+                    Welcome back
+                  </Text>
+                  <Text variant="h1" color="textInverse">Ready to explore?</Text>
+                </View>
+                <IconButton
+                  name="settings-outline"
+                  accessibilityLabel="Settings"
+                  onPress={() => navigation.navigate('Settings')}
+                />
+              </View>
 
-          <View style={[styles.stats, { gap: spacing.sm, marginTop: spacing.lg }]}>
-            <XPBadge value={xp} kind="xp" />
-            <XPBadge value={coins} kind="coins" />
-            <XPBadge value={streakDays} kind="streak" />
-            <View style={styles.flex} />
-            <View style={[styles.levelPill, { backgroundColor: colors.primaryMuted }]}>
-              <Icon name="ribbon" size={15} color={colors.primary} />
-              <Text variant="label" color="primary">{`Level ${level}`}</Text>
+              <View style={[styles.stats, { gap: spacing.sm, marginTop: spacing.lg }]}>
+                <XPBadge value={xp} kind="xp" />
+                <XPBadge value={coins} kind="coins" />
+                <XPBadge value={streakDays} kind="streak" />
+                <View style={styles.flex} />
+                <View style={[styles.levelPill, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
+                  <Icon name="ribbon" size={15} color={colors.textInverse} />
+                  <Text variant="label" color="textInverse">{`Level ${level}`}</Text>
+                </View>
+              </View>
             </View>
-          </View>
+          </Animated.View>
         </Padded>
 
         {/* 1 — Continue Learning */}
-        <View>
+        <Animated.View entering={FadeInDown.delay(80).springify().damping(18)}>
           <Padded>
             <SectionTitle
               title="Continue Learning"
@@ -190,9 +217,10 @@ export const HomeScreen: React.FC = () => {
               />
             </Padded>
           )}
-        </View>
+        </Animated.View>
 
         {/* 2 — Daily Challenge (the daily hook) */}
+        <Animated.View entering={FadeInDown.delay(120).springify().damping(18)}>
         <Padded>
           <SectionTitle title="Daily Challenge" />
           <DailyChallengeCard
@@ -207,8 +235,10 @@ export const HomeScreen: React.FC = () => {
             onStart={() => navigation.navigate('DailyChallenge')}
           />
         </Padded>
+        </Animated.View>
 
         {/* Daily spotlight — rotates concept / did-you-know / try-this by date */}
+        <Animated.View entering={FadeInDown.delay(160).springify().damping(18)}>
         <Padded>
           <SectionTitle title={spotlight.title} />
           <SpotlightCard
@@ -220,6 +250,7 @@ export const HomeScreen: React.FC = () => {
             }
           />
         </Padded>
+        </Animated.View>
 
         {/* 3 — Recommended for You */}
         {recommended.length > 0 && (
@@ -259,9 +290,9 @@ export const HomeScreen: React.FC = () => {
         {/* 5 — Interactive AI Activity */}
         <Padded>
           <SectionTitle title="Interactive AI Activity" />
-          <Card elevation="md" onPress={() => navigation.navigate('BuildAI')}>
+          <GlassCard elevation="glow" onPress={() => navigation.navigate('BuildAI')}>
             <View style={styles.rowGap}>
-              <View style={[styles.activityIcon, { backgroundColor: colors.primaryMuted }]}>
+              <View style={[styles.activityIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.md }]}>
                 <Icon name="construct" size={24} color={colors.primary} />
               </View>
               <View style={styles.flex}>
@@ -272,7 +303,7 @@ export const HomeScreen: React.FC = () => {
               </View>
               <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
             </View>
-          </Card>
+          </GlassCard>
         </Padded>
 
         {/* 6 — Progress & Achievements */}
@@ -310,9 +341,9 @@ export const HomeScreen: React.FC = () => {
 
         {/* AI Glossary */}
         <Padded>
-          <Card elevation="sm" onPress={() => navigation.navigate('Glossary')}>
+          <GlassCard elevation="md" onPress={() => navigation.navigate('Glossary')}>
             <View style={styles.rowGap}>
-              <View style={[styles.glossaryIcon, { backgroundColor: colors.primaryMuted }]}>
+              <View style={[styles.glossaryIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.md }]}>
                 <Icon name="book" size={22} color={colors.primary} />
               </View>
               <View style={styles.flex}>
@@ -323,14 +354,14 @@ export const HomeScreen: React.FC = () => {
               </View>
               <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
             </View>
-          </Card>
+          </GlassCard>
         </Padded>
 
         {/* Learn More — external references */}
         <Padded>
-          <Card elevation="sm" onPress={() => navigation.navigate('LearnMore')}>
+          <GlassCard elevation="md" onPress={() => navigation.navigate('LearnMore')}>
             <View style={styles.rowGap}>
-              <View style={[styles.glossaryIcon, { backgroundColor: colors.primaryMuted }]}>
+              <View style={[styles.glossaryIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.md }]}>
                 <Icon name="library" size={22} color={colors.primary} />
               </View>
               <View style={styles.flex}>
@@ -341,7 +372,7 @@ export const HomeScreen: React.FC = () => {
               </View>
               <Icon name="open-outline" size={18} color={colors.textTertiary} />
             </View>
-          </Card>
+          </GlassCard>
         </Padded>
 
         {/* Recent Activity */}
@@ -377,6 +408,10 @@ const styles = StyleSheet.create({
   fill: { flex: 1 },
   flex: { flex: 1 },
   content: { width: '100%', alignSelf: 'center' },
+  hero: {},
+  heroInner: {},
+  heroSheen: { position: 'absolute', top: 0, left: 0, right: 0, height: '60%' },
+  heroEyebrow: { letterSpacing: 1, opacity: 0.9 },
   glossaryIcon: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   activityIcon: { width: 48, height: 48, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   rowGap: { flexDirection: 'row', alignItems: 'center', gap: 12 },

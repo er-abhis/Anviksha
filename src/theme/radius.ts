@@ -1,10 +1,11 @@
+/** Rounded, bold radii. Large corners are core to the redesign's feel. */
 export const radius = {
   none: 0,
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 20,
-  xxl: 28,
+  sm: 10,
+  md: 16,
+  lg: 22,
+  xl: 28,
+  xxl: 36,
   pill: 999,
 } as const;
 

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
+import Animated, { FadeInDown, ZoomIn } from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Card, DraggableList, ProgressBar, Text } from '../../../components';
+import { DraggableList, GlassCard, ProgressBar, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import {
   Activity,
@@ -18,7 +19,7 @@ export const ActivityRenderer: React.FC<{ activity: Activity }> = ({
 }) => {
   const { colors, radius, spacing } = useTheme();
   return (
-    <Card elevation="md">
+    <GlassCard elevation="lg">
       <View style={[styles.titleRow, { gap: spacing.sm }]}>
         <View style={[styles.pill, { backgroundColor: colors.primaryMuted, borderRadius: radius.sm }]}>
           <Icon name="flask" size={14} color={colors.primary} />
@@ -37,7 +38,7 @@ export const ActivityRenderer: React.FC<{ activity: Activity }> = ({
       {activity.kind === 'bucket' && <Bucket config={activity.config} />}
       {activity.kind === 'slider' && <Slider config={activity.config} />}
       {activity.kind === 'steps' && <Steps config={activity.config} />}
-    </Card>
+    </GlassCard>
   );
 };
 
@@ -63,29 +64,35 @@ const Sequence: React.FC<{ config: SequenceConfig }> = ({ config }) => {
         {config.options.map((opt, i) => {
           const right = i === config.correctIndex;
           const show = answered && (i === picked || right);
+          const tint = show ? (right ? colors.success : colors.error) : colors.glassBorder;
           return (
-            <Pressable
-              key={i}
-              disabled={answered}
-              onPress={() => setPicked(i)}
-              style={[
-                styles.option,
-                {
-                  borderRadius: radius.md,
-                  borderColor: show ? (right ? colors.success : colors.error) : colors.border,
-                  backgroundColor: colors.surface,
-                },
-              ]}
-            >
-              <Text variant="body" style={styles.flex}>{opt}</Text>
-              {show && (
-                <Icon
-                  name={right ? 'checkmark-circle' : 'close-circle'}
-                  size={18}
-                  color={right ? colors.success : colors.error}
-                />
-              )}
-            </Pressable>
+            <Animated.View key={i} entering={FadeInDown.delay(i * 60).duration(320)}>
+              <Pressable
+                disabled={answered}
+                onPress={() => setPicked(i)}
+                style={[
+                  styles.option,
+                  {
+                    borderRadius: radius.lg,
+                    borderColor: tint,
+                    borderWidth: show ? 1.5 : 1,
+                    backgroundColor: colors.glass,
+                  },
+                  show && { shadowColor: tint, shadowOpacity: 0.5, shadowRadius: 14, shadowOffset: { width: 0, height: 0 }, elevation: 6 },
+                ]}
+              >
+                <Text variant="body" style={styles.flex}>{opt}</Text>
+                {show && (
+                  <Animated.View entering={ZoomIn.duration(240)}>
+                    <Icon
+                      name={right ? 'checkmark-circle' : 'close-circle'}
+                      size={18}
+                      color={right ? colors.success : colors.error}
+                    />
+                  </Animated.View>
+                )}
+              </Pressable>
+            </Animated.View>
           );
         })}
       </View>
@@ -134,8 +141,8 @@ const Bucket: React.FC<{ config: BucketConfig }> = ({ config }) => {
                       styles.bucketChip,
                       {
                         borderRadius: radius.pill,
-                        borderColor: active ? colors.primary : colors.border,
-                        backgroundColor: active ? colors.primaryMuted : colors.surface,
+                        borderColor: active ? colors.accent : colors.glassBorder,
+                        backgroundColor: active ? colors.primaryMuted : colors.glass,
                       },
                     ]}
                   >

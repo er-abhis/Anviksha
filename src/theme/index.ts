@@ -1,4 +1,11 @@
-import { ColorPalette, darkColors, lightColors } from './colors';
+import {
+  ColorPalette,
+  darkColors,
+  lightColors,
+  darkGradients,
+  lightGradients,
+  Gradients,
+} from './colors';
 import { createElevation, Elevation } from './elevation';
 import { radius, Radius } from './radius';
 import { spacing, Spacing } from './spacing';
@@ -10,6 +17,7 @@ export type ThemeMode = 'light' | 'dark';
 export interface Theme {
   mode: ThemeMode;
   colors: ColorPalette;
+  gradients: Gradients;
   spacing: Spacing;
   radius: Radius;
   typography: typeof typography;
@@ -29,14 +37,16 @@ const base = {
 export const lightTheme: Theme = {
   mode: 'light',
   colors: lightColors,
-  elevation: createElevation(lightColors.shadow),
+  gradients: lightGradients,
+  elevation: createElevation(lightColors.shadow, lightColors.glow),
   ...base,
 };
 
 export const darkTheme: Theme = {
   mode: 'dark',
   colors: darkColors,
-  elevation: createElevation(darkColors.shadow),
+  gradients: darkGradients,
+  elevation: createElevation(darkColors.shadow, darkColors.glow),
   ...base,
 };
 

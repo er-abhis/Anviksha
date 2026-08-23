@@ -1,8 +1,17 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Card, Header, Screen, SectionTitle, Text } from '../../../components';
+import {
+  EmptyState,
+  GlassCard,
+  Header,
+  Screen,
+  SearchBar,
+  SectionTitle,
+  Text,
+} from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { RESOURCES, Resource } from '../../../content/resources';
 import { openExternal } from '../../../utils/appLinks';
@@ -15,6 +24,20 @@ import { openExternal } from '../../../utils/appLinks';
 export const LearnMoreScreen: React.FC = () => {
   const { colors, spacing } = useTheme();
   const navigation = useNavigation();
+  const [query, setQuery] = useState('');
+
+  const categories = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return RESOURCES;
+    return RESOURCES.map(cat => ({
+      ...cat,
+      items: cat.items.filter(
+        i =>
+          i.label.toLowerCase().includes(q) ||
+          i.source.toLowerCase().includes(q),
+      ),
+    })).filter(cat => cat.items.length > 0);
+  }, [query]);
 
   return (
     <Screen scroll contentContainerStyle={{ gap: spacing.xl }}>
@@ -27,19 +50,39 @@ export const LearnMoreScreen: React.FC = () => {
         </Text>
       </View>
 
-      {RESOURCES.map(cat => (
-        <View key={cat.title}>
-          <SectionTitle title={cat.title} />
-          <Text variant="caption" color="textTertiary" style={{ marginBottom: spacing.sm }}>
-            {cat.blurb}
-          </Text>
-          <View style={{ gap: spacing.sm }}>
-            {cat.items.map(item => (
-              <ResourceRow key={item.url} item={item} />
-            ))}
+      <SearchBar
+        value={query}
+        onChangeText={setQuery}
+        placeholder="Search resources…"
+        accessibilityLabel="Search resources"
+      />
+
+      {categories.length === 0 ? (
+        <EmptyState
+          icon="search-outline"
+          title="No resources found"
+          message={`Nothing matches “${query.trim()}”. Try another search.`}
+        />
+      ) : (
+        categories.map(cat => (
+          <View key={cat.title}>
+            <SectionTitle title={cat.title} />
+            <Text variant="caption" color="textTertiary" style={{ marginBottom: spacing.sm }}>
+              {cat.blurb}
+            </Text>
+            <View style={{ gap: spacing.sm }}>
+              {cat.items.map((item, i) => (
+                <Animated.View
+                  key={item.url}
+                  entering={FadeInDown.delay(i * 50).springify().damping(16)}
+                >
+                  <ResourceRow item={item} />
+                </Animated.View>
+              ))}
+            </View>
           </View>
-        </View>
-      ))}
+        ))
+      )}
     </Screen>
   );
 };
@@ -47,7 +90,7 @@ export const LearnMoreScreen: React.FC = () => {
 const ResourceRow: React.FC<{ item: Resource }> = ({ item }) => {
   const { colors, radius, spacing } = useTheme();
   return (
-    <Card
+    <GlassCard
       elevation="sm"
       onPress={() => openExternal(item.url)}
       accessibilityRole="link"
@@ -63,7 +106,7 @@ const ResourceRow: React.FC<{ item: Resource }> = ({ item }) => {
         </View>
         <Icon name="open-outline" size={18} color={colors.textTertiary} style={{ marginLeft: spacing.sm }} />
       </View>
-    </Card>
+    </GlassCard>
   );
 };
 

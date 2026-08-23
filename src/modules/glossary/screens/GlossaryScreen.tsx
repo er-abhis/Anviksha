@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Card, Header, Screen, Text } from '../../../components';
+import { EmptyState, GlassCard, Header, Screen, SearchBar, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { useAchievementsStore } from '../../../store';
 import { GLOSSARY, GlossaryTerm, glossaryTerm } from '../../../content';
@@ -22,7 +23,6 @@ export const GlossaryScreen: React.FC = () => {
   const unlock = useAchievementsStore(s => s.unlock);
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState<string | null>(null);
-  const [focused, setFocused] = useState(false);
   const [hint, setHint] = useState(0);
 
   useEffect(() => {
@@ -46,8 +46,8 @@ export const GlossaryScreen: React.FC = () => {
     );
   }, [query]);
 
-  // Rotate only when idle — never while the user is focused or typing.
-  const idle = !focused && query.length === 0;
+  // Rotate the placeholder hint only while the field is idle (empty query).
+  const idle = query.length === 0;
   const placeholder = idle ? SEARCH_HINTS[hint % SEARCH_HINTS.length] : 'Search terms…';
   const suggestions = GLOSSARY.slice(0, 6);
 
@@ -55,31 +55,21 @@ export const GlossaryScreen: React.FC = () => {
     <Screen scroll contentContainerStyle={{ gap: spacing.md }}>
       <Header title="AI Glossary" onBack={() => navigation.goBack()} />
 
-      <View style={[styles.search, { backgroundColor: colors.surfaceAlt, borderRadius: radius.md }]}>
-        <Icon name="search" size={18} color={colors.textTertiary} />
-        <TextInput
-          value={query}
-          onChangeText={setQuery}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
-          placeholder={placeholder}
-          placeholderTextColor={colors.textTertiary}
-          style={[styles.input, { color: colors.text }]}
-          autoCorrect={false}
-          accessibilityLabel="Search glossary terms"
-        />
-        {query.length > 0 && (
-          <Pressable onPress={() => setQuery('')} hitSlop={8}>
-            <Icon name="close-circle" size={18} color={colors.textTertiary} />
-          </Pressable>
-        )}
-      </View>
+      <SearchBar
+        value={query}
+        onChangeText={setQuery}
+        placeholder={placeholder}
+        autoCorrect={false}
+        accessibilityLabel="Search glossary terms"
+      />
 
       {results.length === 0 ? (
         <View style={{ marginTop: spacing.xl, gap: spacing.md }}>
-          <Text variant="body" color="textSecondary" center>
-            No terms match “{query}”. Try one of these:
-          </Text>
+          <EmptyState
+            icon="search-outline"
+            title="No terms found"
+            message={`Nothing matches “${query.trim()}”. Try one of these:`}
+          />
           <View style={styles.suggestRow}>
             {suggestions.map(t => (
               <Pressable
@@ -99,14 +89,18 @@ export const GlossaryScreen: React.FC = () => {
           </View>
         </View>
       ) : (
-        results.map(term => (
-          <TermCard
+        results.map((term, i) => (
+          <Animated.View
             key={term.slug}
-            term={term}
-            expanded={open === term.slug}
-            onToggle={() => setOpen(open === term.slug ? null : term.slug)}
-            onRelated={slug => setOpen(slug)}
-          />
+            entering={FadeInDown.delay(i * 50).springify().damping(16)}
+          >
+            <TermCard
+              term={term}
+              expanded={open === term.slug}
+              onToggle={() => setOpen(open === term.slug ? null : term.slug)}
+              onRelated={slug => setOpen(slug)}
+            />
+          </Animated.View>
         ))
       )}
     </Screen>
@@ -121,7 +115,7 @@ const TermCard: React.FC<{
 }> = ({ term, expanded, onToggle, onRelated }) => {
   const { colors, radius, spacing } = useTheme();
   return (
-    <Card elevation="sm" onPress={onToggle}>
+    <GlassCard elevation="sm" onPress={onToggle}>
       <View style={styles.termHead}>
         <View style={[styles.termIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.md }]}>
           <Icon name={term.icon} size={20} color={colors.primary} />
@@ -161,7 +155,7 @@ const TermCard: React.FC<{
           )}
         </View>
       )}
-    </Card>
+    </GlassCard>
   );
 };
 
@@ -174,10 +168,8 @@ const Field: React.FC<{ label: string; value: string }> = ({ label, value }) => 
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  search: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, height: 44 },
   suggestRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center' },
   suggestChip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, paddingVertical: 7, borderWidth: 1 },
-  input: { flex: 1, fontSize: 15, paddingVertical: 0 },
   termHead: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   termIcon: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
   relatedRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },

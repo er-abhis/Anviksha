@@ -19,11 +19,20 @@ export const SettingRow: React.FC<Props> = ({
   value,
   onValueChange,
 }) => {
-  const { colors, spacing } = useTheme();
+  const { colors, radius, spacing } = useTheme();
   return (
     <View style={[styles.row, { paddingVertical: spacing.md, gap: spacing.md }]}>
-      <View style={[styles.icon, { backgroundColor: colors.surfaceAlt }]}>
-        <Icon name={icon} size={18} color={colors.text} />
+      <View
+        style={[
+          styles.icon,
+          {
+            backgroundColor: colors.primaryMuted,
+            borderRadius: radius.md,
+            borderColor: colors.glassBorder,
+          },
+        ]}
+      >
+        <Icon name={icon} size={19} color={colors.accent} />
       </View>
       <View style={styles.flex}>
         <Text variant="bodyStrong">{label}</Text>
@@ -47,9 +56,9 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center' },
   flex: { flex: 1 },
   icon: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
+    width: 40,
+    height: 40,
+    borderWidth: StyleSheet.hairlineWidth,
     alignItems: 'center',
     justifyContent: 'center',
   },

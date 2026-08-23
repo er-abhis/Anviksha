@@ -1,7 +1,8 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import Animated, { FadeInDown, LinearTransition } from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Card, Text } from '../../../components';
+import { GlassCard, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { getComponent } from '../data/components';
 import { LabComponentId } from '../types';
@@ -21,7 +22,7 @@ export const ArchitectureFlow: React.FC<ArchitectureFlowProps> = ({
   accent,
 }) => {
   const { colors, radius, spacing } = useTheme();
-  const tint = accent ?? colors.primary;
+  const tint = accent ?? colors.accent;
 
   const nodes = [
     { emoji: '📥', label: startLabel, endpoint: true },
@@ -33,32 +34,37 @@ export const ArchitectureFlow: React.FC<ArchitectureFlowProps> = ({
   ];
 
   return (
-    <View style={styles.wrap}>
+    <Animated.View layout={LinearTransition} style={styles.wrap}>
       {nodes.map((n, i) => (
-        <View key={`${n.label}-${i}`} style={styles.nodeWrap}>
-          <Card
-            elevation={n.endpoint ? 'none' : 'sm'}
+        <Animated.View
+          key={`${n.label}-${i}`}
+          layout={LinearTransition}
+          entering={FadeInDown.delay(i * 60).springify().damping(16)}
+          style={styles.nodeWrap}
+        >
+          <GlassCard
+            elevation={n.endpoint ? 'sm' : 'glow'}
             padded={false}
             style={StyleSheet.flatten([
               styles.node,
               {
-                borderRadius: radius.md,
+                borderRadius: radius.lg,
                 paddingHorizontal: spacing.md,
                 paddingVertical: spacing.sm,
-                backgroundColor: n.endpoint ? colors.surfaceAlt : colors.surface,
-                borderColor: n.endpoint ? colors.border : tint,
+                borderColor: n.endpoint ? colors.glassBorder : tint,
+                borderWidth: n.endpoint ? StyleSheet.hairlineWidth : 1.5,
               },
             ])}
           >
             <Text style={styles.emoji}>{n.emoji}</Text>
             <Text variant={n.endpoint ? 'caption' : 'bodyStrong'}>{n.label}</Text>
-          </Card>
+          </GlassCard>
           {i < nodes.length - 1 && (
-            <Icon name="arrow-down" size={18} color={colors.textTertiary} />
+            <Icon name="arrow-down" size={18} color={tint} />
           )}
-        </View>
+        </Animated.View>
       ))}
-    </View>
+    </Animated.View>
   );
 };
 

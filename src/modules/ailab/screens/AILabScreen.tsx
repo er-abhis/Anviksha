@@ -1,10 +1,18 @@
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Card, Header, Screen, Text } from '../../../components';
+import {
+  Card,
+  Gradient,
+  GlassCard,
+  Header,
+  Screen,
+  Text,
+} from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { useAILabStore } from '../../../store';
 import { RootStackParamList } from '../../../navigation/types';
@@ -15,7 +23,7 @@ import { SavedProjects } from '../components/SavedProjects';
 import { categoryFromMissionId } from '../freebuild/categories';
 
 export const AILabScreen: React.FC = () => {
-  const { colors, spacing, radius } = useTheme();
+  const { colors, spacing, radius, gradients } = useTheme();
   const tabBarHeight = useBottomTabBarHeight();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -34,95 +42,113 @@ export const AILabScreen: React.FC = () => {
         paddingBottom: tabBarHeight + spacing.lg,
       }}
     >
-      <Header title="🧪 AI Lab" large />
-      <Text variant="body" color="textSecondary">
-        Build, experiment and learn how AI works. Pick a mission and assemble a
-        working AI from the ground up.
-      </Text>
-
-      {/* AI Builder progress */}
-      <Card elevation="sm">
-        <View style={[styles.statsRow, { gap: spacing.md }]}>
-          <View
-            style={[
-              styles.levelChip,
-              { backgroundColor: colors.primaryMuted, borderRadius: radius.md },
-            ]}
-          >
-            <Icon name="hardware-chip" size={18} color={colors.primary} />
-            <Text variant="bodyStrong" color="primary">
-              {' '}Lvl {builderLevelForXp(aiLabXp)}
+      {/* Gradient hero header — the AI Lab wow entry. */}
+      <Animated.View entering={FadeInDown.springify().damping(16)}>
+        <Card elevation="glow" padded={false} style={styles.overflowHidden}>
+          <Gradient
+            colors={gradients.cool}
+            style={StyleSheet.absoluteFill}
+            pointerEvents="none"
+          />
+          <View style={{ padding: spacing.lg, gap: spacing.xs }}>
+            <Header title="🧪 AI Lab" large />
+            <Text variant="body" style={{ color: colors.onPrimary, opacity: 0.9 }}>
+              Build, experiment and learn how AI works. Pick a mission and
+              assemble a working AI from the ground up.
             </Text>
+            <View
+              style={[
+                styles.statsRow,
+                { gap: spacing.md, marginTop: spacing.sm },
+              ]}
+            >
+              <View
+                style={[
+                  styles.levelChip,
+                  { backgroundColor: '#FFFFFF22', borderRadius: radius.pill },
+                ]}
+              >
+                <Icon name="hardware-chip" size={18} color={colors.onPrimary} />
+                <Text variant="bodyStrong" style={{ color: colors.onPrimary }}>
+                  {' '}Lvl {builderLevelForXp(aiLabXp)}
+                </Text>
+              </View>
+              <Text
+                variant="caption"
+                style={[styles.flex, { color: colors.onPrimary, opacity: 0.9 }]}
+              >
+                {aiLabXp} XP · {completedCount}/{MISSIONS.length} missions built
+                · {xpToNextLevel(aiLabXp)} XP to next level
+              </Text>
+            </View>
           </View>
-          <View style={styles.flex}>
-            <Text variant="bodyStrong">AI Builder</Text>
-            <Text variant="caption" color="textSecondary">
-              {aiLabXp} XP · {completedCount}/{MISSIONS.length} missions built ·{' '}
-              {xpToNextLevel(aiLabXp)} XP to next level
-            </Text>
-          </View>
-        </View>
-      </Card>
+        </Card>
+      </Animated.View>
 
       {/* Surprise Me — playful entry that jumps into a random mission. */}
-      <Pressable
-        onPress={() => openMission(pickRandomMissionId())}
-        accessibilityRole="button"
-        accessibilityLabel="Surprise me — open a random mission"
-        style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1 }]}
-      >
-        <Card
-          elevation="lg"
-          padded={false}
-          style={{ backgroundColor: colors.primary, overflow: 'hidden' }}
+      <Animated.View entering={FadeInDown.delay(60).springify().damping(16)}>
+        <Pressable
+          onPress={() => openMission(pickRandomMissionId())}
+          accessibilityRole="button"
+          accessibilityLabel="Surprise me — open a random mission"
+          style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1 }]}
         >
-          <View style={[styles.surpriseRow, { padding: spacing.lg, gap: spacing.md }]}>
+          <Card elevation="glow" padded={false} style={styles.overflowHidden}>
+            <Gradient
+              colors={gradients.brand}
+              style={StyleSheet.absoluteFill}
+              pointerEvents="none"
+            />
+            <View style={[styles.surpriseRow, { padding: spacing.lg, gap: spacing.md }]}>
+              <View
+                style={[
+                  styles.surpriseIcon,
+                  { backgroundColor: '#FFFFFF22', borderRadius: radius.lg },
+                ]}
+              >
+                <Text style={styles.surpriseEmoji}>🎲</Text>
+              </View>
+              <View style={styles.flex}>
+                <Text variant="bodyStrong" style={{ color: colors.onPrimary }}>
+                  Surprise Me
+                </Text>
+                <Text variant="caption" style={{ color: colors.onPrimary, opacity: 0.85 }}>
+                  Not sure where to start? Get a random mission.
+                </Text>
+              </View>
+              <Icon name="shuffle" size={22} color={colors.onPrimary} />
+            </View>
+          </Card>
+        </Pressable>
+      </Animated.View>
+
+      {/* Free Build entry. */}
+      <Animated.View entering={FadeInDown.delay(120).springify().damping(16)}>
+        <GlassCard
+          elevation="md"
+          onPress={() => navigation.navigate('AILabFreeBuild')}
+          accessibilityRole="button"
+          accessibilityLabel="Free Build — build any AI from scratch"
+        >
+          <View style={[styles.surpriseRow, { gap: spacing.md }]}>
             <View
               style={[
                 styles.surpriseIcon,
-                { backgroundColor: '#FFFFFF22', borderRadius: radius.md },
+                { backgroundColor: colors.accent + '22', borderRadius: radius.lg },
               ]}
             >
-              <Text style={styles.surpriseEmoji}>🎲</Text>
+              <Text style={styles.surpriseEmoji}>🧪</Text>
             </View>
             <View style={styles.flex}>
-              <Text variant="bodyStrong" style={{ color: colors.onPrimary }}>
-                Surprise Me
-              </Text>
-              <Text variant="caption" style={{ color: colors.onPrimary, opacity: 0.85 }}>
-                Not sure where to start? Get a random mission.
+              <Text variant="bodyStrong">Free Build</Text>
+              <Text variant="caption" color="textSecondary">
+                No mission — pick a goal and build any AI you like.
               </Text>
             </View>
-            <Icon name="shuffle" size={22} color={colors.onPrimary} />
+            <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
           </View>
-        </Card>
-      </Pressable>
-
-      {/* Free Build entry. */}
-      <Card
-        elevation="md"
-        onPress={() => navigation.navigate('AILabFreeBuild')}
-        accessibilityRole="button"
-        accessibilityLabel="Free Build — build any AI from scratch"
-      >
-        <View style={[styles.surpriseRow, { gap: spacing.md }]}>
-          <View
-            style={[
-              styles.surpriseIcon,
-              { backgroundColor: colors.accent + '22', borderRadius: radius.md },
-            ]}
-          >
-            <Text style={styles.surpriseEmoji}>🧪</Text>
-          </View>
-          <View style={styles.flex}>
-            <Text variant="bodyStrong">Free Build</Text>
-            <Text variant="caption" color="textSecondary">
-              No mission — pick a goal and build any AI you like.
-            </Text>
-          </View>
-          <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
-        </View>
-      </Card>
+        </GlassCard>
+      </Animated.View>
 
       {/* Saved builds — resume / rename / duplicate / delete. */}
       <SavedProjects
@@ -144,13 +170,17 @@ export const AILabScreen: React.FC = () => {
       </Text>
 
       <View style={{ gap: spacing.md }}>
-        {MISSIONS.map(mission => (
-          <MissionCard
+        {MISSIONS.map((mission, i) => (
+          <Animated.View
             key={mission.id}
-            mission={mission}
-            completed={Boolean(completedMap[mission.id])}
-            onPress={() => openMission(mission.id)}
-          />
+            entering={FadeInDown.delay(i * 60).springify().damping(16)}
+          >
+            <MissionCard
+              mission={mission}
+              completed={Boolean(completedMap[mission.id])}
+              onPress={() => openMission(mission.id)}
+            />
+          </Animated.View>
         ))}
       </View>
     </Screen>
@@ -159,6 +189,7 @@ export const AILabScreen: React.FC = () => {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
+  overflowHidden: { overflow: 'hidden' },
   surpriseRow: { flexDirection: 'row', alignItems: 'center' },
   surpriseIcon: {
     width: 48,

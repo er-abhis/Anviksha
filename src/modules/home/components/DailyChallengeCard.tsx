@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Button, Card, Text, XPBadge } from '../../../components';
+import { Button, GlassCard, Text, XPBadge } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { DailyChallengeMock } from '../types';
 
@@ -9,12 +9,19 @@ export const DailyChallengeCard: React.FC<{
   data: DailyChallengeMock;
   onStart?: () => void;
 }> = ({ data, onStart }) => {
-  const { colors, spacing } = useTheme();
+  const { colors, radius, spacing } = useTheme();
   return (
-    <Card elevation="md">
+    <GlassCard elevation="glow">
       <View style={[styles.header, { marginBottom: spacing.sm }]}>
         <View style={[styles.row, { gap: spacing.sm }]}>
-          <Icon name="sparkles" size={18} color={colors.accent} />
+          <View
+            style={[
+              styles.spark,
+              { backgroundColor: colors.primaryMuted, borderRadius: radius.md },
+            ]}
+          >
+            <Icon name="sparkles" size={18} color={colors.accent} />
+          </View>
           <Text variant="bodyStrong">{data.title}</Text>
         </View>
         <XPBadge value={data.xpReward} kind="xp" />
@@ -37,7 +44,7 @@ export const DailyChallengeCard: React.FC<{
           style={{ marginTop: spacing.lg }}
         />
       )}
-    </Card>
+    </GlassCard>
   );
 };
 
@@ -48,4 +55,5 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   row: { flexDirection: 'row', alignItems: 'center' },
+  spark: { width: 34, height: 34, alignItems: 'center', justifyContent: 'center' },
 });
