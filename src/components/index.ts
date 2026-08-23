@@ -30,3 +30,6 @@ export { AchievementCard } from './AchievementCard';
 export type { AchievementCardProps } from './AchievementCard';
 export { DraggableList } from './DraggableList';
 export type { DraggableListProps } from './DraggableList';
+export { QuestionMedia } from './QuestionMedia';
+export { Carousel } from './Carousel';
+export type { CarouselProps } from './Carousel';

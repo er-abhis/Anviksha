@@ -1,0 +1,70 @@
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import { Card, Text } from '../../../components';
+import { useTheme } from '../../../theme/ThemeProvider';
+
+export interface LessonCardData {
+  worldTitle: string;
+  title: string;
+  chapter: number;
+  minutes: number;
+  xp: number;
+  status: 'done' | 'locked' | 'open';
+}
+
+/**
+ * Compact lesson card for Home carousels (Continue / Recommended). Fixed-ish
+ * height so cards line up in a snapping row. Reuses the shared Card + Text.
+ */
+export const LessonCard: React.FC<{ data: LessonCardData; onPress?: () => void }> = ({
+  data,
+  onPress,
+}) => {
+  const { colors, radius, spacing } = useTheme();
+  const meta =
+    data.status === 'done'
+      ? { icon: 'checkmark-circle', label: 'Completed', color: colors.success }
+      : data.status === 'locked'
+      ? { icon: 'lock-closed', label: 'Locked', color: colors.textTertiary }
+      : { icon: 'play-circle', label: 'Start', color: colors.primary };
+
+  return (
+    <Card onPress={onPress} elevation="sm" style={styles.card}>
+      <View style={styles.headRow}>
+        <View style={[styles.chapterPill, { backgroundColor: colors.surfaceAlt, borderRadius: radius.sm }]}>
+          <Text variant="caption" color="textSecondary">{`Chapter ${data.chapter}`}</Text>
+        </View>
+        <Icon name={meta.icon} size={18} color={meta.color} />
+      </View>
+      <Text variant="label" color="textSecondary" numberOfLines={1} style={{ marginTop: spacing.sm }}>
+        {data.worldTitle}
+      </Text>
+      <Text variant="bodyStrong" numberOfLines={2} style={styles.title}>
+        {data.title}
+      </Text>
+      <View style={[styles.footer, { marginTop: spacing.md }]}>
+        <View style={styles.metaItem}>
+          <Icon name="time-outline" size={14} color={colors.textTertiary} />
+          <Text variant="caption" color="textTertiary">{`${data.minutes} min`}</Text>
+        </View>
+        <View style={styles.metaItem}>
+          <Icon name="flash-outline" size={14} color={colors.xp} />
+          <Text variant="caption" color="textTertiary">{`${data.xp} XP`}</Text>
+        </View>
+        <View style={styles.flex} />
+        <Text variant="label" style={{ color: meta.color }}>{meta.label}</Text>
+      </View>
+    </Card>
+  );
+};
+
+const styles = StyleSheet.create({
+  card: { minHeight: 150, justifyContent: 'flex-start' },
+  flex: { flex: 1 },
+  headRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  chapterPill: { paddingHorizontal: 8, paddingVertical: 3 },
+  title: { marginTop: 2, minHeight: 44 },
+  footer: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  metaItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+});

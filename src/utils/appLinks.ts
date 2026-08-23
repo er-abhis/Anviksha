@@ -1,5 +1,4 @@
 import { Alert, Linking, Share } from 'react-native';
-import RNShare from 'react-native-share';
 import { APP, SHARE_MESSAGE } from '../constants/app';
 import { Lesson } from '../content/types';
 
@@ -57,6 +56,10 @@ export const buildAchievementMessage = (lesson: Lesson): string => {
  */
 export const shareAchievement = async (message: string, imageUri?: string): Promise<void> => {
   try {
+    // Lazy require: react-native-share initialises its native module at import
+    // time, so importing it eagerly would crash the whole app on launch if the
+    // native build is stale. Requiring it here keeps failure contained to share.
+    const RNShare = require('react-native-share').default;
     if (imageUri) {
       const url =
         imageUri.startsWith('file://') || imageUri.startsWith('content://')
@@ -67,7 +70,13 @@ export const shareAchievement = async (message: string, imageUri?: string): Prom
       await RNShare.open({ message, failOnCancel: false });
     }
   } catch {
-    // User dismissed the sheet, or sharing is unavailable — nothing to do.
+    // Native module missing (stale build), user dismissed, or unavailable —
+    // fall back to the core RN share sheet (text only) so sharing still works.
+    try {
+      await Share.share({ message });
+    } catch {
+      // Nothing more to do.
+    }
   }
 };
 

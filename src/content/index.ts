@@ -26,6 +26,7 @@ import { WORLD8_LESSONS, WORLD8_QUESTIONS } from './lessons/world8';
 import { WORLD9_LESSONS, WORLD9_QUESTIONS } from './lessons/world9';
 import { WORLD10_LESSONS, WORLD10_QUESTIONS } from './lessons/world10';
 import { WORLD11_LESSONS, WORLD11_QUESTIONS } from './lessons/world11';
+import { attachMedia } from './questionMedia';
 
 export * from './types';
 export { WORLDS, GLOSSARY, BADGES };
@@ -41,7 +42,7 @@ export const QUESTIONS: Question[] = [
   ...WORLD1_QUESTIONS, ...WORLD2_QUESTIONS, ...WORLD3_QUESTIONS, ...WORLD4_QUESTIONS,
   ...WORLD5_QUESTIONS, ...WORLD6_QUESTIONS, ...WORLD7_QUESTIONS, ...WORLD8_QUESTIONS,
   ...WORLD9_QUESTIONS, ...WORLD10_QUESTIONS, ...WORLD11_QUESTIONS,
-];
+].map(attachMedia); // concept icons resolved once, centrally (see questionMedia.ts)
 
 const LESSON_BY_ID = new Map(LESSONS.map(l => [l.id, l]));
 const WORLD_BY_ID = new Map(WORLDS.map(w => [w.id, w]));
@@ -297,4 +298,36 @@ export const buildDailyChallenge = (
 export const questionsByIds = (ids: string[]): Question[] => {
   const byId = new Map(QUESTIONS.map(q => [q.id, q]));
   return ids.map(id => byId.get(id)).filter((q): q is Question => Boolean(q));
+};
+
+/* -------------------- daily spotlight -------------------- */
+/**
+ * A single "for you today" item that rotates DAILY across kinds and content,
+ * so the app doesn't feel identical each session. Deterministic per date
+ * (stable all day, different across days) and built entirely from authored
+ * content — never fabricated, never labelled "AI generated".
+ */
+export type Spotlight =
+  | { kind: 'concept'; title: string; term: GlossaryTerm }
+  | { kind: 'didYouKnow'; title: string; term: GlossaryTerm }
+  | { kind: 'tryThis'; title: string; lesson: Lesson };
+
+export const dailySpotlight = (
+  date: string,
+  completed: Record<string, number>,
+): Spotlight => {
+  const kinds = ['concept', 'didYouKnow', 'tryThis'] as const;
+  const kind = kinds[hashString(date + 'spot') % kinds.length];
+
+  if (kind === 'tryThis') {
+    let pool = LESSONS.filter(l => isLessonUnlocked(l, completed) && !(l.id in completed));
+    if (pool.length === 0) pool = LESSONS;
+    const lesson = pool[hashString(date + 'tl') % pool.length];
+    return { kind, title: 'Try This', lesson };
+  }
+
+  const term = GLOSSARY[hashString(date + 'g') % GLOSSARY.length];
+  return kind === 'concept'
+    ? { kind, title: 'Today’s AI Concept', term }
+    : { kind, title: 'Did You Know?', term };
 };

@@ -8,7 +8,9 @@ import { CurrentWorldMock } from '../types';
 export const CurrentWorldCard: React.FC<{
   data: CurrentWorldMock;
   onPress?: () => void;
-}> = ({ data, onPress }) => {
+  /** Overline label — defaults to "CURRENT WORLD"; reused for Explore/Recommended. */
+  eyebrow?: string;
+}> = ({ data, onPress, eyebrow = 'CURRENT WORLD' }) => {
   const { radius, spacing } = useTheme();
   return (
     <Pressable
@@ -20,7 +22,7 @@ export const CurrentWorldCard: React.FC<{
         <View style={{ padding: spacing.xl }}>
           <View style={styles.eyebrowRow}>
             <Text variant="label" color="textInverse" style={styles.eyebrow}>
-              CURRENT WORLD
+              {eyebrow}
             </Text>
             <Icon name="chevron-forward" size={18} color="#FFFFFF" />
           </View>

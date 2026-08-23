@@ -9,7 +9,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import ViewShot from 'react-native-view-shot';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { AchievementCard, Button, Card, Confetti, DraggableList, ProgressBar, Text } from '../../../components';
+import { AchievementCard, Button, Card, Confetti, DraggableList, ProgressBar, QuestionMedia, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { usePreferencesStore } from '../../../store';
 import { shareAchievement } from '../../../utils/appLinks';
@@ -152,6 +152,7 @@ const QuestionView: React.FC<{ question: Question; onNext: (correct: boolean) =>
       contentContainerStyle={{ padding: spacing.lg, paddingBottom: spacing.giant, gap: spacing.lg }}
       showsVerticalScrollIndicator={false}
     >
+      {question.media && <QuestionMedia media={question.media} />}
       <Text variant="h3">{question.prompt}</Text>
       {question.type === 'match' ? (
         <MatchView question={question} onNext={onNext} />

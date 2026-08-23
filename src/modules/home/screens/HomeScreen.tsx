@@ -9,6 +9,7 @@ import { useResponsive } from '../../../hooks/useResponsive';
 import { CONTENT_MAX_WIDTH } from '../../../constants/layout';
 import {
   Card,
+  Carousel,
   EmptyState,
   IconButton,
   Logo,
@@ -20,15 +21,22 @@ import { RootStackParamList } from '../../../navigation/types';
 import { useAchievementsStore, useDrawerStore, useProgressStore } from '../../../store';
 import {
   BADGES,
+  Lesson,
+  World,
   buildDailyChallenge,
   currentWorld,
-  firstAvailableLesson,
+  dailySpotlight,
+  getWorld,
+  isLessonUnlocked,
+  lessonsForWorld,
   todayISO,
   worldProgress,
+  WORLDS,
 } from '../../../content';
-import { ContinueCard } from '../components/ContinueCard';
 import { DailyChallengeCard } from '../components/DailyChallengeCard';
 import { CurrentWorldCard } from '../components/CurrentWorldCard';
+import { LessonCard } from '../components/LessonCard';
+import { SpotlightCard } from '../components/SpotlightCard';
 import { AchievementChip } from '../components/AchievementChip';
 import { ActivityRow } from '../components/ActivityRow';
 
@@ -45,16 +53,58 @@ export const HomeScreen: React.FC = () => {
   const unlocked = useAchievementsStore(s => s.unlocked);
 
   const world = currentWorld(completed);
-  const lesson = firstAvailableLesson(completed);
   const dailyDone = dailyCompletedDate === todayISO();
   const daily = buildDailyChallenge(todayISO(), completed);
-
+  const spotlight = dailySpotlight(todayISO(), completed);
   const unlockedAchievements = BADGES.filter(a => unlocked[a.slug]);
 
-  const openLesson = () => {
-    if (!lesson) return;
-    navigation.navigate('LessonIntro', { lessonId: lesson.id });
+  // Continue: incomplete chapters of the current world (immediate next first).
+  const continueLessons = lessonsForWorld(world.id).filter(l => !(l.id in completed));
+  // Recommended: the opening chapter of each OTHER world — new topics to try.
+  const recommended: Lesson[] = WORLDS.filter(w => w.id !== world.id)
+    .sort((a, b) => a.order - b.order)
+    .map(w => lessonsForWorld(w.id)[0])
+    .filter(Boolean)
+    .slice(0, 8);
+  // Explore: every world as a category.
+  const exploreWorlds = [...WORLDS].sort((a, b) => a.order - b.order);
+
+  const openLesson = (id: string) => navigation.navigate('LessonIntro', { lessonId: id });
+  const openWorld = (id: string) => navigation.navigate('WorldDetail', { worldId: id });
+
+  const lessonStatus = (l: Lesson): 'done' | 'locked' | 'open' =>
+    l.id in completed ? 'done' : isLessonUnlocked(l, completed) ? 'open' : 'locked';
+
+  const renderLesson = (l: Lesson) => {
+    const w = getWorld(l.worldId);
+    return (
+      <LessonCard
+        data={{
+          worldTitle: w?.title ?? '',
+          title: l.title,
+          chapter: l.order,
+          minutes: l.estimatedMinutes,
+          xp: l.xp,
+          status: lessonStatus(l),
+        }}
+        onPress={() => openLesson(l.id)}
+      />
+    );
   };
+
+  const renderWorld = (w: World, eyebrow: string) => (
+    <CurrentWorldCard
+      eyebrow={eyebrow}
+      data={{
+        title: w.title,
+        subtitle: w.subtitle,
+        progress: worldProgress(w.id, completed),
+        gradient: w.gradient,
+        locked: false,
+      }}
+      onPress={() => openWorld(w.id)}
+    />
+  );
 
   return (
     <SafeAreaView
@@ -64,84 +114,83 @@ export const HomeScreen: React.FC = () => {
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[
+          styles.content,
           {
-            padding: spacing.lg,
+            paddingVertical: spacing.lg,
             gap: spacing.xxl,
             paddingBottom: spacing.giant,
-            width: '100%',
-            alignSelf: 'center',
             maxWidth: isTablet ? CONTENT_MAX_WIDTH : undefined,
           },
         ]}
       >
         {/* Greeting + stats */}
-        <View style={styles.headerRow}>
-          <Pressable
-            onPress={() => openDrawer()}
-            accessibilityRole="button"
-            accessibilityLabel="Open menu"
-            hitSlop={8}
-          >
-            <Logo size={36} style={styles.brandMark} />
-          </Pressable>
-          <View style={styles.flex}>
-            <Text variant="label" color="textSecondary">
-              Welcome back
-            </Text>
-            <Text variant="h1">Ready to explore?</Text>
+        <Padded>
+          <View style={styles.headerRow}>
+            <Pressable
+              onPress={() => openDrawer()}
+              accessibilityRole="button"
+              accessibilityLabel="Open menu"
+              hitSlop={8}
+            >
+              <Logo size={36} style={styles.brandMark} />
+            </Pressable>
+            <View style={styles.flex}>
+              <Text variant="label" color="textSecondary">Welcome back</Text>
+              <Text variant="h1">Ready to explore?</Text>
+            </View>
+            <IconButton
+              name="settings-outline"
+              accessibilityLabel="Settings"
+              onPress={() => navigation.navigate('Settings')}
+            />
           </View>
-          <IconButton
-            name="settings-outline"
-            accessibilityLabel="Settings"
-            onPress={() => navigation.navigate('Settings')}
-          />
-        </View>
 
-        <View style={[styles.stats, { gap: spacing.sm }]}>
-          <XPBadge value={xp} kind="xp" />
-          <XPBadge value={coins} kind="coins" />
-          <XPBadge value={streakDays} kind="streak" />
-          <View style={styles.flex} />
-          <View
-            style={[styles.levelPill, { backgroundColor: colors.primaryMuted }]}
-          >
-            <Icon name="ribbon" size={15} color={colors.primary} />
-            <Text variant="label" color="primary">
-              {`Level ${level}`}
-            </Text>
+          <View style={[styles.stats, { gap: spacing.sm, marginTop: spacing.lg }]}>
+            <XPBadge value={xp} kind="xp" />
+            <XPBadge value={coins} kind="coins" />
+            <XPBadge value={streakDays} kind="streak" />
+            <View style={styles.flex} />
+            <View style={[styles.levelPill, { backgroundColor: colors.primaryMuted }]}>
+              <Icon name="ribbon" size={15} color={colors.primary} />
+              <Text variant="label" color="primary">{`Level ${level}`}</Text>
+            </View>
           </View>
-        </View>
+        </Padded>
 
-        {/* Continue Learning */}
+        {/* 1 — Continue Learning */}
         <View>
-          <SectionTitle title="Continue Learning" />
-          {lesson ? (
-            <ContinueCard
-              item={{
-                id: lesson.id,
-                title: lesson.title,
-                worldTitle: world.title,
-                progress: worldProgress(world.id, completed),
-              }}
-              onPress={openLesson}
+          <Padded>
+            <SectionTitle
+              title="Continue Learning"
+              actionLabel={continueLessons.length ? 'View all' : undefined}
+              onAction={continueLessons.length ? () => openWorld(world.id) : undefined}
+            />
+          </Padded>
+          {continueLessons.length ? (
+            <Carousel
+              data={continueLessons}
+              keyExtractor={l => l.id}
+              renderItem={renderLesson}
             />
           ) : (
-            <EmptyState
-              icon="rocket-outline"
-              title="Start your first lesson"
-              message="Your learning journey begins here. Pick a world to dive in."
-              actionLabel="Explore worlds"
-              onAction={() => navigation.navigate('Worlds')}
-            />
+            <Padded>
+              <EmptyState
+                icon="trophy-outline"
+                title="You're all caught up!"
+                message="You've completed every chapter. Explore a new topic below."
+                actionLabel="Explore worlds"
+                onAction={() => navigation.navigate('Worlds')}
+              />
+            </Padded>
           )}
         </View>
 
-        {/* Daily Challenge */}
-        <View>
+        {/* 2 — Daily Challenge (the daily hook) */}
+        <Padded>
           <SectionTitle title="Daily Challenge" />
           <DailyChallengeCard
             data={{
-              title: dailyDone ? 'Today’s challenge' : 'Today’s challenge',
+              title: 'Today’s challenge',
               description: dailyDone
                 ? 'Nice work — you’ve completed today’s challenge.'
                 : `${daily.questionIds.length} quick questions from your unlocked lessons. Earn up to ${daily.xpReward} XP.`,
@@ -150,59 +199,105 @@ export const HomeScreen: React.FC = () => {
             }}
             onStart={() => navigation.navigate('DailyChallenge')}
           />
-        </View>
+        </Padded>
 
-        {/* Current World */}
-        <View>
-          <SectionTitle
-            title="Current World"
-            actionLabel="View all"
-            onAction={() => navigation.navigate('Worlds')}
-          />
-          <CurrentWorldCard
-            data={{
-              title: world.title,
-              subtitle: world.subtitle,
-              progress: worldProgress(world.id, completed),
-              gradient: world.gradient,
-              locked: false,
-            }}
+        {/* Daily spotlight — rotates concept / did-you-know / try-this by date */}
+        <Padded>
+          <SectionTitle title={spotlight.title} />
+          <SpotlightCard
+            item={spotlight}
             onPress={() =>
-              navigation.navigate('WorldDetail', { worldId: world.id })
+              spotlight.kind === 'tryThis'
+                ? openLesson(spotlight.lesson.id)
+                : navigation.navigate('Glossary')
             }
+          />
+        </Padded>
+
+        {/* 3 — Recommended for You */}
+        {recommended.length > 0 && (
+          <View>
+            <Padded>
+              <SectionTitle
+                title="Recommended for You"
+                actionLabel="See all"
+                onAction={() => navigation.navigate('Worlds')}
+              />
+            </Padded>
+            <Carousel
+              data={recommended}
+              keyExtractor={l => l.id}
+              renderItem={renderLesson}
+            />
+          </View>
+        )}
+
+        {/* 4 — Explore Topics */}
+        <View>
+          <Padded>
+            <SectionTitle
+              title="Explore Topics"
+              actionLabel="View all"
+              onAction={() => navigation.navigate('Worlds')}
+            />
+          </Padded>
+          <Carousel
+            data={exploreWorlds}
+            keyExtractor={w => w.id}
+            renderItem={w => renderWorld(w, 'EXPLORE')}
+            maxItemWidth={300}
           />
         </View>
 
-        {/* Achievements */}
+        {/* 5 — Interactive AI Activity */}
+        <Padded>
+          <SectionTitle title="Interactive AI Activity" />
+          <Card
+            elevation="md"
+            onPress={() => navigation.navigate('Main', { screen: 'Playground' })}
+          >
+            <View style={styles.rowGap}>
+              <View style={[styles.activityIcon, { backgroundColor: colors.primaryMuted }]}>
+                <Icon name="game-controller" size={24} color={colors.primary} />
+              </View>
+              <View style={styles.flex}>
+                <Text variant="bodyStrong">Play with AI</Text>
+                <Text variant="caption" color="textSecondary">
+                  Hands-on simulations — tune, sort, predict and build intuition.
+                </Text>
+              </View>
+              <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
+            </View>
+          </Card>
+        </Padded>
+
+        {/* 6 — Progress & Achievements */}
         <View>
-          <SectionTitle
-            title="Achievements"
-            actionLabel="See all"
-            onAction={() =>
-              navigation.navigate('Main', { screen: 'Achievements' })
-            }
-          />
-          {unlockedAchievements.length === 0 ? (
-            <EmptyState
-              icon="trophy-outline"
-              title="No achievements yet"
-              message="Complete challenges and lessons to earn your first badge."
+          <Padded>
+            <SectionTitle
+              title="Progress & Achievements"
+              actionLabel="See all"
+              onAction={() => navigation.navigate('Main', { screen: 'Achievements' })}
             />
+          </Padded>
+          {unlockedAchievements.length === 0 ? (
+            <Padded>
+              <EmptyState
+                icon="trophy-outline"
+                title="No achievements yet"
+                message="Complete challenges and lessons to earn your first badge."
+              />
+            </Padded>
           ) : (
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ gap: spacing.md }}
+              contentContainerStyle={{ gap: spacing.md, paddingHorizontal: spacing.lg }}
             >
               {unlockedAchievements.map(a => (
                 <AchievementChip
                   key={a.slug}
-                  item={{
-                    id: a.slug,
-                    title: a.title,
-                    icon: a.icon,
-                    unlocked: true,
-                  }}
+                  item={{ id: a.slug, title: a.title, icon: a.icon, unlocked: true }}
                 />
               ))}
             </ScrollView>
@@ -210,23 +305,25 @@ export const HomeScreen: React.FC = () => {
         </View>
 
         {/* AI Glossary */}
-        <Card elevation="sm" onPress={() => navigation.navigate('Glossary')}>
-          <View style={styles.glossaryRow}>
-            <View style={[styles.glossaryIcon, { backgroundColor: colors.primaryMuted }]}>
-              <Icon name="book" size={22} color={colors.primary} />
+        <Padded>
+          <Card elevation="sm" onPress={() => navigation.navigate('Glossary')}>
+            <View style={styles.rowGap}>
+              <View style={[styles.glossaryIcon, { backgroundColor: colors.primaryMuted }]}>
+                <Icon name="book" size={22} color={colors.primary} />
+              </View>
+              <View style={styles.flex}>
+                <Text variant="bodyStrong">AI Glossary</Text>
+                <Text variant="caption" color="textSecondary">
+                  Look up any term — in plain words and technical detail
+                </Text>
+              </View>
+              <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
             </View>
-            <View style={styles.flex}>
-              <Text variant="bodyStrong">AI Glossary</Text>
-              <Text variant="caption" color="textSecondary">
-                Look up any term — in plain words and technical detail
-              </Text>
-            </View>
-            <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
-          </View>
-        </Card>
+          </Card>
+        </Padded>
 
         {/* Recent Activity */}
-        <View>
+        <Padded>
           <SectionTitle title="Recent Activity" />
           {activity.length === 0 ? (
             <EmptyState
@@ -238,26 +335,29 @@ export const HomeScreen: React.FC = () => {
             activity.map(a => (
               <ActivityRow
                 key={a.id}
-                item={{
-                  id: a.id,
-                  label: a.label,
-                  detail: a.detail,
-                  icon: a.icon,
-                }}
+                item={{ id: a.id, label: a.label, detail: a.detail, icon: a.icon }}
               />
             ))
           )}
-        </View>
+        </Padded>
       </ScrollView>
     </SafeAreaView>
   );
 };
 
+/** Horizontal page padding for non-carousel content (carousels bleed edge-to-edge). */
+const Padded: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { spacing } = useTheme();
+  return <View style={{ paddingHorizontal: spacing.lg }}>{children}</View>;
+};
+
 const styles = StyleSheet.create({
   fill: { flex: 1 },
   flex: { flex: 1 },
-  glossaryRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  content: { width: '100%', alignSelf: 'center' },
   glossaryIcon: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  activityIcon: { width: 48, height: 48, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  rowGap: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   headerRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   brandMark: { borderRadius: 10 },
   stats: { flexDirection: 'row', alignItems: 'center' },

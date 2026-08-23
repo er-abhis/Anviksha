@@ -13,6 +13,7 @@ import {
   questionsForWorld,
   quizForLesson,
   varyQuestion,
+  dailySpotlight,
 } from '../index';
 import { ChoiceQuestion } from '../types';
 
@@ -92,6 +93,39 @@ describe('quiz variation (Phase 5)', () => {
     const freshIds = pool.filter(id => !recent.includes(id));
     // With exactly 3 fresh and count 3, all picks must be the fresh ones.
     expect(new Set(picked)).toEqual(new Set(freshIds));
+  });
+});
+
+describe('question media (Phase 6)', () => {
+  it('attaches concept icons only where a concept clearly matches', () => {
+    const withMedia = QUESTIONS.filter(q => q.media);
+    // Some questions get an icon, but not (nearly) all — it must stay selective.
+    expect(withMedia.length).toBeGreaterThan(0);
+    expect(withMedia.length).toBeLessThan(QUESTIONS.length);
+    // Every attached media has an icon + non-empty alt text (accessibility).
+    for (const q of withMedia) {
+      expect(q.media!.icon).toBeTruthy();
+      expect(q.media!.alt.length).toBeGreaterThan(0);
+    }
+  });
+});
+
+describe('daily spotlight (Phase 8)', () => {
+  it('is deterministic per date', () => {
+    const a = dailySpotlight('2026-08-23', {});
+    const b = dailySpotlight('2026-08-23', {});
+    expect(a).toEqual(b);
+    expect(a.title.length).toBeGreaterThan(0);
+  });
+
+  it('rotates content across a run of dates', () => {
+    const kinds = new Set<string>();
+    for (let d = 1; d <= 20; d++) {
+      const iso = `2026-09-${String(d).padStart(2, '0')}`;
+      kinds.add(dailySpotlight(iso, {}).kind);
+    }
+    // Over 20 days it should surface more than one kind of spotlight.
+    expect(kinds.size).toBeGreaterThan(1);
   });
 });
 

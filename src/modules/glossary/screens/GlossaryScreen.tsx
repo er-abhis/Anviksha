@@ -7,24 +7,49 @@ import { useTheme } from '../../../theme/ThemeProvider';
 import { useAchievementsStore } from '../../../store';
 import { GLOSSARY, GlossaryTerm, glossaryTerm } from '../../../content';
 
+/** Rotating hints shown as the placeholder — only while the field is idle. */
+const SEARCH_HINTS = [
+  'Try: What is AGI?',
+  'Search for machine learning',
+  'Explore generative AI',
+  'Learn about neural networks',
+  'What’s an AI agent?',
+];
+
 export const GlossaryScreen: React.FC = () => {
   const { colors, radius, spacing } = useTheme();
   const navigation = useNavigation();
   const unlock = useAchievementsStore(s => s.unlock);
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState<string | null>(null);
+  const [focused, setFocused] = useState(false);
+  const [hint, setHint] = useState(0);
 
   useEffect(() => {
     unlock('glossary-curious', Date.now());
   }, [unlock]);
 
+  // Cycle the hint index; the display gate below keeps it static while typing.
+  useEffect(() => {
+    const id = setInterval(() => setHint(h => h + 1), 3500);
+    return () => clearInterval(id);
+  }, []);
+
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return GLOSSARY;
     return GLOSSARY.filter(
-      t => t.name.toLowerCase().includes(q) || t.simple.toLowerCase().includes(q),
+      t =>
+        t.name.toLowerCase().includes(q) ||
+        t.simple.toLowerCase().includes(q) ||
+        t.technical.toLowerCase().includes(q),
     );
   }, [query]);
+
+  // Rotate only when idle — never while the user is focused or typing.
+  const idle = !focused && query.length === 0;
+  const placeholder = idle ? SEARCH_HINTS[hint % SEARCH_HINTS.length] : 'Search terms…';
+  const suggestions = GLOSSARY.slice(0, 6);
 
   return (
     <Screen scroll contentContainerStyle={{ gap: spacing.md }}>
@@ -35,10 +60,13 @@ export const GlossaryScreen: React.FC = () => {
         <TextInput
           value={query}
           onChangeText={setQuery}
-          placeholder="Search terms…"
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          placeholder={placeholder}
           placeholderTextColor={colors.textTertiary}
           style={[styles.input, { color: colors.text }]}
           autoCorrect={false}
+          accessibilityLabel="Search glossary terms"
         />
         {query.length > 0 && (
           <Pressable onPress={() => setQuery('')} hitSlop={8}>
@@ -48,9 +76,28 @@ export const GlossaryScreen: React.FC = () => {
       </View>
 
       {results.length === 0 ? (
-        <Text variant="body" color="textSecondary" center style={{ marginTop: spacing.xl }}>
-          No terms match “{query}”.
-        </Text>
+        <View style={{ marginTop: spacing.xl, gap: spacing.md }}>
+          <Text variant="body" color="textSecondary" center>
+            No terms match “{query}”. Try one of these:
+          </Text>
+          <View style={styles.suggestRow}>
+            {suggestions.map(t => (
+              <Pressable
+                key={t.slug}
+                onPress={() => {
+                  setQuery(t.name);
+                  setOpen(t.slug);
+                }}
+                style={[styles.suggestChip, { borderColor: colors.border, borderRadius: radius.pill }]}
+                accessibilityRole="button"
+                accessibilityLabel={`Show ${t.name}`}
+              >
+                <Icon name={t.icon} size={14} color={colors.primary} />
+                <Text variant="caption" color="primary">{t.name}</Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
       ) : (
         results.map(term => (
           <TermCard
@@ -128,6 +175,8 @@ const Field: React.FC<{ label: string; value: string }> = ({ label, value }) => 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   search: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, height: 44 },
+  suggestRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center' },
+  suggestChip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, paddingVertical: 7, borderWidth: 1 },
   input: { flex: 1, fontSize: 15, paddingVertical: 0 },
   termHead: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   termIcon: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },

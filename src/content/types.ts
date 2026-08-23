@@ -69,6 +69,23 @@ export type QuestionType =
   | 'match'
   | 'order';
 
+/**
+ * Optional visual for a question. Kept source-agnostic so the same component
+ * serves offline icons today and real images later without touching callers.
+ * `icon` = an Ionicons glyph (offline, zero-weight); `uri`/`local` = a real
+ * image with graceful fallback. `alt` is required for accessibility.
+ */
+export interface QuestionMedia {
+  /** Ionicons name — the offline-safe default illustration. */
+  icon?: string;
+  /** Remote image URL (falls back to the icon/placeholder if unavailable). */
+  uri?: string;
+  /** Bundled asset via require(). */
+  local?: number;
+  /** Accessible description of the visual. Always required. */
+  alt: string;
+}
+
 interface QuestionMeta {
   id: string;
   worldId: string;
@@ -76,6 +93,8 @@ interface QuestionMeta {
   difficulty: Difficulty;
   topic: string;
   prompt: string;
+  /** Optional visual that supports understanding — never decorative. */
+  media?: QuestionMedia;
   /** Shown after the learner answers — this is where the teaching happens. */
   explanation: string;
 }

@@ -1,14 +1,17 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+// ponytail: gesture-handler v3 deprecates the Gesture.Pan() builder in favour
+// of a new hook API (usePanGesture). The builder is stable until the next
+// major; migrate when that API is documented and device-verifiable.
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
-  runOnJS,
   SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
+import { runOnJS } from 'react-native-worklets';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useTheme } from '../theme/ThemeProvider';
 import { usePreferencesStore } from '../store';
@@ -126,6 +129,9 @@ const Row: React.FC<RowProps> = ({
 
   const top = useSharedValue(indexOf(positions, item) * ROW_HEIGHT);
   const dragging = useSharedValue(false);
+  // Slot position captured at drag start; the card tracks finger from here so
+  // it never jumps when the underlying ordering shifts mid-drag.
+  const startTop = useSharedValue(0);
 
   // Follow this row's slot when the ordering changes (unless we're dragging it).
   useAnimatedReaction(
@@ -149,10 +155,13 @@ const Row: React.FC<RowProps> = ({
     .onStart(() => {
       dragging.value = true;
       active.value = true;
+      startTop.value = slot() * ROW_HEIGHT;
     })
     .onUpdate(e => {
+      // Track the finger from the captured start — never from the live slot,
+      // which shifts as rows reorder underneath.
+      top.value = startTop.value + e.translationY;
       const from = slot();
-      top.value = from * ROW_HEIGHT + e.translationY;
       const newSlot = Math.max(0, Math.min(count - 1, Math.round(top.value / ROW_HEIGHT)));
       if (newSlot !== from) {
         positions.value = objectMove(positions.value, from, newSlot);
