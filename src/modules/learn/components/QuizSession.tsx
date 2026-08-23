@@ -125,6 +125,17 @@ export const QuizSession: React.FC<Props> = ({
   }
 
   const q = questions[idx];
+  // Defensive: an empty/exhausted set must never crash the renderer.
+  if (!q) {
+    return (
+      <View style={[styles.fill, styles.emptyCenter]}>
+        <Text variant="body" color="textSecondary" center>
+          No questions available right now.
+        </Text>
+        <Button label="Go back" variant="secondary" onPress={onExit} style={{ marginTop: spacing.lg }} />
+      </View>
+    );
+  }
   return (
     <View style={styles.fill}>
       <View style={{ padding: spacing.lg, gap: spacing.sm }}>
@@ -503,6 +514,7 @@ const styles = StyleSheet.create({
   offscreen: { position: 'absolute', left: -9999, top: 0 },
   fill: { flex: 1 },
   flex: { flex: 1 },
+  emptyCenter: { alignItems: 'center', justifyContent: 'center', padding: 24 },
   progressRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   typeTag: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
   option: { flexDirection: 'row', alignItems: 'center', gap: 8, padding: 14, borderWidth: 1 },

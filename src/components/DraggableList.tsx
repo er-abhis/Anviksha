@@ -141,8 +141,12 @@ const Row: React.FC<RowProps> = ({
 
   const slot = () => {
     'worklet';
-    const e = Object.entries(positions.value).find(([, v]) => v === item);
-    return e ? Number(e[0]) : 0;
+    // Plain for-in loop — most worklet-safe way to read the shared map on the UI thread.
+    const map = positions.value;
+    for (const key in map) {
+      if (map[key] === item) return Number(key);
+    }
+    return 0;
   };
 
   const top = useSharedValue(indexOf(positions, item) * ROW_HEIGHT);
