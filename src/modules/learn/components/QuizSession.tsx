@@ -382,7 +382,7 @@ const Results: React.FC<{
 
   // Capture the branded card off-screen and share it as an image (reaches
   // image-first apps too); fall back to text-only if capture fails.
-  const shotRef = useRef<React.ElementRef<typeof ViewShot>>(null);
+  const shotRef = useRef<React.ComponentRef<typeof ViewShot>>(null);
   const onSharePress = async () => {
     let uri: string | undefined;
     try {

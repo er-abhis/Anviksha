@@ -11,6 +11,8 @@ import {
   isWorldUnlocked,
   lessonsForWorld,
   questionsForWorld,
+  quizForLesson,
+  varyQuestion,
 } from '../index';
 import { ChoiceQuestion } from '../types';
 
@@ -58,6 +60,38 @@ describe('content integrity', () => {
       const n = QUESTIONS.filter(q => q.lessonId === l.id).length;
       expect(n).toBeGreaterThanOrEqual(5);
     }
+  });
+});
+
+describe('quiz variation (Phase 5)', () => {
+  it('shuffling a choice question keeps the correct answer correct', () => {
+    const choice = QUESTIONS.find(
+      q => q.type === 'multiple-choice',
+    ) as ChoiceQuestion;
+    const originalAnswer = choice.options[choice.correctIndex];
+    for (let seed = 1; seed <= 20; seed++) {
+      const v = varyQuestion(choice, seed) as ChoiceQuestion;
+      // Same options (a permutation) and the answer still points at the right text.
+      expect([...v.options].sort()).toEqual([...choice.options].sort());
+      expect(v.options[v.correctIndex]).toBe(originalAnswer);
+    }
+  });
+
+  it('true/false questions keep their natural order', () => {
+    const tf = QUESTIONS.find(q => q.type === 'true-false') as ChoiceQuestion;
+    const v = varyQuestion(tf, 7) as ChoiceQuestion;
+    expect(v.options).toEqual(tf.options);
+    expect(v.correctIndex).toBe(tf.correctIndex);
+  });
+
+  it('prefers questions not in the recent history', () => {
+    const lesson = LESSONS[0];
+    const pool = QUESTIONS.filter(q => q.lessonId === lesson.id).map(q => q.id);
+    const recent = pool.slice(0, pool.length - 3); // only 3 left "fresh"
+    const picked = quizForLesson(lesson.id, 3, recent).map(q => q.id);
+    const freshIds = pool.filter(id => !recent.includes(id));
+    // With exactly 3 fresh and count 3, all picks must be the fresh ones.
+    expect(new Set(picked)).toEqual(new Set(freshIds));
   });
 });
 

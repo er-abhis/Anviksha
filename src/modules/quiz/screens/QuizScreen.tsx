@@ -20,6 +20,14 @@ import {
   QuizSession,
 } from '../../learn/components/QuizSession';
 import { buildAchievementMessage } from '../../../utils/appLinks';
+import { getRecentQuestionIds, pushRecentQuestionIds } from '../../../utils/quizHistory';
+
+/** Draw a quiz that avoids recently-seen questions, then record what was shown. */
+const loadQuiz = (lessonId: string) => {
+  const qs = quizForLesson(lessonId, 8, getRecentQuestionIds());
+  pushRecentQuestionIds(qs.map(q => q.id));
+  return qs;
+};
 
 export const QuizScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -28,7 +36,7 @@ export const QuizScreen: React.FC = () => {
 
   const [attempt, setAttempt] = useState(0);
   const [questions, setQuestions] = useState(() =>
-    lesson ? quizForLesson(lesson.id) : [],
+    lesson ? loadQuiz(lesson.id) : [],
   );
 
   const store = useProgressStore();
@@ -78,7 +86,7 @@ export const QuizScreen: React.FC = () => {
   };
 
   const retry = () => {
-    setQuestions(quizForLesson(lesson.id));
+    setQuestions(loadQuiz(lesson.id));
     setAttempt(a => a + 1);
   };
 

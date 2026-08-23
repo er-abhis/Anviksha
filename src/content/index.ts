@@ -220,11 +220,47 @@ const seededShuffle = <T>(arr: T[], seed: number): T[] => {
 /* eslint-enable no-bitwise */
 
 /* -------------------- lesson quiz -------------------- */
-/** A random subset for a lesson quiz (fresh each attempt so retries vary). */
-export const quizForLesson = (lessonId: string, count = 8): Question[] => {
+/**
+ * Present a question differently without changing its meaning: shuffle the
+ * answer order (choice questions) or the pair order (match) so a repeated
+ * question never looks identical and answer position can't be memorised.
+ * True/false keeps its natural order; ordering questions vary via the UI.
+ */
+export const varyQuestion = (q: Question, seed: number): Question => {
+  if (q.type === 'match') {
+    return { ...q, pairs: seededShuffle(q.pairs, seed) };
+  }
+  if (q.type === 'order' || q.type === 'true-false') return q;
+  // Choice family — permute options and follow the correct answer to its new slot.
+  const perm = seededShuffle(q.options.map((_, i) => i), seed);
+  return {
+    ...q,
+    options: perm.map(i => q.options[i]),
+    correctIndex: perm.indexOf(q.correctIndex),
+  };
+};
+
+/**
+ * Build a lesson quiz that actually feels different each attempt:
+ *  - prefers questions NOT in `recentIds` (the recent-history buffer), so the
+ *    same questions don't recur until the lesson's pool is exhausted;
+ *  - falls back to recently-seen ones only to fill the count;
+ *  - shuffles answer order per question per attempt.
+ * Fully offline and deterministic-per-seed; no API involved.
+ */
+export const quizForLesson = (
+  lessonId: string,
+  count = 8,
+  recentIds: string[] = [],
+): Question[] => {
   const all = questionsForLesson(lessonId);
-  const seed = hashString(lessonId + Math.floor(Math.random() * 1e9));
-  return seededShuffle(all, seed).slice(0, Math.min(count, all.length));
+  if (all.length === 0) return [];
+  const salt = Math.floor(Math.random() * 1e9);
+  const recent = new Set(recentIds);
+  const fresh = seededShuffle(all.filter(q => !recent.has(q.id)), hashString(lessonId + 'f' + salt));
+  const stale = seededShuffle(all.filter(q => recent.has(q.id)), hashString(lessonId + 's' + salt));
+  const picked = [...fresh, ...stale].slice(0, Math.min(count, all.length));
+  return picked.map(q => varyQuestion(q, hashString(q.id + salt)));
 };
 
 /* -------------------- daily challenge -------------------- */
