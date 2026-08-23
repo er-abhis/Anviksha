@@ -7,12 +7,18 @@ import { RootStackParamList } from '../../../navigation/types';
 import { useAchievementsStore, useProgressStore } from '../../../store';
 import {
   PASS_THRESHOLD,
+  WORLDS,
   getLesson,
   isWorldComplete,
+  lessonsForWorld,
   quizForLesson,
   worldCompleteBadge,
 } from '../../../content';
-import { QuizResult, QuizSession } from '../../learn/components/QuizSession';
+import {
+  CompletionInfo,
+  QuizResult,
+  QuizSession,
+} from '../../learn/components/QuizSession';
 
 export const QuizScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -75,6 +81,64 @@ export const QuizScreen: React.FC = () => {
     setAttempt(a => a + 1);
   };
 
+  /**
+   * "What's next" after a pass, derived entirely from the lesson/world data:
+   *  - another chapter in this world  → Next chapter
+   *  - last chapter of this world      → Next world
+   *  - last chapter of the last world  → Explore worlds
+   */
+  const buildCompletion = (): CompletionInfo => {
+    const learned = lesson.keyTakeaways.slice(0, 4);
+    const siblings = lessonsForWorld(lesson.worldId);
+    const idx = siblings.findIndex(l => l.id === lesson.id);
+    const nextChapter = siblings[idx + 1];
+    if (nextChapter) {
+      return {
+        title: lesson.title,
+        learned,
+        primary: {
+          label: 'Next chapter',
+          onPress: () => navigation.replace('LessonIntro', { lessonId: nextChapter.id }),
+        },
+        secondary: {
+          label: 'View chapters',
+          onPress: () => navigation.replace('WorldDetail', { worldId: lesson.worldId }),
+        },
+      };
+    }
+
+    const worldsOrdered = [...WORLDS].sort((a, b) => a.order - b.order);
+    const wIdx = worldsOrdered.findIndex(w => w.id === lesson.worldId);
+    const nextWorld = worldsOrdered[wIdx + 1];
+    if (nextWorld) {
+      return {
+        title: lesson.title,
+        learned,
+        primary: {
+          label: 'Next world',
+          onPress: () => navigation.replace('WorldDetail', { worldId: nextWorld.id }),
+        },
+        secondary: {
+          label: 'View all worlds',
+          onPress: () => navigation.replace('Worlds'),
+        },
+      };
+    }
+
+    return {
+      title: lesson.title,
+      learned,
+      primary: {
+        label: 'Explore worlds',
+        onPress: () => navigation.replace('Worlds'),
+      },
+      secondary: {
+        label: 'Review progress',
+        onPress: () => navigation.navigate('Main', { screen: 'Profile' }),
+      },
+    };
+  };
+
   return (
     <Screen padded={false} edges={['top']}>
       <Header title={lesson.title} onBack={() => navigation.goBack()} />
@@ -87,6 +151,7 @@ export const QuizScreen: React.FC = () => {
           onComplete={onComplete}
           onExit={() => navigation.goBack()}
           onRetry={retry}
+          completion={buildCompletion()}
         />
       </View>
     </Screen>

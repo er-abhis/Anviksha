@@ -14,6 +14,27 @@ export interface QuizResult {
   coins: number;
 }
 
+export interface CompletionAction {
+  label: string;
+  onPress: () => void;
+}
+
+/**
+ * Context-aware "what's next" for a passed lesson quiz. The parent computes it
+ * from the real lesson/world structure (never hardcoded) and passes it in.
+ * When absent (e.g. daily challenge) Results falls back to Try again + Continue.
+ */
+export interface CompletionInfo {
+  /** Title of the chapter/lesson just completed. */
+  title: string;
+  /** A short list of what the learner just covered (key takeaways). */
+  learned?: string[];
+  /** Dominant CTA — the recommended next step (Next chapter / world / explore). */
+  primary: CompletionAction;
+  /** Softer alternative (view chapters / all worlds / review progress). */
+  secondary?: CompletionAction;
+}
+
 interface Props {
   questions: Question[];
   /** 0..1. Use 0 for no pass gate (daily challenge). */
@@ -23,6 +44,8 @@ interface Props {
   onComplete: (r: QuizResult) => void;
   onExit: () => void;
   onRetry?: () => void;
+  /** Shown on a passed result. Absent → generic Continue behaviour. */
+  completion?: CompletionInfo;
 }
 
 const TYPE_LABEL: Record<Question['type'], string> = {
@@ -42,6 +65,7 @@ export const QuizSession: React.FC<Props> = ({
   onComplete,
   onExit,
   onRetry,
+  completion,
 }) => {
   const { colors, spacing } = useTheme();
   const [idx, setIdx] = useState(0);
@@ -83,6 +107,7 @@ export const QuizSession: React.FC<Props> = ({
         coins={coins}
         onExit={onExit}
         onRetry={onRetry}
+        completion={completion}
       />
     );
   }
@@ -332,10 +357,13 @@ const Results: React.FC<{
   coins: number;
   onExit: () => void;
   onRetry?: () => void;
-}> = ({ correct, total, accuracy, passed, gated, xp, coins, onExit, onRetry }) => {
+  completion?: CompletionInfo;
+}> = ({ correct, total, accuracy, passed, gated, xp, coins, onExit, onRetry, completion }) => {
   const { colors, spacing } = useTheme();
   const pct = Math.round(accuracy * 100);
   const good = !gated || passed;
+  // Context-aware completion only makes sense on a genuine pass.
+  const showNext = good && !!completion;
 
   return (
     <ScrollView contentContainerStyle={{ padding: spacing.lg, gap: spacing.lg }}>
@@ -346,8 +374,13 @@ const Results: React.FC<{
           <Text variant="label" color="textSecondary">accuracy</Text>
         </View>
         <Text variant="h2" center style={{ marginTop: spacing.md }}>
-          {gated ? (passed ? 'Lesson passed!' : 'Almost there') : 'Challenge complete!'}
+          {gated ? (passed ? 'Chapter complete!' : 'Almost there') : 'Challenge complete!'}
         </Text>
+        {showNext && (
+          <Text variant="body" color="textSecondary" center style={{ marginTop: spacing.xs }}>
+            {`You completed “${completion!.title}”`}
+          </Text>
+        )}
         {good && (
           <Text variant="body" color="primary" center style={{ marginTop: spacing.xs }}>
             {praise(accuracy)}
@@ -368,10 +401,43 @@ const Results: React.FC<{
         <Row label="Coins earned" value={good ? `+${coins}` : '0'} color={colors.coins} />
       </Card>
 
-      {onRetry && (!gated || !passed) && (
-        <Button label="Try again" variant="secondary" onPress={onRetry} />
+      {showNext && !!completion!.learned?.length && (
+        <Card elevation="sm">
+          <View style={styles.explRow}>
+            <Icon name="sparkles" size={18} color={colors.primary} />
+            <Text variant="bodyStrong">What you learned</Text>
+          </View>
+          <View style={{ gap: spacing.xs, marginTop: spacing.sm }}>
+            {completion!.learned!.map(k => (
+              <View key={k} style={styles.itemRow}>
+                <Icon name="checkmark" size={15} color={colors.success} style={{ marginTop: 3 }} />
+                <Text variant="body" color="textSecondary" style={styles.flex}>{k}</Text>
+              </View>
+            ))}
+          </View>
+        </Card>
       )}
-      <Button label={good ? 'Continue' : 'Back'} onPress={onExit} />
+
+      {showNext ? (
+        <View style={{ gap: spacing.sm }}>
+          <Button
+            label={completion!.primary.label}
+            onPress={completion!.primary.onPress}
+            right={<Icon name="arrow-forward" size={18} color={colors.onPrimary} />}
+          />
+          {completion!.secondary && (
+            <Button label={completion!.secondary.label} variant="secondary" onPress={completion!.secondary.onPress} />
+          )}
+          {onRetry && <Button label="Retake quiz" variant="ghost" onPress={onRetry} />}
+        </View>
+      ) : (
+        <View style={{ gap: spacing.sm }}>
+          {onRetry && (!gated || !passed) && (
+            <Button label="Try again" variant="secondary" onPress={onRetry} />
+          )}
+          <Button label={good ? 'Continue' : 'Back'} onPress={onExit} />
+        </View>
+      )}
     </ScrollView>
   );
 };
