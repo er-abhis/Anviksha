@@ -9,7 +9,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import ViewShot from 'react-native-view-shot';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { AchievementCard, Button, Card, Confetti, ProgressBar, Text } from '../../../components';
+import { AchievementCard, Button, Card, Confetti, DraggableList, ProgressBar, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { usePreferencesStore } from '../../../store';
 import { shareAchievement } from '../../../utils/appLinks';
@@ -307,37 +307,28 @@ const OrderView: React.FC<{ question: OrderQuestion; onNext: (c: boolean) => voi
   question,
   onNext,
 }) => {
-  const { colors, radius, spacing } = useTheme();
+  const { spacing } = useTheme();
   const n = question.items.length;
   const [order, setOrder] = useState<string[]>(question.items.map((_, i) => question.items[(i + 1) % n]));
   const [checked, setChecked] = useState(false);
   const correct = order.every((s, i) => s === question.items[i]);
 
-  const move = (i: number, dir: -1 | 1) => {
-    const j = i + dir;
-    if (j < 0 || j >= n) return;
-    const nx = [...order];
-    [nx[i], nx[j]] = [nx[j], nx[i]];
-    setOrder(nx);
-    setChecked(false);
-  };
-
   return (
     <View style={{ gap: spacing.sm }}>
-      {order.map((item, i) => (
-        <View key={item} style={[styles.orderRow, { borderRadius: radius.md, borderColor: colors.border, backgroundColor: colors.surface }]}>
-          <View style={[styles.stepNum, { backgroundColor: colors.surfaceAlt, borderRadius: radius.sm }]}>
-            <Text variant="label" color="textSecondary">{i + 1}</Text>
-          </View>
-          <Text variant="body" style={styles.flex}>{item}</Text>
-          <Pressable hitSlop={6} disabled={i === 0} onPress={() => move(i, -1)}>
-            <Icon name="chevron-up" size={20} color={i === 0 ? colors.textTertiary : colors.text} />
-          </Pressable>
-          <Pressable hitSlop={6} disabled={i === n - 1} onPress={() => move(i, 1)}>
-            <Icon name="chevron-down" size={20} color={i === n - 1 ? colors.textTertiary : colors.text} />
-          </Pressable>
-        </View>
-      ))}
+      <Text variant="caption" color="textTertiary">Long-press a card, then drag to reorder.</Text>
+      <DraggableList
+        items={order}
+        disabled={checked}
+        onChange={next => {
+          setOrder(next);
+          setChecked(false);
+        }}
+        rowStatus={
+          checked
+            ? (item, i) => (question.items[i] === item ? 'correct' : 'wrong')
+            : undefined
+        }
+      />
       {!checked ? (
         <Button label="Check order" onPress={() => setChecked(true)} />
       ) : (
@@ -518,8 +509,6 @@ const styles = StyleSheet.create({
   itemRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   chipWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   matchChip: { paddingHorizontal: 10, paddingVertical: 6, borderWidth: 1 },
-  orderRow: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 12, borderWidth: 1 },
-  stepNum: { width: 26, height: 26, alignItems: 'center', justifyContent: 'center' },
   resultHead: { alignItems: 'center' },
   resultRing: { width: 140, height: 140, borderRadius: 70, borderWidth: 6, alignItems: 'center', justifyContent: 'center' },
   statRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },

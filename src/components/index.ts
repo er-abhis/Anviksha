@@ -28,3 +28,5 @@ export { Confetti } from './Confetti';
 export type { ConfettiProps } from './Confetti';
 export { AchievementCard } from './AchievementCard';
 export type { AchievementCardProps } from './AchievementCard';
+export { DraggableList } from './DraggableList';
+export type { DraggableListProps } from './DraggableList';

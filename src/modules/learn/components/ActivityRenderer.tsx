@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Card, ProgressBar, Text } from '../../../components';
+import { Card, DraggableList, ProgressBar, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import {
   Activity,
@@ -204,7 +204,7 @@ const StepBtn: React.FC<{ icon: string; onPress: () => void }> = ({ icon, onPres
 
 /* ------------------------------- Steps ------------------------------ */
 const Steps: React.FC<{ config: StepsConfig }> = ({ config }) => {
-  const { colors, radius, spacing } = useTheme();
+  const { spacing } = useTheme();
   // Deterministic derangement (rotate by 1) so it never starts already-solved.
   const n = config.steps.length;
   const [order, setOrder] = useState<string[]>(
@@ -213,41 +213,22 @@ const Steps: React.FC<{ config: StepsConfig }> = ({ config }) => {
   const [checked, setChecked] = useState(false);
   const correct = order.every((s, i) => s === config.steps[i]);
 
-  const move = (i: number, dir: -1 | 1) => {
-    const j = i + dir;
-    if (j < 0 || j >= order.length) return;
-    const next = [...order];
-    [next[i], next[j]] = [next[j], next[i]];
-    setOrder(next);
-    setChecked(false);
-  };
-
   return (
     <View style={{ gap: spacing.sm }}>
-      {order.map((step, i) => (
-        <View
-          key={step}
-          style={[
-            styles.stepRow,
-            {
-              borderRadius: radius.md,
-              borderColor: checked ? (correct ? colors.success : colors.border) : colors.border,
-              backgroundColor: colors.surface,
-            },
-          ]}
-        >
-          <View style={[styles.stepNum, { backgroundColor: colors.surfaceAlt, borderRadius: radius.sm }]}>
-            <Text variant="label" color="textSecondary">{i + 1}</Text>
-          </View>
-          <Text variant="body" style={styles.flex}>{step}</Text>
-          <Pressable hitSlop={6} disabled={i === 0} onPress={() => move(i, -1)}>
-            <Icon name="chevron-up" size={20} color={i === 0 ? colors.textTertiary : colors.text} />
-          </Pressable>
-          <Pressable hitSlop={6} disabled={i === order.length - 1} onPress={() => move(i, 1)}>
-            <Icon name="chevron-down" size={20} color={i === order.length - 1 ? colors.textTertiary : colors.text} />
-          </Pressable>
-        </View>
-      ))}
+      <Text variant="caption" color="textTertiary">Long-press a step, then drag to arrange.</Text>
+      <DraggableList
+        items={order}
+        disabled={checked}
+        onChange={next => {
+          setOrder(next);
+          setChecked(false);
+        }}
+        rowStatus={
+          checked
+            ? (item, i) => (config.steps[i] === item ? 'correct' : 'wrong')
+            : undefined
+        }
+      />
       <ActionRow
         checked={checked}
         canCheck
@@ -311,8 +292,6 @@ const styles = StyleSheet.create({
   stepper: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   stopBox: { flex: 1, padding: 12, gap: 2 },
   stepBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
-  stepRow: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 12, borderWidth: 1 },
-  stepNum: { width: 26, height: 26, alignItems: 'center', justifyContent: 'center' },
   actionRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   smallBtn: { paddingHorizontal: 14, paddingVertical: 8, borderWidth: 1 },
 });
