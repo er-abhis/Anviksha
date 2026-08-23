@@ -1,8 +1,18 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
+import ViewShot from 'react-native-view-shot';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Button, Card, Confetti, ProgressBar, Text } from '../../../components';
+import { AchievementCard, Button, Card, Confetti, ProgressBar, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
+import { usePreferencesStore } from '../../../store';
+import { shareAchievement } from '../../../utils/appLinks';
 import { ChoiceQuestion, MatchQuestion, OrderQuestion, Question } from '../../../content';
 
 export interface QuizResult {
@@ -33,6 +43,8 @@ export interface CompletionInfo {
   primary: CompletionAction;
   /** Softer alternative (view chapters / all worlds / review progress). */
   secondary?: CompletionAction;
+  /** Caption for the share sheet. Presence enables the Share button. */
+  shareMessage?: string;
 }
 
 interface Props {
@@ -360,19 +372,46 @@ const Results: React.FC<{
   completion?: CompletionInfo;
 }> = ({ correct, total, accuracy, passed, gated, xp, coins, onExit, onRetry, completion }) => {
   const { colors, spacing } = useTheme();
+  const reducedMotion = usePreferencesStore(s => s.reducedMotion);
   const pct = Math.round(accuracy * 100);
   const good = !gated || passed;
   // Context-aware completion only makes sense on a genuine pass.
   const showNext = good && !!completion;
 
+  // Short, meaningful entrance: the score ring springs in as results appear.
+  const enter = useSharedValue(reducedMotion ? 1 : 0);
+  useEffect(() => {
+    if (reducedMotion) return;
+    enter.value = withDelay(60, withSpring(1, { damping: 12, stiffness: 140 }));
+  }, [enter, reducedMotion]);
+  const ringStyle = useAnimatedStyle(() => ({
+    opacity: withTiming(enter.value, { duration: 220 }),
+    transform: [{ scale: 0.85 + enter.value * 0.15 }],
+  }));
+
+  // Capture the branded card off-screen and share it as an image (reaches
+  // image-first apps too); fall back to text-only if capture fails.
+  const shotRef = useRef<React.ElementRef<typeof ViewShot>>(null);
+  const onSharePress = async () => {
+    let uri: string | undefined;
+    try {
+      uri = await shotRef.current?.capture?.();
+    } catch {
+      uri = undefined;
+    }
+    await shareAchievement(completion!.shareMessage!, uri);
+  };
+
   return (
     <ScrollView contentContainerStyle={{ padding: spacing.lg, gap: spacing.lg }}>
       {good && <Confetti />}
       <View style={styles.resultHead}>
-        <View style={[styles.resultRing, { borderColor: good ? colors.success : colors.error }]}>
+        <Animated.View
+          style={[styles.resultRing, { borderColor: good ? colors.success : colors.error }, ringStyle]}
+        >
           <Text variant="display" color={good ? 'success' : 'error'}>{`${pct}%`}</Text>
           <Text variant="label" color="textSecondary">accuracy</Text>
-        </View>
+        </Animated.View>
         <Text variant="h2" center style={{ marginTop: spacing.md }}>
           {gated ? (passed ? 'Chapter complete!' : 'Almost there') : 'Challenge complete!'}
         </Text>
@@ -428,6 +467,14 @@ const Results: React.FC<{
           {completion!.secondary && (
             <Button label={completion!.secondary.label} variant="secondary" onPress={completion!.secondary.onPress} />
           )}
+          {!!completion!.shareMessage && (
+            <Button
+              label="Share achievement"
+              variant="ghost"
+              onPress={onSharePress}
+              left={<Icon name="share-social-outline" size={18} color={colors.primary} />}
+            />
+          )}
           {onRetry && <Button label="Retake quiz" variant="ghost" onPress={onRetry} />}
         </View>
       ) : (
@@ -436,6 +483,14 @@ const Results: React.FC<{
             <Button label="Try again" variant="secondary" onPress={onRetry} />
           )}
           <Button label={good ? 'Continue' : 'Back'} onPress={onExit} />
+        </View>
+      )}
+
+      {showNext && !!completion!.shareMessage && (
+        <View style={styles.offscreen} pointerEvents="none">
+          <ViewShot ref={shotRef} options={{ format: 'png', quality: 1 }}>
+            <AchievementCard title={completion!.title} learned={completion!.learned} pct={pct} />
+          </ViewShot>
         </View>
       )}
     </ScrollView>
@@ -453,6 +508,7 @@ const Row: React.FC<{ label: string; value: string; color?: string }> = ({ label
 };
 
 const styles = StyleSheet.create({
+  offscreen: { position: 'absolute', left: -9999, top: 0 },
   fill: { flex: 1 },
   flex: { flex: 1 },
   progressRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },

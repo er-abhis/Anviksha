@@ -34,6 +34,18 @@ jest.mock('react-native-reanimated', () => {
   };
 });
 
+// react-native-share is native — stub the share API used by appLinks.
+jest.mock('react-native-share', () => ({
+  __esModule: true,
+  default: { open: jest.fn(async () => ({ success: true })) },
+}));
+
+// react-native-view-shot is native — stub capture + the ViewShot wrapper.
+jest.mock('react-native-view-shot', () => {
+  const { View } = require('react-native');
+  return { __esModule: true, default: View, captureRef: jest.fn(async () => 'file://mock.png') };
+});
+
 // MMKV is native (Nitro) — back it with an in-memory map for tests.
 jest.mock('react-native-mmkv', () => {
   const store = new Map();

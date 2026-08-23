@@ -1,5 +1,7 @@
 import { Alert, Linking, Share } from 'react-native';
+import RNShare from 'react-native-share';
 import { APP, SHARE_MESSAGE } from '../constants/app';
+import { Lesson } from '../content/types';
 
 /** Web Play Store listing (works in a browser even before the app is live). */
 export const webStoreUrl = (): string =>
@@ -25,6 +27,45 @@ export const openExternal = async (url: string): Promise<void> => {
 export const shareApp = async (): Promise<void> => {
   try {
     await Share.share({ message: `${SHARE_MESSAGE} ${webStoreUrl()}`.trim() });
+  } catch {
+    // User dismissed the sheet, or sharing is unavailable — nothing to do.
+  }
+};
+
+/**
+ * Build the achievement caption from the real lesson — title + what was
+ * learned + Play Store link. Used as the share text (and travels alongside the
+ * image so apps that show both, like WhatsApp, get context under the picture).
+ */
+export const buildAchievementMessage = (lesson: Lesson): string => {
+  const bullets = (lesson.objectives.length ? lesson.objectives : lesson.keyTakeaways)
+    .slice(0, 5)
+    .map(o => `• ${o}`)
+    .join('\n');
+  return (
+    `🎓 I just completed “${lesson.title}” on ${APP.name}.\n\n` +
+    (bullets ? `Here’s what I learned:\n${bullets}\n\n` : '') +
+    `Learn AI the fun way with ${APP.name}:\n${webStoreUrl()}`
+  );
+};
+
+/**
+ * Share an achievement through the native sheet. With an image it reaches
+ * every app including image-first ones (Instagram, Stories); text-only is the
+ * graceful fallback if capture fails. Uses react-native-share so image files
+ * work on Android (core RN Share can't share files there).
+ */
+export const shareAchievement = async (message: string, imageUri?: string): Promise<void> => {
+  try {
+    if (imageUri) {
+      const url =
+        imageUri.startsWith('file://') || imageUri.startsWith('content://')
+          ? imageUri
+          : `file://${imageUri}`;
+      await RNShare.open({ url, message, type: 'image/png', failOnCancel: false });
+    } else {
+      await RNShare.open({ message, failOnCancel: false });
+    }
   } catch {
     // User dismissed the sheet, or sharing is unavailable — nothing to do.
   }

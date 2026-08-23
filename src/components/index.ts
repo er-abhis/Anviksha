@@ -26,3 +26,5 @@ export { Logo } from './Logo';
 export type { LogoProps } from './Logo';
 export { Confetti } from './Confetti';
 export type { ConfettiProps } from './Confetti';
+export { AchievementCard } from './AchievementCard';
+export type { AchievementCardProps } from './AchievementCard';

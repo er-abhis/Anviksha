@@ -19,6 +19,7 @@ import {
   QuizResult,
   QuizSession,
 } from '../../learn/components/QuizSession';
+import { buildAchievementMessage } from '../../../utils/appLinks';
 
 export const QuizScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -89,6 +90,7 @@ export const QuizScreen: React.FC = () => {
    */
   const buildCompletion = (): CompletionInfo => {
     const learned = lesson.keyTakeaways.slice(0, 4);
+    const shareMessage = buildAchievementMessage(lesson);
     const siblings = lessonsForWorld(lesson.worldId);
     const idx = siblings.findIndex(l => l.id === lesson.id);
     const nextChapter = siblings[idx + 1];
@@ -96,6 +98,7 @@ export const QuizScreen: React.FC = () => {
       return {
         title: lesson.title,
         learned,
+        shareMessage,
         primary: {
           label: 'Next chapter',
           onPress: () => navigation.replace('LessonIntro', { lessonId: nextChapter.id }),
@@ -114,6 +117,7 @@ export const QuizScreen: React.FC = () => {
       return {
         title: lesson.title,
         learned,
+        shareMessage,
         primary: {
           label: 'Next world',
           onPress: () => navigation.replace('WorldDetail', { worldId: nextWorld.id }),
