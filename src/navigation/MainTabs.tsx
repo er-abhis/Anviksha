@@ -1,6 +1,6 @@
 import React from 'react';
-import { Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { MainTabParamList } from './types';
 import { useTheme } from '../theme/ThemeProvider';
@@ -20,6 +20,7 @@ const ICONS: Record<keyof MainTabParamList, { on: string; off: string }> = {
 
 export const MainTabs: React.FC = () => {
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
 
   return (
     <Tab.Navigator
@@ -30,8 +31,10 @@ export const MainTabs: React.FC = () => {
         tabBarStyle: {
           backgroundColor: colors.surface,
           borderTopColor: colors.border,
-          height: Platform.OS === 'ios' ? 84 : 64,
-          paddingBottom: Platform.OS === 'ios' ? 28 : 10,
+          // Grow the bar by the real bottom inset so labels never sit under the
+          // Android gesture pill / iOS home indicator.
+          height: 60 + insets.bottom,
+          paddingBottom: insets.bottom + 6,
           paddingTop: 8,
         },
         tabBarLabelStyle: { fontSize: 11, fontWeight: '500' },

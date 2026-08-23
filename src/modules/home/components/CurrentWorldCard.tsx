@@ -19,7 +19,7 @@ export const CurrentWorldCard: React.FC<{
       style={({ pressed }) => pressed && styles.pressed}
     >
       <Gradient colors={data.gradient} style={{ borderRadius: radius.lg }}>
-        <View style={{ padding: spacing.xl }}>
+        <View style={{ padding: spacing.xl, minHeight: 150, justifyContent: 'center' }}>
           <View style={styles.eyebrowRow}>
             <Text variant="label" color="textInverse" style={styles.eyebrow}>
               {eyebrow}

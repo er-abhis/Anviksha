@@ -22,6 +22,9 @@ export type RootStackParamList = {
   LessonIntro: { lessonId: string };
   Lesson: { lessonId: string };
   DailyChallenge: undefined;
+  BuildAI: undefined;
+  WhatToBuild: undefined;
+  LearnMore: undefined;
   Worlds: undefined;
   WorldDetail: { worldId: string };
   Glossary: undefined;

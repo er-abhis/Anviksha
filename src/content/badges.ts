@@ -21,6 +21,18 @@ export const BADGES: Badge[] = [
     icon: 'ribbon',
   },
   {
+    slug: 'builder',
+    title: 'AI Architect',
+    description: 'Build a correct AI architecture in Build the AI.',
+    icon: 'construct',
+  },
+  {
+    slug: 'designer',
+    title: 'AI Designer',
+    description: 'Explore an AI stack in What Would You Build?',
+    icon: 'bulb',
+  },
+  {
     slug: 'streak-3',
     title: '3-Day Streak',
     description: 'Keep a 3-day learning streak.',

@@ -2,6 +2,7 @@ import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {
   Card,
@@ -18,6 +19,7 @@ import { BADGES, LESSONS, WORLDS, isWorldUnlocked } from '../../../content';
 
 export const ProfileScreen: React.FC = () => {
   const { colors, radius, spacing } = useTheme();
+  const tabBarHeight = useBottomTabBarHeight();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
@@ -38,12 +40,13 @@ export const ProfileScreen: React.FC = () => {
   const menu: { icon: string; label: string; onPress: () => void }[] = [
     { icon: 'map-outline', label: 'My Worlds', onPress: () => navigation.navigate('Worlds') },
     { icon: 'book-outline', label: 'AI Glossary', onPress: () => navigation.navigate('Glossary') },
+    { icon: 'library-outline', label: 'Learn More', onPress: () => navigation.navigate('LearnMore') },
     { icon: 'cafe-outline', label: '☕ Buy Me a Coffee', onPress: () => navigation.navigate('Coffee') },
     { icon: 'settings-outline', label: 'Settings', onPress: () => navigation.navigate('Settings') },
   ];
 
   return (
-    <Screen scroll contentContainerStyle={{ gap: spacing.xl }}>
+    <Screen scroll contentContainerStyle={{ gap: spacing.xl, paddingBottom: tabBarHeight + spacing.lg }}>
       <Header
         title="Profile"
         large

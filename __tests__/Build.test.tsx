@@ -1,22 +1,19 @@
 /**
- * Smoke test: the redesigned Home (carousels + sections) must render without
- * throwing. Mounts it inside a real navigator + providers so useNavigation and
- * the stores resolve as they do in the app.
+ * Smoke test: the "Build the AI" game renders inside a navigator without
+ * throwing (drag list, scenario picker, component pool).
  * @format
  */
 import React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
 import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemeProvider } from '../src/theme/ThemeProvider';
-import { HomeScreen } from '../src/modules/home/screens/HomeScreen';
+import { BuildScreen } from '../src/modules/build/screens/BuildScreen';
 
-// Home lives inside the bottom-tab shell (it reads the tab bar height), so the
-// smoke test mounts it the same way.
-const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
-test('Home screen renders', async () => {
+test('Build the AI screen renders', async () => {
   await ReactTestRenderer.act(() => {
     ReactTestRenderer.create(
       <SafeAreaProvider
@@ -27,9 +24,9 @@ test('Home screen renders', async () => {
       >
         <ThemeProvider>
           <NavigationContainer>
-            <Tab.Navigator screenOptions={{ headerShown: false }}>
-              <Tab.Screen name="Home" component={HomeScreen} />
-            </Tab.Navigator>
+            <Stack.Navigator screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="BuildAI" component={BuildScreen} />
+            </Stack.Navigator>
           </NavigationContainer>
         </ThemeProvider>
       </SafeAreaProvider>,

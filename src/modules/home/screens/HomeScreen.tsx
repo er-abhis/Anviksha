@@ -1,10 +1,11 @@
 import React from 'react';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StatusBar, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { useTheme } from '../../../theme/ThemeProvider';
+import { useTheme, useThemeMode } from '../../../theme/ThemeProvider';
 import { useResponsive } from '../../../hooks/useResponsive';
 import { CONTENT_MAX_WIDTH } from '../../../constants/layout';
 import {
@@ -42,7 +43,9 @@ import { ActivityRow } from '../components/ActivityRow';
 
 export const HomeScreen: React.FC = () => {
   const { colors, spacing } = useTheme();
+  const mode = useThemeMode();
   const { isTablet } = useResponsive();
+  const tabBarHeight = useBottomTabBarHeight();
   const openDrawer = useDrawerStore(s => s.show);
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -111,6 +114,10 @@ export const HomeScreen: React.FC = () => {
       edges={['top']}
       style={[styles.fill, { backgroundColor: colors.background }]}
     >
+      <StatusBar
+        barStyle={mode === 'dark' ? 'light-content' : 'dark-content'}
+        backgroundColor={colors.background}
+      />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[
@@ -118,7 +125,7 @@ export const HomeScreen: React.FC = () => {
           {
             paddingVertical: spacing.lg,
             gap: spacing.xxl,
-            paddingBottom: spacing.giant,
+            paddingBottom: tabBarHeight + spacing.lg,
             maxWidth: isTablet ? CONTENT_MAX_WIDTH : undefined,
           },
         ]}
@@ -252,18 +259,15 @@ export const HomeScreen: React.FC = () => {
         {/* 5 — Interactive AI Activity */}
         <Padded>
           <SectionTitle title="Interactive AI Activity" />
-          <Card
-            elevation="md"
-            onPress={() => navigation.navigate('Main', { screen: 'Playground' })}
-          >
+          <Card elevation="md" onPress={() => navigation.navigate('BuildAI')}>
             <View style={styles.rowGap}>
               <View style={[styles.activityIcon, { backgroundColor: colors.primaryMuted }]}>
-                <Icon name="game-controller" size={24} color={colors.primary} />
+                <Icon name="construct" size={24} color={colors.primary} />
               </View>
               <View style={styles.flex}>
-                <Text variant="bodyStrong">Play with AI</Text>
+                <Text variant="bodyStrong">Build the AI</Text>
                 <Text variant="caption" color="textSecondary">
-                  Hands-on simulations — tune, sort, predict and build intuition.
+                  Assemble real AI architectures — drag components into the right pipeline.
                 </Text>
               </View>
               <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
@@ -318,6 +322,24 @@ export const HomeScreen: React.FC = () => {
                 </Text>
               </View>
               <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
+            </View>
+          </Card>
+        </Padded>
+
+        {/* Learn More — external references */}
+        <Padded>
+          <Card elevation="sm" onPress={() => navigation.navigate('LearnMore')}>
+            <View style={styles.rowGap}>
+              <View style={[styles.glossaryIcon, { backgroundColor: colors.primaryMuted }]}>
+                <Icon name="library" size={22} color={colors.primary} />
+              </View>
+              <View style={styles.flex}>
+                <Text variant="bodyStrong">Learn More</Text>
+                <Text variant="caption" color="textSecondary">
+                  Trusted courses, docs and research — opens in your browser
+                </Text>
+              </View>
+              <Icon name="open-outline" size={18} color={colors.textTertiary} />
             </View>
           </Card>
         </Padded>

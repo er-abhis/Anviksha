@@ -2,6 +2,7 @@ import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {
   Card,
@@ -30,6 +31,7 @@ const KIND_META: Record<Activity['kind'], { icon: string; tag: string }> = {
 
 export const PlaygroundScreen: React.FC = () => {
   const { colors, spacing, radius } = useTheme();
+  const tabBarHeight = useBottomTabBarHeight();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const completed = useProgressStore(s => s.completed);
@@ -37,13 +39,45 @@ export const PlaygroundScreen: React.FC = () => {
   const unlockedCount = LESSONS.filter(l => isLessonUnlocked(l, completed)).length;
 
   return (
-    <Screen scroll contentContainerStyle={{ gap: spacing.xl }}>
+    <Screen scroll contentContainerStyle={{ gap: spacing.xl, paddingBottom: tabBarHeight + spacing.lg }}>
       <Header title="Playground" large />
 
       <Text variant="body" color="textSecondary">
         Hands-on mini-sims for every idea in the course. Tap one to experiment —
         no scores, no pressure. {unlockedCount} unlocked so far.
       </Text>
+
+      {/* Featured: Build the AI game */}
+      <Card elevation="md" onPress={() => navigation.navigate('BuildAI')}>
+        <View style={styles.simRow}>
+          <View style={[styles.simIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.md }]}>
+            <Icon name="construct" size={20} color={colors.primary} />
+          </View>
+          <View style={styles.flex}>
+            <Text variant="bodyStrong">Build the AI</Text>
+            <Text variant="caption" color="textSecondary">
+              Assemble real AI architectures from components.
+            </Text>
+          </View>
+          <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
+        </View>
+      </Card>
+
+      {/* Featured: What Would You Build? */}
+      <Card elevation="md" onPress={() => navigation.navigate('WhatToBuild')}>
+        <View style={styles.simRow}>
+          <View style={[styles.simIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.md }]}>
+            <Icon name="bulb" size={20} color={colors.primary} />
+          </View>
+          <View style={styles.flex}>
+            <Text variant="bodyStrong">What Would You Build?</Text>
+            <Text variant="caption" color="textSecondary">
+              Pick components for a goal and reveal the AI stack.
+            </Text>
+          </View>
+          <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
+        </View>
+      </Card>
 
       {/* Quick actions */}
       <View style={[styles.quickRow, { gap: spacing.md }]}>

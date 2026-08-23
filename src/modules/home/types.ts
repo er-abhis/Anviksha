@@ -1,12 +1,5 @@
 /** View-model shapes for Home cards. Real values come from the stores. */
 
-export interface ContinueItem {
-  id: string;
-  title: string;
-  worldTitle: string;
-  progress: number; // 0..1
-}
-
 export interface DailyChallengeMock {
   title: string;
   description: string;

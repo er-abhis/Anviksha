@@ -54,7 +54,9 @@ export const Screen: React.FC<ScreenProps> = ({
       {scroll ? (
         <ScrollView
           style={styles.flex}
-          contentContainerStyle={[inner, contentContainerStyle]}
+          // Default bottom room so content clears the bottom tab bar / Android
+          // gesture nav; callers can still override via contentContainerStyle.
+          contentContainerStyle={[inner, { paddingBottom: spacing.giant }, contentContainerStyle]}
           showsVerticalScrollIndicator={false}
         >
           {children}

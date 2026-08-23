@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 // ponytail: gesture-handler v3 deprecates the Gesture.Pan() builder in favour
 // of a new hook API (usePanGesture). The builder is stable until the next
 // major; migrate when that API is documented and device-verifiable.
@@ -38,6 +38,12 @@ export interface DraggableListProps {
   disabled?: boolean;
   /** Optional per-row correctness tint applied to the row border. */
   rowStatus?: (item: string, index: number) => 'correct' | 'wrong' | undefined;
+  /** Optional display label (items may be ids). Defaults to the item itself. */
+  labelFor?: (item: string) => string;
+  /** Optional leading Ionicons glyph per row. */
+  iconFor?: (item: string) => string;
+  /** When set, a tap-to-remove control is shown on each row. */
+  onRemove?: (item: string) => void;
 }
 
 /** Current slot of an item (works on either thread). */
@@ -65,6 +71,9 @@ export const DraggableList: React.FC<DraggableListProps> = ({
   onChange,
   disabled,
   rowStatus,
+  labelFor,
+  iconFor,
+  onRemove,
 }) => {
   const { spacing } = useTheme();
   const reducedMotion = usePreferencesStore(s => s.reducedMotion);
@@ -92,6 +101,9 @@ export const DraggableList: React.FC<DraggableListProps> = ({
           reducedMotion={reducedMotion}
           status={rowStatus?.(item, indexOf(positions, item))}
           onCommit={onChange}
+          labelFor={labelFor}
+          iconFor={iconFor}
+          onRemove={onRemove}
         />
       ))}
     </View>
@@ -107,6 +119,9 @@ interface RowProps {
   reducedMotion: boolean;
   status?: 'correct' | 'wrong';
   onCommit: (next: string[]) => void;
+  labelFor?: (item: string) => string;
+  iconFor?: (item: string) => string;
+  onRemove?: (item: string) => void;
 }
 
 const Row: React.FC<RowProps> = ({
@@ -118,6 +133,9 @@ const Row: React.FC<RowProps> = ({
   reducedMotion,
   status,
   onCommit,
+  labelFor,
+  iconFor,
+  onRemove,
 }) => {
   const { colors, radius } = useTheme();
 
@@ -205,7 +223,15 @@ const Row: React.FC<RowProps> = ({
           <View style={[styles.badge, { backgroundColor: colors.surfaceAlt, borderRadius: radius.sm }]}>
             <Text variant="label" color="textSecondary">{`${indexOf(positions, item) + 1}`}</Text>
           </View>
-          <Text variant="body" style={styles.flex} numberOfLines={2}>{item}</Text>
+          {iconFor && <Icon name={iconFor(item)} size={18} color={colors.primary} />}
+          <Text variant="body" style={styles.flex} numberOfLines={2}>
+            {labelFor ? labelFor(item) : item}
+          </Text>
+          {onRemove && !disabled && (
+            <Pressable hitSlop={8} onPress={() => onRemove(item)} accessibilityRole="button" accessibilityLabel="Remove">
+              <Icon name="close-circle" size={20} color={colors.textTertiary} />
+            </Pressable>
+          )}
           <Icon
             name="reorder-three"
             size={22}

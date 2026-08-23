@@ -17,6 +17,9 @@ import { SettingsScreen } from '../modules/settings/screens/SettingsScreen';
 import { SimulationsScreen } from '../modules/simulations/screens/SimulationsScreen';
 import { QuizScreen } from '../modules/quiz/screens/QuizScreen';
 import { DailyChallengeScreen } from '../modules/dailyChallenge/screens/DailyChallengeScreen';
+import { BuildScreen } from '../modules/build/screens/BuildScreen';
+import { WhatToBuildScreen } from '../modules/build/screens/WhatToBuildScreen';
+import { LearnMoreScreen } from '../modules/resources/screens/LearnMoreScreen';
 import { WorldsScreen } from '../modules/worlds/screens/WorldsScreen';
 import { WorldDetailScreen } from '../modules/worlds/screens/WorldDetailScreen';
 import { LessonIntroScreen } from '../modules/learn/screens/LessonIntroScreen';
@@ -107,6 +110,21 @@ export const RootNavigator: React.FC = () => {
         <Stack.Screen
           name="DailyChallenge"
           component={DailyChallengeScreen}
+          options={{ animation: 'slide_from_right' }}
+        />
+        <Stack.Screen
+          name="BuildAI"
+          component={BuildScreen}
+          options={{ animation: 'slide_from_right' }}
+        />
+        <Stack.Screen
+          name="WhatToBuild"
+          component={WhatToBuildScreen}
+          options={{ animation: 'slide_from_right' }}
+        />
+        <Stack.Screen
+          name="LearnMore"
+          component={LearnMoreScreen}
           options={{ animation: 'slide_from_right' }}
         />
         <Stack.Screen

@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { Card, EmptyState, Header, Screen, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { useAchievementsStore } from '../../../store';
@@ -8,11 +9,12 @@ import { BADGES } from '../../../content';
 
 export const AchievementsScreen: React.FC = () => {
   const { colors, radius, spacing } = useTheme();
+  const tabBarHeight = useBottomTabBarHeight();
   const unlocked = useAchievementsStore(s => s.unlocked);
   const unlockedCount = BADGES.filter(a => unlocked[a.slug]).length;
 
   return (
-    <Screen scroll contentContainerStyle={{ gap: spacing.md }}>
+    <Screen scroll contentContainerStyle={{ gap: spacing.md, paddingBottom: tabBarHeight + spacing.lg }}>
       <Header title="Achievements" large />
 
       {unlockedCount === 0 ? (
