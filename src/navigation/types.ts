@@ -4,6 +4,7 @@ import { NavigatorScreenParams } from '@react-navigation/native';
 export type MainTabParamList = {
   Home: undefined;
   Playground: undefined;
+  AILab: undefined;
   Achievements: undefined;
   Profile: undefined;
 };
@@ -22,6 +23,19 @@ export type RootStackParamList = {
   LessonIntro: { lessonId: string };
   Lesson: { lessonId: string };
   DailyChallenge: undefined;
+  AILabMission: { missionId: string; projectId?: string };
+  AILabChallenge: { missionId: string; seed?: number };
+  AILabFreeBuild: { category?: string; projectId?: string } | undefined;
+  AILabShowcase: {
+    title: string;
+    emoji: string;
+    components: string[];
+    score: number;
+    xpEarned: number;
+    challengesDone: number;
+    challengesTotal: number;
+    concept: string;
+  };
   BuildAI: undefined;
   WhatToBuild: undefined;
   LearnMore: undefined;

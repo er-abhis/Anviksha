@@ -18,6 +18,10 @@ import { SimulationsScreen } from '../modules/simulations/screens/SimulationsScr
 import { QuizScreen } from '../modules/quiz/screens/QuizScreen';
 import { DailyChallengeScreen } from '../modules/dailyChallenge/screens/DailyChallengeScreen';
 import { BuildScreen } from '../modules/build/screens/BuildScreen';
+import { AILabMissionScreen } from '../modules/ailab/screens/AILabMissionScreen';
+import { AILabChallengeScreen } from '../modules/ailab/screens/AILabChallengeScreen';
+import { AILabFreeBuildScreen } from '../modules/ailab/screens/AILabFreeBuildScreen';
+import { AILabShowcaseScreen } from '../modules/ailab/screens/AILabShowcaseScreen';
 import { WhatToBuildScreen } from '../modules/build/screens/WhatToBuildScreen';
 import { LearnMoreScreen } from '../modules/resources/screens/LearnMoreScreen';
 import { WorldsScreen } from '../modules/worlds/screens/WorldsScreen';
@@ -111,6 +115,26 @@ export const RootNavigator: React.FC = () => {
           name="DailyChallenge"
           component={DailyChallengeScreen}
           options={{ animation: 'slide_from_right' }}
+        />
+        <Stack.Screen
+          name="AILabMission"
+          component={AILabMissionScreen}
+          options={{ animation: 'slide_from_right' }}
+        />
+        <Stack.Screen
+          name="AILabChallenge"
+          component={AILabChallengeScreen}
+          options={{ animation: 'slide_from_bottom' }}
+        />
+        <Stack.Screen
+          name="AILabFreeBuild"
+          component={AILabFreeBuildScreen}
+          options={{ animation: 'slide_from_right' }}
+        />
+        <Stack.Screen
+          name="AILabShowcase"
+          component={AILabShowcaseScreen}
+          options={{ animation: 'slide_from_bottom' }}
         />
         <Stack.Screen
           name="BuildAI"

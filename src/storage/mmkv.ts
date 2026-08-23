@@ -13,6 +13,7 @@ export const StorageKeys = {
   preferences: 'user.preferences',
   progress: 'user.progress',
   achievements: 'user.achievements',
+  ailab: 'user.ailab',
   onboardingComplete: 'app.onboardingComplete',
 } as const;
 

@@ -5,3 +5,4 @@ export { usePreferencesStore } from './preferencesStore';
 export { useProgressStore } from './progressStore';
 export { useAchievementsStore } from './achievementsStore';
 export { useDrawerStore } from './drawerStore';
+export { useAILabStore } from '../modules/ailab/storage/aiLabStore';

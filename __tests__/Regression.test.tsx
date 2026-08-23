@@ -10,6 +10,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ThemeProvider } from '../src/theme/ThemeProvider';
 import { LESSONS, WORLDS } from '../src/content';
 
@@ -26,6 +27,11 @@ import { SettingsScreen } from '../src/modules/settings/screens/SettingsScreen';
 import { PlaygroundScreen } from '../src/modules/playground/screens/PlaygroundScreen';
 import { AchievementsScreen } from '../src/modules/achievements/screens/AchievementsScreen';
 import { ProfileScreen } from '../src/modules/profile/screens/ProfileScreen';
+import { AILabScreen } from '../src/modules/ailab/screens/AILabScreen';
+import { AILabMissionScreen } from '../src/modules/ailab/screens/AILabMissionScreen';
+import { AILabChallengeScreen } from '../src/modules/ailab/screens/AILabChallengeScreen';
+import { AILabFreeBuildScreen } from '../src/modules/ailab/screens/AILabFreeBuildScreen';
+import { AILabShowcaseScreen } from '../src/modules/ailab/screens/AILabShowcaseScreen';
 
 const METRICS = {
   frame: { x: 0, y: 0, width: 390, height: 844 },
@@ -38,15 +44,17 @@ const Tab = createBottomTabNavigator();
 const renderStack = async (name: string, Comp: React.ComponentType<any>, params?: object) => {
   await ReactTestRenderer.act(() => {
     ReactTestRenderer.create(
-      <SafeAreaProvider initialMetrics={METRICS}>
-        <ThemeProvider>
-          <NavigationContainer>
-            <Stack.Navigator screenOptions={{ headerShown: false }}>
-              <Stack.Screen name={name} component={Comp} initialParams={params} />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </ThemeProvider>
-      </SafeAreaProvider>,
+      <GestureHandlerRootView>
+        <SafeAreaProvider initialMetrics={METRICS}>
+          <ThemeProvider>
+            <NavigationContainer>
+              <Stack.Navigator screenOptions={{ headerShown: false }}>
+                <Stack.Screen name={name} component={Comp} initialParams={params} />
+              </Stack.Navigator>
+            </NavigationContainer>
+          </ThemeProvider>
+        </SafeAreaProvider>
+      </GestureHandlerRootView>,
     );
   });
 };
@@ -54,15 +62,17 @@ const renderStack = async (name: string, Comp: React.ComponentType<any>, params?
 const renderTab = async (name: string, Comp: React.ComponentType<any>) => {
   await ReactTestRenderer.act(() => {
     ReactTestRenderer.create(
-      <SafeAreaProvider initialMetrics={METRICS}>
-        <ThemeProvider>
-          <NavigationContainer>
-            <Tab.Navigator screenOptions={{ headerShown: false }}>
-              <Tab.Screen name={name} component={Comp} />
-            </Tab.Navigator>
-          </NavigationContainer>
-        </ThemeProvider>
-      </SafeAreaProvider>,
+      <GestureHandlerRootView>
+        <SafeAreaProvider initialMetrics={METRICS}>
+          <ThemeProvider>
+            <NavigationContainer>
+              <Tab.Navigator screenOptions={{ headerShown: false }}>
+                <Tab.Screen name={name} component={Comp} />
+              </Tab.Navigator>
+            </NavigationContainer>
+          </ThemeProvider>
+        </SafeAreaProvider>
+      </GestureHandlerRootView>,
     );
   });
 };
@@ -84,4 +94,27 @@ describe('screen regression', () => {
   it('renders Playground (tab)', () => renderTab('Playground', PlaygroundScreen));
   it('renders Achievements (tab)', () => renderTab('Achievements', AchievementsScreen));
   it('renders Profile (tab)', () => renderTab('Profile', ProfileScreen));
+
+  // AI Lab — full flow renders without throwing.
+  it('renders AI Lab (tab)', () => renderTab('AILab', AILabScreen));
+  it('renders AILabMission', () =>
+    renderStack('AILabMission', AILabMissionScreen, { missionId: 'chatbot' }));
+  it('renders AILabChallenge', () =>
+    renderStack('AILabChallenge', AILabChallengeScreen, {
+      missionId: 'chatbot',
+      seed: 1,
+    }));
+  it('renders AILabFreeBuild (picker)', () =>
+    renderStack('AILabFreeBuild', AILabFreeBuildScreen));
+  it('renders AILabShowcase', () =>
+    renderStack('AILabShowcase', AILabShowcaseScreen, {
+      title: 'a Chatbot',
+      emoji: '🤖',
+      components: ['brain'],
+      score: 100,
+      xpEarned: 100,
+      challengesDone: 0,
+      challengesTotal: 2,
+      concept: 'The AI Brain',
+    }));
 });

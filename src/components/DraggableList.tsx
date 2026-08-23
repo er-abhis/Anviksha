@@ -44,6 +44,8 @@ export interface DraggableListProps {
   iconFor?: (item: string) => string;
   /** When set, a tap-to-remove control is shown on each row. */
   onRemove?: (item: string) => void;
+  /** Draw a downward connector between rows (pipeline "A ↓ B" look). */
+  connector?: boolean;
 }
 
 /** Current slot of an item (works on either thread). */
@@ -74,8 +76,9 @@ export const DraggableList: React.FC<DraggableListProps> = ({
   labelFor,
   iconFor,
   onRemove,
+  connector,
 }) => {
-  const { spacing } = useTheme();
+  const { spacing, colors } = useTheme();
   const reducedMotion = usePreferencesStore(s => s.reducedMotion);
   // index -> item; the live ordering the UI thread mutates while dragging.
   const positions = useSharedValue<PositionMap>(
@@ -90,6 +93,18 @@ export const DraggableList: React.FC<DraggableListProps> = ({
 
   return (
     <View style={{ height: items.length * ROW_HEIGHT, marginTop: spacing.xs }}>
+      {/* Static ↓ connectors sit in the gaps between rows (position-based, not
+          item-based, so they stay put while items reorder). Non-interactive. */}
+      {connector &&
+        items.slice(0, -1).map((_, i) => (
+          <View
+            key={`conn-${i}`}
+            pointerEvents="none"
+            style={[styles.connector, { top: (i + 1) * ROW_HEIGHT - 9 }]}
+          >
+            <Icon name="chevron-down" size={16} color={colors.textTertiary} />
+          </View>
+        ))}
       {items.map(item => (
         <Row
           key={item}
@@ -259,4 +274,13 @@ const styles = StyleSheet.create({
     height: ROW_HEIGHT - 8,
   },
   badge: { width: 26, height: 26, alignItems: 'center', justifyContent: 'center' },
+  connector: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    height: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 0,
+  },
 });

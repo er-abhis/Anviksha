@@ -110,4 +110,54 @@ export const BADGES: Badge[] = [
     description: 'Open the AI glossary for the first time.',
     icon: 'book',
   },
+
+  // ── AI Lab ───────────────────────────────────────────────
+  {
+    slug: 'ailab-first-build',
+    title: 'First AI Built',
+    description: 'Build your first working AI in the AI Lab.',
+    icon: 'hardware-chip',
+  },
+  {
+    slug: 'ailab-architect',
+    title: 'AI Architect',
+    description: 'Complete an AI Lab mission — build plus all challenges.',
+    icon: 'construct',
+  },
+  {
+    slug: 'ailab-bug-hunter',
+    title: 'Bug Hunter',
+    description: 'Solve five AI Lab challenges.',
+    icon: 'bug',
+  },
+  {
+    slug: 'ailab-tool-master',
+    title: 'Tool Master',
+    description: 'Complete the AI Game mission.',
+    icon: 'build',
+  },
+  {
+    slug: 'ailab-voice-engineer',
+    title: 'Voice Engineer',
+    description: 'Complete the Voice Assistant mission.',
+    icon: 'mic',
+  },
+  {
+    slug: 'ailab-vision-explorer',
+    title: 'Vision Explorer',
+    description: 'Complete a Vision-based mission.',
+    icon: 'eye',
+  },
+  {
+    slug: 'ailab-agent-builder',
+    title: 'Agent Builder',
+    description: 'Complete the Research Assistant mission.',
+    icon: 'search',
+  },
+  {
+    slug: 'ailab-master',
+    title: 'AI Lab Master',
+    description: 'Complete all eight AI Lab missions.',
+    icon: 'trophy',
+  },
 ];
