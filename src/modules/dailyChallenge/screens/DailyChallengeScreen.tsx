@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Button, GlassCard, Header, Screen, Text, XPBadge } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
@@ -47,7 +47,7 @@ export const DailyChallengeScreen: React.FC = () => {
   if (running) {
     return (
       <Screen padded={false} edges={['top']}>
-        <Header title="Daily Challenge" onBack={() => navigation.goBack()} />
+        <Header title="Daily Challenge" onBack={() => navigation.goBack()} gutter />
         <View style={{ flex: 1 }}>
           <QuizSession
             questions={questions}
@@ -69,7 +69,7 @@ export const DailyChallengeScreen: React.FC = () => {
     <Screen scroll contentContainerStyle={{ gap: spacing.xl }}>
       <Header title="Daily Challenge" onBack={() => navigation.goBack()} />
 
-      <Animated.View entering={FadeInDown.duration(400)}>
+      <Animated.View>
       <GlassCard elevation="lg">
         <View style={[styles.head, { marginBottom: spacing.md }]}>
           <View style={[styles.icon, { backgroundColor: colors.primaryMuted }]}>

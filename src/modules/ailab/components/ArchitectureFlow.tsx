@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import Animated, { FadeInDown, LinearTransition } from 'react-native-reanimated';
+import Animated, { LinearTransition } from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { GlassCard, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
@@ -39,7 +39,6 @@ export const ArchitectureFlow: React.FC<ArchitectureFlowProps> = ({
         <Animated.View
           key={`${n.label}-${i}`}
           layout={LinearTransition}
-          entering={FadeInDown.delay(i * 60).springify().damping(16)}
           style={styles.nodeWrap}
         >
           <GlassCard

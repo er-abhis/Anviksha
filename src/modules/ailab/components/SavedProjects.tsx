@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Alert, Pressable, StyleSheet, TextInput, View } from 'react-native';
-import Animated, { FadeInDown, LinearTransition } from 'react-native-reanimated';
+import Animated, { LinearTransition } from 'react-native-reanimated';
 import { Gradient, GlassCard, IconButton, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { useAILabStore } from '../../../store';
@@ -51,7 +51,6 @@ export const SavedProjects: React.FC<SavedProjectsProps> = ({ onResume }) => {
           <Animated.View
             key={p.id}
             layout={LinearTransition}
-            entering={FadeInDown.delay(i * 50).springify().damping(16)}
           >
           <GlassCard elevation="md">
             <View style={[styles.row, { gap: spacing.sm }]}>

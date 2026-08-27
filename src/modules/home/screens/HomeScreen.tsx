@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, ScrollView, StatusBar, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
@@ -138,7 +138,6 @@ export const HomeScreen: React.FC = () => {
         {/* Greeting + stats */}
         <Padded>
           <Animated.View
-            entering={FadeInDown.springify().damping(16)}
             style={[styles.hero, { borderRadius: radius.xl }, elevation.glow]}
           >
             <Gradient
@@ -192,7 +191,7 @@ export const HomeScreen: React.FC = () => {
         </Padded>
 
         {/* 1 — Continue Learning */}
-        <Animated.View entering={FadeInDown.delay(80).springify().damping(18)}>
+        <Animated.View>
           <Padded>
             <SectionTitle
               title="Continue Learning"
@@ -220,7 +219,7 @@ export const HomeScreen: React.FC = () => {
         </Animated.View>
 
         {/* 2 — Daily Challenge (the daily hook) */}
-        <Animated.View entering={FadeInDown.delay(120).springify().damping(18)}>
+        <Animated.View>
         <Padded>
           <SectionTitle title="Daily Challenge" />
           <DailyChallengeCard
@@ -238,7 +237,7 @@ export const HomeScreen: React.FC = () => {
         </Animated.View>
 
         {/* Daily spotlight — rotates concept / did-you-know / try-this by date */}
-        <Animated.View entering={FadeInDown.delay(160).springify().damping(18)}>
+        <Animated.View>
         <Padded>
           <SectionTitle title={spotlight.title} />
           <SpotlightCard

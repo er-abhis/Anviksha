@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Gradient, GlassCard, Header, Logo, Screen, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
@@ -26,7 +26,7 @@ export const AboutScreen: React.FC = () => {
     <Screen scroll contentContainerStyle={{ gap: spacing.xl }}>
       <Header title="About App" onBack={() => navigation.goBack()} />
 
-      <Animated.View entering={FadeInDown.duration(400)}>
+      <Animated.View>
         <Gradient colors={gradients.brand} style={{ ...styles.hero, borderRadius: radius.xl, ...elevation.glow }}>
           <View style={[styles.logoWrap, { backgroundColor: 'rgba(255,255,255,0.14)', borderRadius: radius.xl }]}>
             <Logo size={72} />
@@ -39,13 +39,13 @@ export const AboutScreen: React.FC = () => {
         </Gradient>
       </Animated.View>
 
-      <Animated.View entering={FadeInDown.delay(120).duration(400)}>
+      <Animated.View>
         <GlassCard>
           <Text variant="body" color="textSecondary" style={styles.desc}>{DESCRIPTION}</Text>
         </GlassCard>
       </Animated.View>
 
-      <Animated.View entering={FadeInDown.delay(200).duration(400)} style={{ gap: spacing.md }}>
+      <Animated.View style={{ gap: spacing.md }}>
         <Text variant="h3">What’s inside</Text>
         <GlassCard padded={false} style={{ paddingHorizontal: spacing.lg }}>
           {FEATURES.map((f, i) => (

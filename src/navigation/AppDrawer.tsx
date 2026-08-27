@@ -46,7 +46,7 @@ export const AppDrawer: React.FC = () => {
 
   const p = useSharedValue(0);
   useEffect(() => {
-    p.value = withTiming(open ? 1 : 0, { duration: 260 });
+    p.value = withTiming(open ? 1 : 0, { duration: 200 });
   }, [open, p]);
 
   // Android back closes the drawer before the app can exit.

@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -51,7 +51,7 @@ export const SimulationsScreen: React.FC = () => {
         onBack={() => navigation.goBack()}
       />
 
-      <Animated.View entering={FadeInDown.duration(450)}>
+      <Animated.View>
         <Gradient
           colors={gradients.cool}
           borderRadius={radius.xl}
@@ -70,11 +70,11 @@ export const SimulationsScreen: React.FC = () => {
         </Gradient>
       </Animated.View>
 
-      <Animated.View entering={FadeInDown.duration(450).delay(100)}>
+      <Animated.View>
         <ActivityRenderer activity={lesson.activity} />
       </Animated.View>
 
-      <Animated.View entering={FadeInDown.duration(450).delay(180)}>
+      <Animated.View>
         <Button
           label="Open the full lesson"
           variant="secondary"

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {
@@ -142,7 +142,7 @@ export const AILabChallengeScreen: React.FC = () => {
       <ProgressBar progress={(index + (solved ? 1 : 0)) / challenges.length} />
 
       {/* Scenario */}
-      <Animated.View entering={FadeInDown.springify().damping(16)}>
+      <Animated.View>
       <Card elevation="glow" style={styles.overflowHidden}>
         <Gradient
           colors={[colors.warning + '26', colors.warning + '05']}
@@ -204,7 +204,7 @@ export const AILabChallengeScreen: React.FC = () => {
       </View>
 
       {tried && !solved && (
-        <Animated.View entering={FadeInDown.springify().damping(16)}>
+        <Animated.View>
           <GlassCard elevation="sm" style={{ borderColor: colors.error }}>
             <Text variant="body" color="error">
               Not quite yet — {challenge.hint.toLowerCase()}
@@ -214,7 +214,7 @@ export const AILabChallengeScreen: React.FC = () => {
       )}
 
       {solved ? (
-        <Animated.View entering={FadeInDown.springify().damping(16)}>
+        <Animated.View>
         <Card elevation="glow" style={{ overflow: 'hidden', borderColor: colors.success }}>
           <Gradient
             colors={gradients.success}

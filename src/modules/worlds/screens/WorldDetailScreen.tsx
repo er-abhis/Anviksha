@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import {
   useNavigation,
   useRoute,
@@ -86,7 +86,6 @@ export const WorldDetailScreen: React.FC = () => {
           return (
             <Animated.View
               key={lesson.id}
-              entering={FadeInDown.delay(i * 50).springify().damping(16)}
             >
               <GlassCard
                 elevation="sm"

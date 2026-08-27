@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import Animated, { FadeInDown, ZoomIn } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { DraggableList, GlassCard, ProgressBar, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
@@ -66,7 +66,7 @@ const Sequence: React.FC<{ config: SequenceConfig }> = ({ config }) => {
           const show = answered && (i === picked || right);
           const tint = show ? (right ? colors.success : colors.error) : colors.glassBorder;
           return (
-            <Animated.View key={i} entering={FadeInDown.delay(i * 60).duration(320)}>
+            <Animated.View key={i}>
               <Pressable
                 disabled={answered}
                 onPress={() => setPicked(i)}
@@ -83,7 +83,7 @@ const Sequence: React.FC<{ config: SequenceConfig }> = ({ config }) => {
               >
                 <Text variant="body" style={styles.flex}>{opt}</Text>
                 {show && (
-                  <Animated.View entering={ZoomIn.duration(240)}>
+                  <Animated.View>
                     <Icon
                       name={right ? 'checkmark-circle' : 'close-circle'}
                       size={18}

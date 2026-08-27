@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import Animated, { FadeInDown, LinearTransition } from 'react-native-reanimated';
+import Animated, { LinearTransition } from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Gradient, GlassCard, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
@@ -92,7 +92,6 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
                 {turn.trace.map((stage, i) => (
                   <Animated.View
                     key={`${stage}-${i}`}
-                    entering={FadeInDown.delay(i * 50).springify().damping(16)}
                     style={styles.traceItem}
                   >
                     <View
@@ -123,7 +122,6 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
 
             {/* User input bubble */}
             <Animated.View
-              entering={FadeInDown.delay(turn.trace.length * 50).springify().damping(16)}
               style={[styles.userBubble, { borderRadius: radius.lg }]}
             >
               <Gradient
@@ -139,7 +137,6 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
 
             {/* AI response bubble */}
             <Animated.View
-              entering={FadeInDown.delay(turn.trace.length * 50 + 80).springify().damping(16)}
               style={[
                 styles.aiBubble,
                 {

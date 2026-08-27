@@ -153,7 +153,7 @@ export const QuizScreen: React.FC = () => {
 
   return (
     <Screen padded={false} edges={['top']}>
-      <Header title={lesson.title} onBack={() => navigation.goBack()} />
+      <Header title={lesson.title} onBack={() => navigation.goBack()} gutter />
       <View style={{ flex: 1 }}>
         <QuizSession
           key={attempt}

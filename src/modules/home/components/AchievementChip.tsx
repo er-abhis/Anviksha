@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, { ZoomIn } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
@@ -13,7 +13,6 @@ export const AchievementChip: React.FC<{ item: AchievementMock }> = ({
   const tint = item.unlocked ? colors.accent : colors.textTertiary;
   return (
     <Animated.View
-      entering={ZoomIn.springify().damping(16)}
       style={[styles.wrap, { width: 92 }]}
     >
       <View

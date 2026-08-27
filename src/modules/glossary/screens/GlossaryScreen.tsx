@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { EmptyState, GlassCard, Header, Screen, SearchBar, Text } from '../../../components';
@@ -92,7 +92,6 @@ export const GlossaryScreen: React.FC = () => {
         results.map((term, i) => (
           <Animated.View
             key={term.slug}
-            entering={FadeInDown.delay(i * 50).springify().damping(16)}
           >
             <TermCard
               term={term}

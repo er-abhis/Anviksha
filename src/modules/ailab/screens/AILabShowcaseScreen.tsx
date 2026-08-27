@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, { FadeInDown, ZoomIn } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ViewShot from 'react-native-view-shot';
@@ -91,9 +91,8 @@ export const AILabShowcaseScreen: React.FC = () => {
           ]}
         >
       {/* Hero */}
-      <Animated.View entering={FadeInDown.springify().damping(16)} style={styles.hero}>
+      <Animated.View style={styles.hero}>
         <Animated.View
-          entering={ZoomIn.springify().damping(12)}
           style={[
             styles.heroBadge,
             { borderRadius: radius.xl, borderColor: colors.glassBorder },

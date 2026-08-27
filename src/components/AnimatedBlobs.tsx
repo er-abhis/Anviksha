@@ -1,12 +1,5 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { StyleSheet, useWindowDimensions, View, ViewStyle } from 'react-native';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from 'react-native-reanimated';
 import { useTheme } from '../theme/ThemeProvider';
 import { Gradient } from './Gradient';
 
@@ -26,9 +19,9 @@ export interface AnimatedBlobsProps {
 }
 
 /**
- * Ambient neon blobs that slowly drift and pulse behind content — the signature
- * backdrop of the redesign. Soft radial gradients (no blur dependency). Purely
- * decorative: non-interactive and cheap (3 looping shared values).
+ * Static neon blobs behind content — the signature backdrop of the redesign.
+ * Soft radial gradients (no blur dependency). Purely decorative and static:
+ * no looping motion (was ambient drift/pulse; removed to cut animation overuse).
  */
 export const AnimatedBlobs: React.FC<AnimatedBlobsProps> = ({
   intensity = 1,
@@ -66,29 +59,10 @@ const Blob: React.FC<{
   screenH: number;
   opacity: number;
 }> = ({ spec, screenW, screenH, opacity }) => {
-  const t = useSharedValue(0);
-
-  useEffect(() => {
-    t.value = withRepeat(
-      withTiming(1, { duration: 7000, easing: Easing.inOut(Easing.sin) }),
-      -1,
-      true,
-    );
-  }, [t]);
-
   const dim = screenW * spec.size;
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: (t.value - 0.5) * spec.drift },
-      { translateY: (0.5 - t.value) * spec.drift },
-      { scale: 1 + t.value * 0.08 },
-    ],
-    opacity: opacity * (0.75 + t.value * 0.25),
-  }));
-
   return (
-    <Animated.View
+    <View
       style={[
         styles.blob,
         {
@@ -96,8 +70,8 @@ const Blob: React.FC<{
           height: dim,
           left: spec.x * screenW,
           top: spec.y * screenH,
+          opacity: opacity * 0.9,
         },
-        animatedStyle,
       ]}
     >
       <Gradient
@@ -106,7 +80,7 @@ const Blob: React.FC<{
         opacities={[0.9, 0.5, 0]}
         style={StyleSheet.absoluteFill}
       />
-    </Animated.View>
+    </View>
   );
 };
 

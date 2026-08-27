@@ -1,10 +1,10 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
-import Animated, { FadeInDown, ZoomIn } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import {
   GlassCard,
   Gradient,
@@ -62,7 +62,7 @@ export const ProfileScreen: React.FC = () => {
       />
 
       {/* Gradient hero */}
-      <Animated.View entering={FadeInDown.duration(420)}>
+      <Animated.View>
         <Gradient
           colors={gradients.brand}
           start={{ x: 0, y: 0 }}
@@ -72,7 +72,6 @@ export const ProfileScreen: React.FC = () => {
         >
           <View style={[styles.identity, { gap: spacing.md }]}>
             <Animated.View
-              entering={ZoomIn.duration(360).delay(120)}
               style={[
                 styles.avatar,
                 { borderColor: 'rgba(255,255,255,0.35)' },
@@ -105,13 +104,12 @@ export const ProfileScreen: React.FC = () => {
         </Text>
       )}
 
-      <Animated.View entering={FadeInDown.duration(400).delay(80)}>
+      <Animated.View>
         <GlassCard padded={false}>
           <View style={styles.statsRow}>
             {stats.map((s, i) => (
               <Animated.View
                 key={s.label}
-                entering={FadeInDown.duration(360).delay(140 + i * 90)}
                 style={[
                   styles.stat,
                   i < stats.length - 1 && { borderRightWidth: StyleSheet.hairlineWidth, borderRightColor: colors.glassBorder },
@@ -128,17 +126,17 @@ export const ProfileScreen: React.FC = () => {
         </GlassCard>
       </Animated.View>
 
-      <Animated.View entering={FadeInDown.duration(400).delay(160)}>
+      <Animated.View>
         <GlassCard padded={false} style={{ paddingHorizontal: spacing.lg }}>
           {menu.map((m, i) => (
-            <GlassCard
+            <Pressable
               key={m.label}
-              padded={false}
-              sheen={false}
               onPress={m.onPress}
-              style={[
+              accessibilityRole="button"
+              accessibilityLabel={m.label}
+              style={({ pressed }) => [
                 styles.menuRow,
-                { backgroundColor: 'transparent', borderWidth: 0 },
+                { opacity: pressed ? 0.6 : 1 },
                 i < menu.length - 1 && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.glassBorder },
               ]}
             >
@@ -147,7 +145,7 @@ export const ProfileScreen: React.FC = () => {
               </View>
               <Text variant="body" style={styles.flex}>{m.label}</Text>
               <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
-            </GlassCard>
+            </Pressable>
           ))}
         </GlassCard>
       </Animated.View>

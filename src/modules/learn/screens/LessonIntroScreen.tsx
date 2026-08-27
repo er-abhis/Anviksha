@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {
   Button,
@@ -103,7 +103,7 @@ export const LessonIntroScreen: React.FC = () => {
           <View style={[styles.ring, styles.ringA]} />
           <View style={[styles.ring, styles.ringB]} />
 
-          <Animated.View entering={FadeInDown.duration(400)} style={styles.heroInner}>
+          <Animated.View style={styles.heroInner}>
             <View style={styles.heroBadge}>
               <Icon name={world?.icon ?? 'sparkles'} size={30} color="#FFFFFF" />
             </View>
@@ -192,7 +192,7 @@ export const LessonIntroScreen: React.FC = () => {
         </Intro>
 
         {/* ---------- Motivation ---------- */}
-        <Animated.View entering={FadeInDown.delay(380).duration(400)}>
+        <Animated.View>
           <Gradient colors={gradient} style={{ ...styles.motivation, borderRadius: radius.lg }}>
             <Icon name="rocket-outline" size={22} color="#FFFFFF" />
             <Text variant="h3" color="textInverse" center style={{ marginTop: spacing.sm }}>
@@ -202,7 +202,7 @@ export const LessonIntroScreen: React.FC = () => {
         </Animated.View>
 
         {/* ---------- Start / Locked ---------- */}
-        <Animated.View entering={FadeInDown.delay(440).duration(400)} style={{ gap: spacing.sm }}>
+        <Animated.View style={{ gap: spacing.sm }}>
           {isDone && (
             <View style={styles.doneRow}>
               <Icon name="checkmark-circle" size={16} color={colors.success} />
@@ -266,7 +266,7 @@ const Intro: React.FC<{
 }> = ({ delay, icon, title, children }) => {
   const { colors, spacing } = useTheme();
   return (
-    <Animated.View entering={FadeInDown.delay(delay).duration(400)} style={{ gap: spacing.sm }}>
+    <Animated.View style={{ gap: spacing.sm }}>
       <View style={styles.head}>
         <Icon name={icon} size={16} color={colors.primary} />
         <Text variant="label" color="primary">{title.toUpperCase()}</Text>

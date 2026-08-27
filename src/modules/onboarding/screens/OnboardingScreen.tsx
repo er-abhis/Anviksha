@@ -8,11 +8,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Animated, {
-  FadeInDown,
-  FadeInUp,
-  ZoomIn,
-} from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../navigation/types';
 import { AnimatedBlobs, Button, Gradient, Text } from '../../../components';
@@ -63,13 +59,11 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
             <AnimatedBlobs intensity={0.9} />
             <SafeAreaView style={styles.slide}>
               <Animated.View
-                entering={ZoomIn.duration(600).springify()}
                 style={styles.artWrap}
               >
                 <AbstractArt variant={item.art} size={width * 0.6} />
               </Animated.View>
               <Animated.View
-                entering={FadeInUp.duration(500).delay(120)}
                 style={[styles.copy, { paddingHorizontal: spacing.xxl }]}
               >
                 <Text variant="h1" color="textInverse">
@@ -90,7 +84,6 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
 
       <SafeAreaView edges={['bottom']} style={styles.footer}>
         <Animated.View
-          entering={FadeInDown.duration(500).delay(200)}
           style={[styles.footerInner, { padding: spacing.xl }]}
         >
           <View style={styles.dots}>

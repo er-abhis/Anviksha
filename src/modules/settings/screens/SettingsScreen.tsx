@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { GlassCard, Header, Screen, SectionTitle, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
@@ -79,7 +79,7 @@ export const SettingsScreen: React.FC = () => {
       <Header title="Settings" onBack={() => navigation.goBack()} />
 
       {/* Appearance */}
-      <Animated.View entering={FadeInDown.delay(50).duration(400)}>
+      <Animated.View>
         <SectionTitle title="Appearance" />
         <GlassCard>
           <Text variant="label" color="textSecondary" style={{ marginBottom: spacing.sm }}>
@@ -121,7 +121,7 @@ export const SettingsScreen: React.FC = () => {
       </Animated.View>
 
       {/* Preferences */}
-      <Animated.View entering={FadeInDown.delay(100).duration(400)}>
+      <Animated.View>
         <SectionTitle title="Preferences" />
         <GlassCard padded={false} style={{ paddingHorizontal: spacing.lg }}>
           <SettingRow
@@ -156,7 +156,7 @@ export const SettingsScreen: React.FC = () => {
       </Animated.View>
 
       {/* About */}
-      <Animated.View entering={FadeInDown.delay(150).duration(400)}>
+      <Animated.View>
         <SectionTitle title="About" />
         <GlassCard padded={false} style={{ paddingHorizontal: spacing.lg }}>
           <ActionRow

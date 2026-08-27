@@ -1,6 +1,6 @@
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
@@ -43,7 +43,7 @@ export const AILabScreen: React.FC = () => {
       }}
     >
       {/* Gradient hero header — the AI Lab wow entry. */}
-      <Animated.View entering={FadeInDown.springify().damping(16)}>
+      <Animated.View>
         <Card elevation="glow" padded={false} style={styles.overflowHidden}>
           <Gradient
             colors={gradients.cool}
@@ -86,7 +86,7 @@ export const AILabScreen: React.FC = () => {
       </Animated.View>
 
       {/* Surprise Me — playful entry that jumps into a random mission. */}
-      <Animated.View entering={FadeInDown.delay(60).springify().damping(16)}>
+      <Animated.View>
         <Pressable
           onPress={() => openMission(pickRandomMissionId())}
           accessibilityRole="button"
@@ -123,7 +123,7 @@ export const AILabScreen: React.FC = () => {
       </Animated.View>
 
       {/* Free Build entry. */}
-      <Animated.View entering={FadeInDown.delay(120).springify().damping(16)}>
+      <Animated.View>
         <GlassCard
           elevation="md"
           onPress={() => navigation.navigate('AILabFreeBuild')}
@@ -173,7 +173,6 @@ export const AILabScreen: React.FC = () => {
         {MISSIONS.map((mission, i) => (
           <Animated.View
             key={mission.id}
-            entering={FadeInDown.delay(i * 60).springify().damping(16)}
           >
             <MissionCard
               mission={mission}

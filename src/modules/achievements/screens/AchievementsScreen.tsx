@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import Animated, { FadeInDown, ZoomIn } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { EmptyState, Gradient, GlassCard, Header, Screen, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { useAchievementsStore } from '../../../store';
@@ -25,7 +25,7 @@ export const AchievementsScreen: React.FC = () => {
           message="Earn badges by completing challenges, finishing lessons, and keeping streaks. Complete your first challenge to unlock one."
         />
       ) : (
-        <Animated.View entering={FadeInDown.duration(360)}>
+        <Animated.View>
           <Text variant="label" color="textSecondary">
             {`${unlockedCount} of ${BADGES.length} unlocked`}
           </Text>
@@ -37,7 +37,6 @@ export const AchievementsScreen: React.FC = () => {
         return (
           <Animated.View
             key={a.slug}
-            entering={FadeInDown.duration(360).delay(60 + i * 60)}
           >
             <GlassCard
               padded={false}
@@ -50,7 +49,7 @@ export const AchievementsScreen: React.FC = () => {
             >
               <View style={[styles.row, { gap: spacing.md, padding: spacing.lg }]}>
                 {isUnlocked ? (
-                  <Animated.View entering={ZoomIn.duration(340).delay(120 + i * 60)}>
+                  <Animated.View>
                     <Gradient
                       colors={gradients.brand}
                       borderRadius={radius.md}

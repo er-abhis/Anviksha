@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -217,7 +217,7 @@ export const AILabMissionScreen: React.FC = () => {
       />
 
       {/* Hero + objective */}
-      <Animated.View entering={FadeInDown.springify().damping(16)}>
+      <Animated.View>
         <Card elevation="glow" style={styles.overflowHidden}>
           <Gradient
             colors={[accent + '2E', accent + '08']}
@@ -295,7 +295,7 @@ export const AILabMissionScreen: React.FC = () => {
 
       {/* Mission complete — build valid AND all challenges solved. */}
       {complete && score && (
-        <Animated.View entering={FadeInDown.springify().damping(16)}>
+        <Animated.View>
         <Card elevation="glow" style={{ overflow: 'hidden', borderColor: colors.success }}>
           <Gradient
             colors={gradients.success}
@@ -367,7 +367,7 @@ export const AILabMissionScreen: React.FC = () => {
 
       {/* Completion criteria — architecture valid but challenges outstanding. */}
       {validation?.ok && !complete && (
-        <Animated.View entering={FadeInDown.springify().damping(16)}>
+        <Animated.View>
         <Card elevation="glow" style={{ overflow: 'hidden', borderColor: colors.success }}>
           <Gradient
             colors={gradients.success}

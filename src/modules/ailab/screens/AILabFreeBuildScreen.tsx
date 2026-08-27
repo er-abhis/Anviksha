@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -121,7 +121,6 @@ export const AILabFreeBuildScreen: React.FC = () => {
           {FREE_CATEGORIES.map((cat, i) => (
             <Animated.View
               key={cat.id}
-              entering={FadeInDown.delay(i * 60).springify().damping(16)}
               style={styles.gridItem}
             >
               <GlassCard

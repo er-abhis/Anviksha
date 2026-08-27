@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
@@ -10,7 +10,6 @@ export const ActivityRow: React.FC<{ item: ActivityMock }> = ({ item }) => {
   const { colors, radius, spacing } = useTheme();
   return (
     <Animated.View
-      entering={FadeInDown.springify().damping(18)}
       style={[styles.row, { paddingVertical: spacing.sm, gap: spacing.md }]}
     >
       <View

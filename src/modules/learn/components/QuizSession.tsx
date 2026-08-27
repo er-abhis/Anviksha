@@ -1,16 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import Animated, {
-  FadeIn,
-  FadeInDown,
-  SlideInRight,
-  ZoomIn,
-  useAnimatedStyle,
-  useSharedValue,
-  withDelay,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSpring, withTiming } from 'react-native-reanimated';
 import ViewShot from 'react-native-view-shot';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { AchievementCard, Button, Confetti, DraggableList, GlassCard, ProgressBar, QuestionMedia, Text } from '../../../components';
@@ -142,7 +132,7 @@ export const QuizSession: React.FC<Props> = ({
   }
   return (
     <View style={styles.fill}>
-      <Animated.View entering={FadeInDown.duration(400)} style={{ padding: spacing.lg, gap: spacing.sm }}>
+      <Animated.View style={{ padding: spacing.lg, gap: spacing.sm }}>
         <View style={styles.progressRow}>
           <Text variant="label" color="textSecondary">{`Question ${idx + 1} of ${total}`}</Text>
           <View style={[styles.typeTag, { backgroundColor: colors.glass, borderColor: colors.glassBorder, borderRadius: radius.pill }]}>
@@ -167,7 +157,7 @@ const QuestionView: React.FC<{ question: Question; onNext: (correct: boolean) =>
       contentContainerStyle={{ padding: spacing.lg, paddingBottom: spacing.giant, gap: spacing.lg }}
       showsVerticalScrollIndicator={false}
     >
-      <Animated.View entering={SlideInRight.duration(320)} style={{ gap: spacing.lg }}>
+      <Animated.View style={{ gap: spacing.lg }}>
         {question.media && <QuestionMedia media={question.media} />}
         <GlassCard elevation="lg">
           <Text variant="h3">{question.prompt}</Text>
@@ -187,7 +177,7 @@ const QuestionView: React.FC<{ question: Question; onNext: (correct: boolean) =>
 const Explanation: React.FC<{ correct: boolean; text: string }> = ({ correct, text }) => {
   const { colors, spacing, radius } = useTheme();
   return (
-    <Animated.View entering={FadeInDown.duration(300)}>
+    <Animated.View>
     <GlassCard
       elevation="md"
       style={{
@@ -235,7 +225,7 @@ const ChoiceView: React.FC<{ question: ChoiceQuestion; onNext: (c: boolean) => v
         const show = answered && (i === picked || isRight);
         const tint = show ? (isRight ? colors.success : colors.error) : colors.glassBorder;
         return (
-          <Animated.View key={i} entering={FadeInDown.delay(i * 60).duration(320)}>
+          <Animated.View key={i}>
             <Pressable
               disabled={answered}
               onPress={() => setPicked(i)}
@@ -252,7 +242,7 @@ const ChoiceView: React.FC<{ question: ChoiceQuestion; onNext: (c: boolean) => v
             >
               <Text variant="body" style={styles.flex}>{opt}</Text>
               {show && (
-                <Animated.View entering={ZoomIn.duration(240)}>
+                <Animated.View>
                   <Icon
                     name={isRight ? 'checkmark-circle' : 'close-circle'}
                     size={20}
@@ -289,7 +279,7 @@ const MatchView: React.FC<{ question: MatchQuestion; onNext: (c: boolean) => voi
       {question.pairs.map((pair, i) => {
         const isRight = checked && rights[assign[i]] === pair.right;
         return (
-          <Animated.View key={i} entering={FadeInDown.delay(i * 60).duration(320)} style={{ gap: spacing.xs }}>
+          <Animated.View key={i} style={{ gap: spacing.xs }}>
             <View style={styles.itemRow}>
               <Text variant="bodyStrong" style={styles.flex}>{pair.left}</Text>
               {checked && (
@@ -431,7 +421,7 @@ const Results: React.FC<{
   return (
     <ScrollView contentContainerStyle={{ padding: spacing.lg, gap: spacing.lg }}>
       {good && <Confetti />}
-      <Animated.View entering={FadeIn.duration(400)} style={styles.resultHead}>
+      <Animated.View style={styles.resultHead}>
         <Animated.View
           style={[styles.resultRing, { borderColor: good ? colors.success : colors.error }, ringStyle]}
         >

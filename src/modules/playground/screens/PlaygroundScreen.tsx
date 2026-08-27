@@ -1,6 +1,6 @@
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
@@ -42,7 +42,7 @@ export const PlaygroundScreen: React.FC = () => {
   return (
     <Screen scroll contentContainerStyle={{ gap: spacing.xl, paddingBottom: tabBarHeight + spacing.lg }}>
       {/* Gradient hero */}
-      <Animated.View entering={FadeInDown.duration(450)}>
+      <Animated.View>
         <Gradient
           colors={gradients.cool}
           borderRadius={radius.xl}
@@ -59,7 +59,7 @@ export const PlaygroundScreen: React.FC = () => {
       </Animated.View>
 
       {/* Featured: Build the AI game */}
-      <Animated.View entering={FadeInDown.duration(450).delay(80)}>
+      <Animated.View>
         <Card glow onPress={() => navigation.navigate('BuildAI')}>
           <View style={styles.simRow}>
             <View style={[styles.simIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.md }]}>
@@ -77,7 +77,7 @@ export const PlaygroundScreen: React.FC = () => {
       </Animated.View>
 
       {/* Featured: What Would You Build? */}
-      <Animated.View entering={FadeInDown.duration(450).delay(160)}>
+      <Animated.View>
         <Card glow onPress={() => navigation.navigate('WhatToBuild')}>
           <View style={styles.simRow}>
             <View style={[styles.simIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.md }]}>
@@ -96,7 +96,6 @@ export const PlaygroundScreen: React.FC = () => {
 
       {/* Quick actions */}
       <Animated.View
-        entering={FadeInDown.duration(450).delay(240)}
         style={[styles.quickRow, { gap: spacing.md }]}
       >
         <QuickCard
@@ -117,7 +116,6 @@ export const PlaygroundScreen: React.FC = () => {
         return (
           <Animated.View
             key={world.id}
-            entering={FadeInDown.duration(450).delay(300 + wi * 80)}
           >
             <SectionTitle title={world.title} />
             <View style={{ gap: spacing.sm }}>

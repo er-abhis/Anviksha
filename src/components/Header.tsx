@@ -10,6 +10,12 @@ export interface HeaderProps {
   onBack?: () => void;
   right?: React.ReactNode;
   large?: boolean;
+  /**
+   * Add the horizontal screen gutter. Default false: inside a padded `Screen`
+   * (the common case) the Screen already provides it, so self-padding would
+   * double-indent the header. Set true on full-bleed (`padded={false}`) screens.
+   */
+  gutter?: boolean;
 }
 
 /** Screen header. `large` renders a title-only hero style (Home/Profile). */
@@ -19,11 +25,18 @@ export const Header: React.FC<HeaderProps> = ({
   onBack,
   right,
   large,
+  gutter = false,
 }) => {
   const { spacing } = useTheme();
 
   return (
-    <View style={[styles.row, { paddingHorizontal: spacing.lg, gap: spacing.md }]}>
+    <View
+      style={[
+        styles.row,
+        { gap: spacing.md },
+        gutter && { paddingHorizontal: spacing.lg },
+      ]}
+    >
       {onBack && (
         <IconButton
           name="chevron-back"

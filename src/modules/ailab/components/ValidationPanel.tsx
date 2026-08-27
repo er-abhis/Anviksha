@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { GlassCard, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
@@ -27,7 +27,6 @@ const Row: React.FC<{ issue: Diagnostic; index: number }> = ({ issue, index }) =
   const toned = issue.level === 'success' || issue.level === 'error';
   return (
     <Animated.View
-      entering={FadeInDown.delay(index * 60).springify().damping(16)}
       style={[
         styles.row,
         {

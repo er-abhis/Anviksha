@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -88,7 +88,6 @@ export const WorldsScreen: React.FC = () => {
           return (
             <Animated.View
               key={world.id}
-              entering={FadeInDown.delay(i * 50).springify().damping(16)}
             >
               <GlassCard
                 elevation="md"

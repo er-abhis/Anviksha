@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {
   Button,
@@ -80,7 +80,7 @@ export const CoffeeScreen: React.FC = () => {
       <Header title="Support Anviksha" onBack={() => navigation.goBack()} />
 
       {/* Hero */}
-      <Animated.View entering={FadeInDown.duration(400)}>
+      <Animated.View>
         <Gradient colors={gradients.brand} style={{ ...styles.hero, borderRadius: radius.xl, ...elevation.glow }}>
           <View style={styles.heroBadge}>
             <Icon name="cafe" size={30} color="#FFFFFF" />
@@ -93,7 +93,7 @@ export const CoffeeScreen: React.FC = () => {
       </Animated.View>
 
       {/* Why support */}
-      <Animated.View entering={FadeInDown.delay(120).duration(400)} style={{ gap: spacing.md }}>
+      <Animated.View style={{ gap: spacing.md }}>
         {REASONS.map(r => (
           <GlassCard key={r.title}>
             <View style={[styles.reason, { gap: spacing.md }]}>
@@ -110,7 +110,7 @@ export const CoffeeScreen: React.FC = () => {
       </Animated.View>
 
       {/* Tabs */}
-      <Animated.View entering={FadeInDown.delay(220).duration(400)} style={{ gap: spacing.md }}>
+      <Animated.View style={{ gap: spacing.md }}>
         <Text variant="h3">Choose how to support</Text>
         <View style={[styles.tabs, { backgroundColor: colors.surfaceAlt, borderRadius: radius.md }]}>
           {(['paypal', 'upi'] as Tab[]).map(t => {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Button, GlassCard, Gradient, Header, Screen, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
@@ -18,7 +18,7 @@ export const AboutDeveloperScreen: React.FC = () => {
     <Screen scroll contentContainerStyle={{ gap: spacing.xl }}>
       <Header title="About Developer" onBack={() => navigation.goBack()} />
 
-      <Animated.View entering={FadeInDown.duration(400)}>
+      <Animated.View>
         <Gradient colors={gradients.brand} style={{ ...styles.hero, borderRadius: radius.xl, ...elevation.glow }}>
           <View style={styles.avatar}>
             <Icon name="person" size={40} color="#FFFFFF" />
@@ -30,13 +30,13 @@ export const AboutDeveloperScreen: React.FC = () => {
         </Gradient>
       </Animated.View>
 
-      <Animated.View entering={FadeInDown.delay(120).duration(400)}>
+      <Animated.View>
         <GlassCard>
           <Text variant="body" color="textSecondary" style={styles.bio}>{BIO}</Text>
         </GlassCard>
       </Animated.View>
 
-      <Animated.View entering={FadeInDown.delay(200).duration(400)} style={{ gap: spacing.sm }}>
+      <Animated.View style={{ gap: spacing.sm }}>
         <View style={styles.tags}>
           <Tag icon="flag-outline" label="Made in India 🇮🇳" />
           <Tag icon="rocket-outline" label="Independent Developer" />

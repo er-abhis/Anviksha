@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {
   Button,
@@ -150,7 +150,7 @@ const Section: React.FC<{ icon: string; title: string; children: React.ReactNode
 }) => {
   const { colors, spacing } = useTheme();
   return (
-    <Animated.View entering={FadeInDown.duration(400)} style={{ gap: spacing.sm }}>
+    <Animated.View style={{ gap: spacing.sm }}>
       <View style={styles.sectionHead}>
         <Icon name={icon} size={16} color={colors.primary} />
         <Text variant="label" color="primary">{title.toUpperCase()}</Text>
