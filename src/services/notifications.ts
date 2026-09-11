@@ -107,7 +107,17 @@ let permissionGranted = false;
 /** (Re)create all reminder triggers from current state. Idempotent (fixed ids). */
 export const rescheduleReminders = async (): Promise<void> => {
   if (Platform.OS !== 'android' && Platform.OS !== 'ios') return;
-  const enabled = useSettingsStore.getState().notifications && permissionGranted;
+  const wantsNotifications = useSettingsStore.getState().notifications;
+  // Re-check permission live: the user may have enabled the Notifications toggle
+  // AFTER launch, so a launch-time denial must not disable reminders forever.
+  // If already denied at OS level this resolves to denied without re-prompting.
+  if (wantsNotifications && !permissionGranted) {
+    const s = await notifee.requestPermission().catch(() => null);
+    permissionGranted =
+      s?.authorizationStatus === AuthorizationStatus.AUTHORIZED ||
+      s?.authorizationStatus === AuthorizationStatus.PROVISIONAL;
+  }
+  const enabled = wantsNotifications && permissionGranted;
 
   // Respect the user's toggle: off → clear everything.
   if (!enabled) {

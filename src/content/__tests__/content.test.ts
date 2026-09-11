@@ -9,6 +9,7 @@ import {
   isLessonInteractiveUnlocked,
   isWorldComplete,
   isWorldUnlocked,
+  UNLOCK_ALL_LESSONS,
   lessonsForWorld,
   questionsForWorld,
   quizForLesson,
@@ -142,11 +143,13 @@ describe('progression', () => {
     for (const w of WORLDS) {
       const ls = lessonsForWorld(w.id);
       expect(isLessonInteractiveUnlocked(ls[0], {})).toBe(true);
-      if (ls[1]) expect(isLessonInteractiveUnlocked(ls[1], {})).toBe(false);
+      if (ls[1] && !UNLOCK_ALL_LESSONS)
+        expect(isLessonInteractiveUnlocked(ls[1], {})).toBe(false);
     }
   });
 
   it('gates lesson 2 interactive until lesson 1 is done, and names the blocker', () => {
+    if (UNLOCK_ALL_LESSONS) return; // gating temporarily overridden
     const w1 = lessonsForWorld(WORLDS[0].id);
     const [first, second] = w1;
     // Fresh user: lesson 1 open, lesson 2 interactive locked -> blocker is lesson 1.
@@ -166,7 +169,8 @@ describe('progression', () => {
     expect(isWorldComplete(WORLDS[0].id, completed)).toBe(true);
     const w2 = lessonsForWorld(WORLDS[1].id);
     expect(isLessonInteractiveUnlocked(w2[0], completed)).toBe(true);
-    if (w2[1]) expect(isLessonInteractiveUnlocked(w2[1], completed)).toBe(false);
+    if (w2[1] && !UNLOCK_ALL_LESSONS)
+      expect(isLessonInteractiveUnlocked(w2[1], completed)).toBe(false);
   });
 });
 

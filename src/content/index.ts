@@ -94,10 +94,17 @@ export const isWorldUnlocked = (
  * open; each later lesson opens once the previous lesson in the same world is
  * completed. A world's progression never depends on any other world.
  */
+/**
+ * Temporary override: unlock every lesson regardless of progress. Flip back to
+ * `false` to restore sequential-within-world gating. ponytail: single kill switch.
+ */
+export const UNLOCK_ALL_LESSONS = true;
+
 export const isLessonUnlocked = (
   lesson: Lesson,
   completed: Record<string, number>,
 ): boolean => {
+  if (UNLOCK_ALL_LESSONS) return true;
   if (lesson.order === 1) return true;
   const prev = lessonsForWorld(lesson.worldId).find(
     l => l.order === lesson.order - 1,
