@@ -32,6 +32,9 @@ import { GlossaryScreen } from '../modules/glossary/screens/GlossaryScreen';
 import { CoffeeScreen } from '../modules/coffee/screens/CoffeeScreen';
 import { AboutScreen } from '../modules/about/screens/AboutScreen';
 import { AboutDeveloperScreen } from '../modules/about/screens/AboutDeveloperScreen';
+import { BrainScreen } from '../modules/brain/screens/BrainScreen';
+import { BrainSimScreen } from '../modules/brain/screens/BrainSimScreen';
+import { DetectiveScreen } from '../modules/brain/screens/DetectiveScreen';
 import { AppDrawer } from './AppDrawer';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -134,6 +137,21 @@ export const RootNavigator: React.FC = () => {
         <Stack.Screen
           name="AILabShowcase"
           component={AILabShowcaseScreen}
+          options={{ animation: 'slide_from_bottom' }}
+        />
+        <Stack.Screen
+          name="Brain"
+          component={BrainScreen}
+          options={{ animation: 'slide_from_right' }}
+        />
+        <Stack.Screen
+          name="BrainSim"
+          component={BrainSimScreen}
+          options={{ animation: 'slide_from_bottom' }}
+        />
+        <Stack.Screen
+          name="Detective"
+          component={DetectiveScreen}
           options={{ animation: 'slide_from_bottom' }}
         />
         <Stack.Screen

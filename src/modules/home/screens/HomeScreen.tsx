@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Pressable, ScrollView, StatusBar, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated from 'react-native-reanimated';
@@ -22,7 +22,16 @@ import {
   XPBadge,
 } from '../../../components';
 import { RootStackParamList } from '../../../navigation/types';
-import { useAchievementsStore, useDrawerStore, useProgressStore } from '../../../store';
+import {
+  conceptsMastered,
+  dueForReview,
+  simsCompletedCount,
+  useAchievementsStore,
+  useBrainStore,
+  useDrawerStore,
+  useProgressStore,
+} from '../../../store';
+import { CASES, SIMS, missionForDay } from '../../brain/data';
 import {
   BADGES,
   Lesson,
@@ -57,6 +66,24 @@ export const HomeScreen: React.FC = () => {
     useProgressStore();
   const dailyCompletedDate = useProgressStore(s => s.dailyCompletedDate);
   const unlocked = useAchievementsStore(s => s.unlocked);
+
+  // AI Brain playground state — the new "learn by playing" core.
+  const simsDone = useBrainStore(simsCompletedCount);
+  const mastered = useBrainStore(conceptsMastered);
+  const simsCompletedMap = useBrainStore(s => s.simsCompleted);
+  const casesState = useBrainStore(s => s.cases);
+  const concepts = useBrainStore(s => s.concepts);
+  const due = useMemo(() => dueForReview(concepts, Date.now()), [concepts]);
+  const mission = missionForDay(todayISO());
+  const quickSims = ['neural-network', 'decision-tree', 'token-explorer', 'training-lab']
+    .map(id => SIMS.find(s => s.id === id)!)
+    .filter(Boolean);
+  const arenaCase = CASES.find(c => !casesState[c.id]?.solved) ?? CASES[0];
+  const openMission = () =>
+    mission.kind === 'sim'
+      ? navigation.navigate('BrainSim', { simId: mission.targetId })
+      : navigation.navigate('Detective', { caseId: mission.targetId });
+  const reviewSim = due.length ? SIMS.find(s => s.concept === due[0]) : undefined;
 
   const world = currentWorld(completed);
   const dailyDone = dailyCompletedDate === todayISO();
@@ -142,16 +169,10 @@ export const HomeScreen: React.FC = () => {
           >
             <Gradient
               colors={gradients.brand}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
               style={StyleSheet.absoluteFill}
               borderRadius={radius.xl}
-            />
-            <Gradient
-              colors={gradients.sheen}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 0, y: 1 }}
-              style={styles.heroSheen}
-              borderRadius={radius.xl}
-              pointerEvents="none"
             />
             <View style={[styles.heroInner, { padding: spacing.xl }]}>
               <View style={styles.headerRow}>
@@ -165,9 +186,9 @@ export const HomeScreen: React.FC = () => {
                 </Pressable>
                 <View style={styles.flex}>
                   <Text variant="label" color="textInverse" style={styles.heroEyebrow}>
-                    Welcome back
+                    ANVIKSHA
                   </Text>
-                  <Text variant="h1" color="textInverse">Ready to explore?</Text>
+                  <Text variant="h1" color="textInverse">Learn AI by Playing</Text>
                 </View>
                 <IconButton
                   name="settings-outline"
@@ -188,6 +209,116 @@ export const HomeScreen: React.FC = () => {
               </View>
             </View>
           </Animated.View>
+        </Padded>
+
+        {/* ★ Inside the AI Brain — the primary "learn by playing" entry */}
+        <Padded>
+          <GlassCard elevation="glow" onPress={() => navigation.navigate('Brain')} padded={false} style={styles.brainCard}>
+            <Gradient colors={gradients.cool} style={StyleSheet.absoluteFill} borderRadius={radius.lg} />
+            <View style={styles.brainInner}>
+              <View style={styles.brainTop}>
+                <Text style={styles.brainEmoji}>🧠</Text>
+                <View style={styles.flex}>
+                  <Text variant="label" color="textInverse" style={{ opacity: 0.9, letterSpacing: 1 }}>INSIDE THE AI BRAIN</Text>
+                  <Text variant="h2" color="textInverse">{SIMS.length + CASES.length}+ interactive AI simulations</Text>
+                </View>
+              </View>
+              <View style={styles.brainCtaRow}>
+                <View style={[styles.brainCta, { borderRadius: radius.pill }]}>
+                  <Text variant="button" color="primary">{simsDone > 0 ? 'Continue Learning' : 'Start Exploring'}</Text>
+                  <Icon name="arrow-forward" size={16} color={colors.primary} />
+                </View>
+              </View>
+            </View>
+          </GlassCard>
+        </Padded>
+
+        {/* Today's Mission — one short interactive challenge */}
+        <Padded>
+          <SectionTitle title="Today’s Mission" />
+          <GlassCard elevation="md" onPress={openMission}>
+            <View style={styles.rowGap}>
+              <View style={[styles.activityIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.md }]}>
+                <Icon name={mission.kind === 'sim' ? 'flask' : 'search'} size={24} color={colors.primary} />
+              </View>
+              <View style={styles.flex}>
+                <Text variant="label" color="accent">{mission.kind === 'sim' ? '2–4 MIN EXPERIMENT' : 'DETECTIVE CASE'}</Text>
+                <Text variant="bodyStrong">{mission.title}</Text>
+                <Text variant="caption" color="textSecondary" numberOfLines={1}>{mission.blurb}</Text>
+              </View>
+              <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
+            </View>
+          </GlassCard>
+        </Padded>
+
+        {/* Quick Playground — jump straight into a sim */}
+        <Padded>
+          <SectionTitle title="Quick Playground" actionLabel="All sims" onAction={() => navigation.navigate('Brain')} />
+          <View style={styles.quickGrid}>
+            {quickSims.map(s => (
+              <Pressable
+                key={s.id}
+                onPress={() => navigation.navigate('BrainSim', { simId: s.id })}
+                style={({ pressed }) => [styles.quickCell, { opacity: pressed ? 0.7 : 1 }]}
+              >
+                <GlassCard elevation="md">
+                  <View style={styles.quickRow2}>
+                    <View style={[styles.quickIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.md }]}>
+                      <Icon name={s.icon} size={20} color={colors.primary} />
+                    </View>
+                    {simsCompletedMap[s.id] && <Icon name="checkmark-circle" size={15} color={colors.success} />}
+                  </View>
+                  <Text variant="bodyStrong" numberOfLines={1} style={{ marginTop: spacing.sm }}>{s.title}</Text>
+                </GlassCard>
+              </Pressable>
+            ))}
+          </View>
+        </Padded>
+
+        {/* Progress snapshot */}
+        <Padded>
+          <SectionTitle title="Your Progress" actionLabel="Details" onAction={() => navigation.navigate('Main', { screen: 'Profile' })} />
+          <View style={styles.progressRow}>
+            <ProgressTile icon="flash" value={`${xp}`} label="XP" tint={colors.xp} />
+            <ProgressTile icon="ribbon" value={`${level}`} label="Level" tint={colors.primary} />
+            <ProgressTile icon="flask" value={`${simsDone}`} label="Sims" tint={colors.accent} />
+            <ProgressTile icon="sparkles" value={`${mastered}`} label="Concepts" tint={colors.accentAlt} />
+            <ProgressTile icon="flame" value={`${streakDays}`} label="Streak" tint={colors.streak} />
+          </View>
+        </Padded>
+
+        {/* Ready to Review — spaced revision recommendation */}
+        {reviewSim && (
+          <Padded>
+            <GlassCard elevation="md" onPress={() => navigation.navigate('BrainSim', { simId: reviewSim.id })} style={{ borderColor: colors.warning + '66' }}>
+              <View style={styles.rowGap}>
+                <View style={[styles.activityIcon, { backgroundColor: colors.warning + '22', borderRadius: radius.md }]}>
+                  <Icon name="refresh" size={22} color={colors.warning} />
+                </View>
+                <View style={styles.flex}>
+                  <Text variant="bodyStrong">🔁 Review {reviewSim.concept}</Text>
+                  <Text variant="caption" color="textSecondary">Due for revision — revisit to lock it in.</Text>
+                </View>
+                <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
+              </View>
+            </GlassCard>
+          </Padded>
+        )}
+
+        {/* Challenge Arena — one AI puzzle */}
+        <Padded>
+          <SectionTitle title="Challenge Arena" />
+          <GlassCard elevation="md" onPress={() => navigation.navigate('Detective', { caseId: arenaCase.id })}>
+            <View style={styles.rowGap}>
+              <Text style={styles.arenaEmoji}>{arenaCase.emoji}</Text>
+              <View style={styles.flex}>
+                <Text variant="label" color="accent">AI DETECTIVE 🕵️</Text>
+                <Text variant="bodyStrong">{arenaCase.title}</Text>
+                <Text variant="caption" color="textSecondary">Investigate the scenario and name the flaw.</Text>
+              </View>
+              <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
+            </View>
+          </GlassCard>
         </Padded>
 
         {/* 1 — Continue Learning */}
@@ -403,13 +534,29 @@ const Padded: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <View style={{ paddingHorizontal: spacing.lg }}>{children}</View>;
 };
 
+/** Compact progress stat used in the Home "Your Progress" row. */
+const ProgressTile: React.FC<{ icon: string; value: string; label: string; tint: string }> = ({
+  icon,
+  value,
+  label,
+  tint,
+}) => {
+  const { colors, radius } = useTheme();
+  return (
+    <View style={[styles.progressTile, { backgroundColor: colors.glass, borderColor: colors.glassBorder, borderRadius: radius.md }]}>
+      <Icon name={icon} size={16} color={tint} />
+      <Text variant="bodyStrong" style={{ color: tint }}>{value}</Text>
+      <Text variant="caption" color="textTertiary">{label}</Text>
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
   fill: { flex: 1 },
   flex: { flex: 1 },
   content: { width: '100%', alignSelf: 'center' },
   hero: {},
   heroInner: {},
-  heroSheen: { position: 'absolute', top: 0, left: 0, right: 0, height: '60%' },
   heroEyebrow: { letterSpacing: 1, opacity: 0.9 },
   glossaryIcon: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   activityIcon: { width: 48, height: 48, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
@@ -425,4 +572,24 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 999,
   },
+  brainCard: { overflow: 'hidden' },
+  brainInner: { padding: 20, gap: 16 },
+  brainTop: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  brainEmoji: { fontSize: 40 },
+  brainCtaRow: { flexDirection: 'row' },
+  brainCta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  quickGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  quickCell: { width: '47.5%' },
+  quickRow2: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  quickIcon: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
+  progressRow: { flexDirection: 'row', gap: 8 },
+  progressTile: { flex: 1, alignItems: 'center', gap: 2, paddingVertical: 10, borderWidth: StyleSheet.hairlineWidth },
+  arenaEmoji: { fontSize: 34 },
 });

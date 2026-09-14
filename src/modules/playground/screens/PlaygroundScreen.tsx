@@ -58,6 +58,24 @@ export const PlaygroundScreen: React.FC = () => {
         </Gradient>
       </Animated.View>
 
+      {/* Featured: Inside the AI Brain — interactive sims + detective */}
+      <Animated.View>
+        <Card glow onPress={() => navigation.navigate('Brain')}>
+          <View style={styles.simRow}>
+            <View style={[styles.simIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.md }]}>
+              <Icon name="hardware-chip" size={20} color={colors.primary} />
+            </View>
+            <View style={styles.flex}>
+              <Text variant="bodyStrong">Inside the AI Brain</Text>
+              <Text variant="caption" color="textSecondary">
+                Interactive simulations + AI Detective cases. Learn by playing.
+              </Text>
+            </View>
+            <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
+          </View>
+        </Card>
+      </Animated.View>
+
       {/* Featured: Build the AI game */}
       <Animated.View>
         <Card glow onPress={() => navigation.navigate('BuildAI')}>

@@ -11,7 +11,7 @@ export const CurrentWorldCard: React.FC<{
   /** Overline label — defaults to "CURRENT WORLD"; reused for Explore/Recommended. */
   eyebrow?: string;
 }> = ({ data, onPress, eyebrow = 'CURRENT WORLD' }) => {
-  const { radius, spacing, gradients, elevation } = useTheme();
+  const { radius, spacing, elevation } = useTheme();
   return (
     <PressableScale
       onPress={onPress}
@@ -22,13 +22,6 @@ export const CurrentWorldCard: React.FC<{
         colors={data.gradient}
         style={{ borderRadius: radius.xl, overflow: 'hidden' }}
       >
-        <Gradient
-          colors={gradients.sheen}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 1 }}
-          style={styles.sheen}
-          pointerEvents="none"
-        />
         <View style={{ padding: spacing.xl, minHeight: 158, justifyContent: 'center' }}>
           <View style={styles.eyebrowRow}>
             <Text variant="label" color="textInverse" style={styles.eyebrow}>
@@ -64,7 +57,6 @@ export const CurrentWorldCard: React.FC<{
 };
 
 const styles = StyleSheet.create({
-  sheen: { position: 'absolute', top: 0, left: 0, right: 0, height: '60%' },
   eyebrowRow: {
     flexDirection: 'row',
     alignItems: 'center',

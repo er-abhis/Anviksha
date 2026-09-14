@@ -6,3 +6,9 @@ export { useProgressStore } from './progressStore';
 export { useAchievementsStore } from './achievementsStore';
 export { useDrawerStore } from './drawerStore';
 export { useAILabStore } from '../modules/ailab/storage/aiLabStore';
+export {
+  useBrainStore,
+  simsCompletedCount,
+  conceptsMastered,
+  dueForReview,
+} from '../modules/brain/brainStore';

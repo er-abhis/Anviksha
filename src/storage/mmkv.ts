@@ -14,6 +14,7 @@ export const StorageKeys = {
   progress: 'user.progress',
   achievements: 'user.achievements',
   ailab: 'user.ailab',
+  brain: 'user.brain',
   onboardingComplete: 'app.onboardingComplete',
 } as const;
 
