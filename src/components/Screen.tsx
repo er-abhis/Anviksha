@@ -63,10 +63,15 @@ export const Screen: React.FC<ScreenProps> = ({
       {scroll ? (
         <ScrollView
           style={styles.flex}
-          contentContainerStyle={[inner, { paddingBottom: spacing.giant }, contentContainerStyle]}
+          contentContainerStyle={inner}
           showsVerticalScrollIndicator={false}
         >
-          <Body {...bodyProps}>{children}</Body>
+          {/* Layout styles (gap, paddingBottom) live on Body so `gap` actually
+              spaces the children — on the ScrollView container it would only see
+              this single Body child and be swallowed. */}
+          <Body {...bodyProps} style={[{ paddingBottom: spacing.giant }, contentContainerStyle]}>
+            {children}
+          </Body>
         </ScrollView>
       ) : (
         <Body {...bodyProps} style={[styles.flex, inner, contentContainerStyle]}>

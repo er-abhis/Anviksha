@@ -38,7 +38,7 @@ export const AILabScreen: React.FC = () => {
     <Screen
       scroll
       contentContainerStyle={{
-        gap: spacing.lg,
+        gap: spacing.xl,
         paddingBottom: tabBarHeight + spacing.lg,
       }}
     >
@@ -108,7 +108,7 @@ export const AILabScreen: React.FC = () => {
               >
                 <Text style={styles.surpriseEmoji}>🎲</Text>
               </View>
-              <View style={styles.flex}>
+              <View style={styles.textCol}>
                 <Text variant="bodyStrong" style={{ color: colors.onPrimary }}>
                   Surprise Me
                 </Text>
@@ -139,7 +139,7 @@ export const AILabScreen: React.FC = () => {
             >
               <Text style={styles.surpriseEmoji}>🧪</Text>
             </View>
-            <View style={styles.flex}>
+            <View style={styles.textCol}>
               <Text variant="bodyStrong">Free Build</Text>
               <Text variant="caption" color="textSecondary">
                 No mission — pick a goal and build any AI you like.
@@ -165,7 +165,7 @@ export const AILabScreen: React.FC = () => {
         }}
       />
 
-      <Text variant="label" color="textSecondary">
+      <Text variant="label" color="textSecondary" style={{ marginTop: spacing.sm }}>
         {MISSIONS.length} MISSIONS
       </Text>
 
@@ -188,6 +188,7 @@ export const AILabScreen: React.FC = () => {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
+  textCol: { flex: 1, minWidth: 0, gap: 3 },
   overflowHidden: { overflow: 'hidden' },
   surpriseRow: { flexDirection: 'row', alignItems: 'center' },
   surpriseIcon: {

@@ -40,7 +40,7 @@ export const PlaygroundScreen: React.FC = () => {
   const unlockedCount = LESSONS.filter(l => isLessonUnlocked(l, completed)).length;
 
   return (
-    <Screen scroll contentContainerStyle={{ gap: spacing.xl, paddingBottom: tabBarHeight + spacing.lg }}>
+    <Screen scroll contentContainerStyle={{ gap: spacing.xxl, paddingBottom: tabBarHeight + spacing.lg }}>
       {/* Gradient hero */}
       <Animated.View>
         <Gradient
@@ -65,9 +65,9 @@ export const PlaygroundScreen: React.FC = () => {
             <View style={[styles.simIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.md }]}>
               <Icon name="hardware-chip" size={20} color={colors.primary} />
             </View>
-            <View style={styles.flex}>
-              <Text variant="bodyStrong">Inside the AI Brain</Text>
-              <Text variant="caption" color="textSecondary">
+            <View style={styles.textCol}>
+              <Text variant="bodyStrong" numberOfLines={1}>Inside the AI Brain</Text>
+              <Text variant="caption" color="textSecondary" numberOfLines={2}>
                 Interactive simulations + AI Detective cases. Learn by playing.
               </Text>
             </View>
@@ -83,9 +83,9 @@ export const PlaygroundScreen: React.FC = () => {
             <View style={[styles.simIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.md }]}>
               <Icon name="construct" size={20} color={colors.primary} />
             </View>
-            <View style={styles.flex}>
-              <Text variant="bodyStrong">Build the AI</Text>
-              <Text variant="caption" color="textSecondary">
+            <View style={styles.textCol}>
+              <Text variant="bodyStrong" numberOfLines={1}>Build the AI</Text>
+              <Text variant="caption" color="textSecondary" numberOfLines={2}>
                 Assemble real AI architectures from components.
               </Text>
             </View>
@@ -101,9 +101,9 @@ export const PlaygroundScreen: React.FC = () => {
             <View style={[styles.simIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.md }]}>
               <Icon name="bulb" size={20} color={colors.primary} />
             </View>
-            <View style={styles.flex}>
-              <Text variant="bodyStrong">What Would You Build?</Text>
-              <Text variant="caption" color="textSecondary">
+            <View style={styles.textCol}>
+              <Text variant="bodyStrong" numberOfLines={1}>What Would You Build?</Text>
+              <Text variant="caption" color="textSecondary" numberOfLines={2}>
                 Pick components for a goal and reveal the AI stack.
               </Text>
             </View>
@@ -134,6 +134,7 @@ export const PlaygroundScreen: React.FC = () => {
         return (
           <Animated.View
             key={world.id}
+            style={{ marginTop: spacing.sm }}
           >
             <SectionTitle title={world.title} />
             <View style={{ gap: spacing.sm }}>
@@ -170,7 +171,7 @@ export const PlaygroundScreen: React.FC = () => {
                             color={locked ? colors.textTertiary : colors.primary}
                           />
                         </View>
-                        <View style={styles.flex}>
+                        <View style={styles.textCol}>
                           <Text
                             variant="bodyStrong"
                             color={locked ? 'textTertiary' : 'text'}
@@ -225,6 +226,7 @@ const QuickCard: React.FC<{ icon: string; label: string; onPress: () => void }> 
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
+  textCol: { flex: 1, minWidth: 0, gap: 3 },
   heroCopy: { opacity: 0.92, marginTop: 8 },
   quickRow: { flexDirection: 'row' },
   quickInner: { gap: 8 },

@@ -50,7 +50,7 @@ export const MissionCard: React.FC<MissionCardProps> = ({
           <Text style={styles.emoji}>{mission.emoji}</Text>
         </View>
 
-        <View style={styles.flex}>
+        <View style={styles.textCol}>
           <View style={[styles.titleRow, { gap: spacing.sm }]}>
             <Text variant="bodyStrong" numberOfLines={1} style={styles.flex}>
               {mission.title}
@@ -96,6 +96,7 @@ const styles = StyleSheet.create({
   },
   row: { flexDirection: 'row', alignItems: 'center' },
   flex: { flex: 1 },
+  textCol: { flex: 1, minWidth: 0, gap: 2 },
   emojiChip: {
     width: 48,
     height: 48,
