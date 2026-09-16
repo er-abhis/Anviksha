@@ -73,7 +73,11 @@ export const RootNavigator: React.FC = () => {
           component={OnboardingScreen}
           options={{ animation: 'fade' }}
         />
-        <Stack.Screen name="Main" component={MainTabs} />
+        <Stack.Screen
+          name="Main"
+          component={MainTabs}
+          options={{ animation: 'fade' }}
+        />
         <Stack.Screen
           name="Settings"
           component={SettingsScreen}

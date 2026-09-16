@@ -17,7 +17,12 @@ import { usePreferencesStore } from './src/store';
 const App: React.FC = () => {
   useEffect(() => {
     initNotifications();
-    checkForUpdates();
+    // Best-effort Play in-app update check. Deferred off the render commit and
+    // hard-swallowed so nothing here can ever crash the app.
+    const t = setTimeout(() => {
+      checkForUpdates().catch(() => {});
+    }, 0);
+    return () => clearTimeout(t);
   }, []);
 
   // Respect the OS "Remove animations" accessibility setting: treat it as a

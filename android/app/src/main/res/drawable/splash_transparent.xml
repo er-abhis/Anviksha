@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fully transparent 1dp drawable used as the Android 12+ system splash icon,
+     so the OS-mandated cold-start splash shows NO logo (just the black
+     windowSplashScreenBackground). The app's JS SplashScreen renders the real
+     artwork — this keeps it feeling like a single splash. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@android:color/transparent" />
+    <size android:width="1dp" android:height="1dp" />
+</shape>
