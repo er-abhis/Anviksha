@@ -71,7 +71,7 @@ export const AppDrawer: React.FC = () => {
   const items: Item[] = [
     { key: 'Home', icon: 'home-outline', label: 'Home', route: 'Main', run: () => { hide(); navigationRef.isReady() && navigationRef.navigate('Main', { screen: 'Home' }); } },
     { key: 'LearnMore', icon: 'library-outline', label: 'Learn More', route: 'LearnMore', run: () => go('LearnMore') },
-    { key: 'Coffee', icon: 'cafe-outline', label: 'Buy Me a Coffee', route: 'Coffee', run: () => go('Coffee') },
+    { key: 'Coffee', icon: 'cafe-outline', label: 'Support the Developer', route: 'Coffee', run: () => go('Coffee') },
     { key: 'About', icon: 'document-text-outline', label: 'About App', route: 'About', run: () => go('About') },
     { key: 'Developer', icon: 'code-slash-outline', label: 'About Developer', route: 'Developer', run: () => go('Developer') },
     { key: 'Contact', icon: 'mail-outline', label: 'Contact Us', run: () => { hide(); openContactForm(); } },

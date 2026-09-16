@@ -26,11 +26,15 @@ const UPI_ID = 'royal.4766@ybl';
 
 type Tab = 'paypal' | 'upi';
 
-/** Amounts match the trailing value in each PayPal.me URL so nothing misleads. */
+/**
+ * Voluntary donation amounts. Framed as gifts, not purchases: no tier unlocks
+ * any feature or content (that would require Play Billing). Amounts match the
+ * trailing value in each PayPal.me URL so nothing misleads.
+ */
 const PAYPAL_TIERS = [
-  { emoji: '☕', label: 'Buy a coffee', amount: '$5', url: 'https://paypal.me/tinytalkerdev/5' },
-  { emoji: '🍰', label: 'Support the work', amount: '$25', url: 'https://paypal.me/tinytalkerdev/25' },
-  { emoji: '🚀', label: 'Power a feature', amount: '$50', url: 'https://paypal.me/tinytalkerdev/50' },
+  { emoji: '☕', label: 'Small thanks', amount: '$5', url: 'https://paypal.me/tinytalkerdev/5' },
+  { emoji: '🍰', label: 'Kind support', amount: '$25', url: 'https://paypal.me/tinytalkerdev/25' },
+  { emoji: '💜', label: 'Generous support', amount: '$50', url: 'https://paypal.me/tinytalkerdev/50' },
 ];
 
 const REASONS = [
@@ -85,9 +89,9 @@ export const CoffeeScreen: React.FC = () => {
           <View style={styles.heroBadge}>
             <Icon name="cafe" size={30} color="#FFFFFF" />
           </View>
-          <Text variant="h2" color="textInverse" center>Buy me a coffee</Text>
+          <Text variant="h2" color="textInverse" center>Support the developer</Text>
           <Text variant="body" color="textInverse" center style={styles.heroSub}>
-            {`${APP.name} is built independently. A small tip keeps the lessons coming. ❤️`}
+            {`${APP.name} is built independently. A voluntary donation helps keep it free — you receive nothing in return. ❤️`}
           </Text>
         </Gradient>
       </Animated.View>
@@ -186,7 +190,7 @@ export const CoffeeScreen: React.FC = () => {
       </Animated.View>
 
       <Text variant="caption" color="textTertiary" center>
-        {`${APP.name} is an independently developed app, not a charity. Support is entirely voluntary.`}
+        {`${APP.name} is an independently developed app, not a charity. Donations are entirely voluntary and do not unlock any features, content, or benefits — every part of the app is free for everyone.`}
       </Text>
     </Screen>
   );
