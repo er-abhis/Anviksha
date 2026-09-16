@@ -7,6 +7,7 @@ import { AchievementCard, Button, Confetti, DraggableList, GlassCard, ProgressBa
 import { useTheme } from '../../../theme/ThemeProvider';
 import { usePreferencesStore } from '../../../store';
 import { shareAchievement } from '../../../utils/appLinks';
+import { hapticSuccess, hapticError } from '../../../utils/haptics';
 import { ChoiceQuestion, MatchQuestion, OrderQuestion, Question } from '../../../content';
 
 export interface QuizResult {
@@ -228,7 +229,10 @@ const ChoiceView: React.FC<{ question: ChoiceQuestion; onNext: (c: boolean) => v
           <Animated.View key={i}>
             <Pressable
               disabled={answered}
-              onPress={() => setPicked(i)}
+              onPress={() => {
+                setPicked(i);
+                (i === question.correctIndex ? hapticSuccess : hapticError)();
+              }}
               style={[
                 styles.option,
                 {

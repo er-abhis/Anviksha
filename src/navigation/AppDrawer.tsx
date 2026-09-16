@@ -59,7 +59,7 @@ export const AppDrawer: React.FC = () => {
     return () => sub.remove();
   }, [open, hide]);
 
-  const go = (route: 'Coffee' | 'About' | 'Developer' | 'LearnMore') => {
+  const go = (route: 'Coffee' | 'About' | 'Developer' | 'LearnMore' | 'Search') => {
     hide();
     if (navigationRef.isReady()) navigationRef.navigate(route);
   };
@@ -70,6 +70,7 @@ export const AppDrawer: React.FC = () => {
 
   const items: Item[] = [
     { key: 'Home', icon: 'home-outline', label: 'Home', route: 'Main', run: () => { hide(); navigationRef.isReady() && navigationRef.navigate('Main', { screen: 'Home' }); } },
+    { key: 'Search', icon: 'search-outline', label: 'Search', route: 'Search', run: () => go('Search') },
     { key: 'LearnMore', icon: 'library-outline', label: 'Learn More', route: 'LearnMore', run: () => go('LearnMore') },
     { key: 'Coffee', icon: 'cafe-outline', label: 'Support the Developer', route: 'Coffee', run: () => go('Coffee') },
     { key: 'About', icon: 'document-text-outline', label: 'About App', route: 'About', run: () => go('About') },

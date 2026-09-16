@@ -126,6 +126,20 @@ jest.mock('@notifee/react-native', () => ({
   TriggerType: { TIMESTAMP: 0 },
 }));
 
+// Play in-app updates is native — stub the class + enums used by appUpdate.ts.
+jest.mock('sp-react-native-in-app-updates', () => ({
+  __esModule: true,
+  default: class {
+    checkNeedsUpdate = jest.fn(async () => ({ shouldUpdate: false }));
+    addStatusUpdateListener = jest.fn();
+    removeStatusUpdateListener = jest.fn();
+    startUpdate = jest.fn(async () => {});
+    installUpdate = jest.fn();
+  },
+  AndroidUpdateType: { FLEXIBLE: 0, IMMEDIATE: 1 },
+  AndroidInstallStatus: { DOWNLOADED: 11 },
+}));
+
 // SQLite is native (JSI) — stub the quick-sqlite connection used by the runner.
 jest.mock('react-native-quick-sqlite', () => ({
   open: () => ({

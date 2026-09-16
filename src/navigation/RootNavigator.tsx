@@ -29,6 +29,7 @@ import { WorldDetailScreen } from '../modules/worlds/screens/WorldDetailScreen';
 import { LessonIntroScreen } from '../modules/learn/screens/LessonIntroScreen';
 import { LessonScreen } from '../modules/learn/screens/LessonScreen';
 import { GlossaryScreen } from '../modules/glossary/screens/GlossaryScreen';
+import { SearchScreen } from '../modules/search/screens/SearchScreen';
 import { CoffeeScreen } from '../modules/coffee/screens/CoffeeScreen';
 import { AboutScreen } from '../modules/about/screens/AboutScreen';
 import { AboutDeveloperScreen } from '../modules/about/screens/AboutDeveloperScreen';
@@ -97,6 +98,11 @@ export const RootNavigator: React.FC = () => {
         <Stack.Screen
           name="Glossary"
           component={GlossaryScreen}
+          options={{ animation: 'slide_from_right' }}
+        />
+        <Stack.Screen
+          name="Search"
+          component={SearchScreen}
           options={{ animation: 'slide_from_right' }}
         />
         <Stack.Screen

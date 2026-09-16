@@ -25,6 +25,9 @@ export const Text: React.FC<AppTextProps> = ({
 
   return (
     <RNText
+      // Honour OS font scaling for accessibility, but cap it so very large
+      // system fonts can't break dense sim/quiz layouts.
+      maxFontSizeMultiplier={1.4}
       {...rest}
       style={[
         base,

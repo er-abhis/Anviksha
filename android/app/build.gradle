@@ -124,6 +124,26 @@ android {
     }
 }
 
+// Write the native versionName/versionCode into a JS file so the app can show
+// its real build version (Settings/About/menu) without a runtime dependency.
+// Regenerated on every build; keeps src/generated/appVersion.ts in sync.
+tasks.register("generateAppVersion") {
+    def outFile = file("$rootDir/../src/generated/appVersion.ts")
+    def vName = android.defaultConfig.versionName
+    def vCode = android.defaultConfig.versionCode
+    outputs.upToDateWhen { false }
+    doLast {
+        outFile.parentFile.mkdirs()
+        outFile.text = "// AUTO-GENERATED at build time by the generateAppVersion Gradle task\n" +
+            "// (android/app/build.gradle) from versionName / versionCode. Do not edit by hand.\n" +
+            "export const APP_VERSION = '${vName}';\n" +
+            "export const APP_BUILD = ${vCode};\n"
+    }
+}
+tasks.configureEach { task ->
+    if (task.name == "preBuild") task.dependsOn("generateAppVersion")
+}
+
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")

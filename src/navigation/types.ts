@@ -45,6 +45,7 @@ export type RootStackParamList = {
   Worlds: undefined;
   WorldDetail: { worldId: string };
   Glossary: undefined;
+  Search: undefined;
   Coffee: undefined;
   About: undefined;
   Developer: undefined;

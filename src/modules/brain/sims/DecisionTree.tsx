@@ -73,6 +73,9 @@ export const DecisionTree: React.FC = () => {
               <Pressable
                 key={f}
                 onPress={() => setFeature(i as 0 | 1)}
+                accessibilityRole="button"
+                accessibilityLabel={`Split on ${f}`}
+                accessibilityState={{ selected: active }}
                 style={[
                   styles.segBtn,
                   {

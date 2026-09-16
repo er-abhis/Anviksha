@@ -46,7 +46,7 @@ export const LearnMoreScreen: React.FC = () => {
       <View style={[styles.note, { backgroundColor: colors.surfaceAlt }]}>
         <Icon name="open-outline" size={16} color={colors.textSecondary} />
         <Text variant="caption" color="textSecondary" style={styles.flex}>
-          These are trusted external sites and open in your browser — they’re not part of Anviksha.
+          These are trusted external sites and open in your browser (internet required) — they’re not part of Anviksha.
         </Text>
       </View>
 

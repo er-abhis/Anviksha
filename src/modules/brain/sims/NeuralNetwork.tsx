@@ -116,6 +116,9 @@ export const NeuralNetwork: React.FC = () => {
               <Pressable
                 key={p}
                 onPress={() => setPreset(p)}
+                accessibilityRole="button"
+                accessibilityLabel={`${p} logic`}
+                accessibilityState={{ selected: active }}
                 style={[styles.segBtn, { borderRadius: radius.pill, backgroundColor: active ? colors.primaryMuted : colors.glass, borderColor: active ? colors.primary : colors.glassBorder }]}
               >
                 <Text variant="bodyStrong" color={active ? 'primary' : 'textSecondary'}>{p}</Text>

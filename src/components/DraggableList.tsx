@@ -229,6 +229,17 @@ const Row: React.FC<RowProps> = ({
     <Animated.View style={[styles.rowWrap, style]}>
       <GestureDetector gesture={pan}>
         <View
+          accessible
+          accessibilityRole="adjustable"
+          accessibilityLabel={`Reorder item ${indexOf(positions, item) + 1} of ${count}: ${
+            labelFor ? labelFor(item) : item
+          }`}
+          accessibilityHint={
+            disabled
+              ? undefined
+              : 'Double tap and hold, then drag up or down to reorder'
+          }
+          accessibilityValue={{ text: `Position ${indexOf(positions, item) + 1} of ${count}` }}
           style={[
             styles.row,
             {
@@ -242,7 +253,7 @@ const Row: React.FC<RowProps> = ({
           <View style={[styles.badge, { backgroundColor: colors.surfaceAlt, borderRadius: radius.sm }]}>
             <Text variant="label" color="textSecondary">{`${indexOf(positions, item) + 1}`}</Text>
           </View>
-          {iconFor && <Icon name={iconFor(item)} size={18} color={colors.primary} />}
+          {iconFor && <Icon name={iconFor(item)} size={18} color={colors.primary} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />}
           <Text variant="body" style={styles.flex} numberOfLines={2}>
             {labelFor ? labelFor(item) : item}
           </Text>
@@ -255,6 +266,8 @@ const Row: React.FC<RowProps> = ({
             name="reorder-three"
             size={22}
             color={disabled ? colors.textTertiary : colors.textSecondary}
+            accessibilityElementsHidden
+            importantForAccessibility="no-hide-descendants"
           />
         </View>
       </GestureDetector>
