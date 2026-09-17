@@ -49,9 +49,9 @@ export const LabCanvas: React.FC<{
         borderRadius={radius.lg}
         pointerEvents="none"
       />
-      {/* neon top glow */}
+      {/* neon top glow — a subtle sheen, not a hard purple band */}
       <Gradient
-        colors={['rgba(124,92,255,0.45)', 'rgba(124,92,255,0)']}
+        colors={['rgba(124,92,255,0.18)', 'rgba(124,92,255,0)']}
         start={{ x: 0.5, y: 0 }}
         end={{ x: 0.5, y: 1 }}
         style={styles.topGlow}
@@ -73,7 +73,7 @@ export const LabCanvas: React.FC<{
 
 const styles = StyleSheet.create({
   wrap: { overflow: 'hidden', borderWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(124,92,255,0.35)' },
-  topGlow: { position: 'absolute', top: 0, left: 0, right: 0, height: '55%' },
+  topGlow: { position: 'absolute', top: 0, left: 0, right: 0, height: '40%' },
   sweep: { position: 'absolute', top: 0, bottom: 0, width: '35%' },
   content: { flex: 1, padding: 14, justifyContent: 'center' },
 });

@@ -28,6 +28,21 @@ export interface GradientProps {
 let seq = 0;
 const nextId = () => `grad-${(seq = (seq + 1) % 100000)}`;
 
+// react-native-svg ignores the alpha channel of a Stop's `stopColor`, so an
+// `rgba(…,0.2)` stop renders fully opaque — collapsing fades to a hard band.
+// Split any embedded alpha out into a separate opacity that Stop honours.
+export const splitAlpha = (c: string): { color: string; alpha: number } => {
+  const rgba = c.match(/^rgba?\(\s*([^)]+)\)$/i);
+  if (rgba) {
+    const p = rgba[1].split(',').map(s => s.trim());
+    if (p.length === 4) return { color: `rgb(${p[0]}, ${p[1]}, ${p[2]})`, alpha: parseFloat(p[3]) };
+    return { color: c, alpha: 1 };
+  }
+  const hex8 = c.match(/^#([0-9a-fA-F]{6})([0-9a-fA-F]{2})$/);
+  if (hex8) return { color: `#${hex8[1]}`, alpha: parseInt(hex8[2], 16) / 255 };
+  return { color: c, alpha: 1 };
+};
+
 /**
  * SVG-based gradient (no expo-linear-gradient dependency). Supports linear and
  * radial fills. Fills its container; place absolute children over it.
@@ -44,14 +59,17 @@ export const Gradient: React.FC<GradientProps> = ({
   pointerEvents,
 }) => {
   const id = useMemo(nextId, []);
-  const stops = colors.map((c, i) => (
-    <Stop
-      key={i}
-      offset={colors.length === 1 ? 0 : i / (colors.length - 1)}
-      stopColor={c}
-      stopOpacity={opacities?.[i] ?? 1}
-    />
-  ));
+  const stops = colors.map((c, i) => {
+    const { color, alpha } = splitAlpha(c);
+    return (
+      <Stop
+        key={i}
+        offset={colors.length === 1 ? 0 : i / (colors.length - 1)}
+        stopColor={color}
+        stopOpacity={(opacities?.[i] ?? 1) * alpha}
+      />
+    );
+  });
 
   return (
     <View

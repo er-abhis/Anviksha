@@ -23,6 +23,12 @@ export const Text: React.FC<AppTextProps> = ({
   const theme = useTheme();
   const base = theme.typography[variant];
 
+  // When a caller overrides fontSize (e.g. an emoji at 40px) without also
+  // giving a lineHeight, the variant's small lineHeight would clip the glyph
+  // top/bottom. Drop the base lineHeight so RN derives it from the new size.
+  const flat = StyleSheet.flatten(style) || {};
+  const sizeOverridden = flat.fontSize != null && flat.lineHeight == null;
+
   return (
     <RNText
       // Honour OS font scaling for accessibility, but cap it so very large
@@ -35,6 +41,7 @@ export const Text: React.FC<AppTextProps> = ({
         { color: theme.colors[color] },
         center && styles.center,
         style,
+        sizeOverridden && { lineHeight: undefined },
       ]}
     />
   );
