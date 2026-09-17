@@ -49,6 +49,7 @@ export type RootStackParamList = {
   Coffee: undefined;
   About: undefined;
   Developer: undefined;
+  Privacy: undefined;
 };
 
 declare global {

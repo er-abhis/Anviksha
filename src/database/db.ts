@@ -12,7 +12,9 @@ let dbPromise: Promise<AppDatabase> | null = null;
 
 const getUserVersion = async (db: AppDatabase): Promise<number> => {
   const result = await db.executeAsync('PRAGMA user_version;');
-  return result.rows?.item(0).user_version as number;
+  // Fully optional-chained: a driver returning no rows must not crash launch;
+  // a missing user_version simply means "start migrations from 0".
+  return (result.rows?.item(0)?.user_version as number | undefined) ?? 0;
 };
 
 const runMigrations = async (db: AppDatabase): Promise<void> => {

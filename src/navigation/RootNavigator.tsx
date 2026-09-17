@@ -33,6 +33,7 @@ import { SearchScreen } from '../modules/search/screens/SearchScreen';
 import { CoffeeScreen } from '../modules/coffee/screens/CoffeeScreen';
 import { AboutScreen } from '../modules/about/screens/AboutScreen';
 import { AboutDeveloperScreen } from '../modules/about/screens/AboutDeveloperScreen';
+import { PrivacyPolicyScreen } from '../modules/legal/screens/PrivacyPolicyScreen';
 import { BrainScreen } from '../modules/brain/screens/BrainScreen';
 import { BrainSimScreen } from '../modules/brain/screens/BrainSimScreen';
 import { DetectiveScreen } from '../modules/brain/screens/DetectiveScreen';
@@ -122,6 +123,11 @@ export const RootNavigator: React.FC = () => {
         <Stack.Screen
           name="Developer"
           component={AboutDeveloperScreen}
+          options={{ animation: 'slide_from_right' }}
+        />
+        <Stack.Screen
+          name="Privacy"
+          component={PrivacyPolicyScreen}
           options={{ animation: 'slide_from_right' }}
         />
         <Stack.Screen

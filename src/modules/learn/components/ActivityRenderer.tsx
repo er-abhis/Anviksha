@@ -171,6 +171,9 @@ const Slider: React.FC<{ config: SliderConfig }> = ({ config }) => {
   const mid = Math.round((config.min + config.max) / 2);
   const [value, setValue] = useState(mid);
 
+  // Guard against a mis-authored activity with no stops: render nothing rather
+  // than crash on `stop.title` below.
+  if (!config.stops.length) return null;
   const stop = config.stops.find(s => value <= s.upTo) ?? config.stops[config.stops.length - 1];
   const fraction = (value - config.min) / (config.max - config.min);
   const clamp = (v: number) => Math.max(config.min, Math.min(config.max, v));

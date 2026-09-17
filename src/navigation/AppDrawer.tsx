@@ -59,7 +59,7 @@ export const AppDrawer: React.FC = () => {
     return () => sub.remove();
   }, [open, hide]);
 
-  const go = (route: 'Coffee' | 'About' | 'Developer' | 'LearnMore' | 'Search') => {
+  const go = (route: 'Coffee' | 'About' | 'Developer' | 'LearnMore' | 'Search' | 'Privacy') => {
     hide();
     if (navigationRef.isReady()) navigationRef.navigate(route);
   };
@@ -75,6 +75,7 @@ export const AppDrawer: React.FC = () => {
     { key: 'Coffee', icon: 'cafe-outline', label: 'Support the Developer', route: 'Coffee', run: () => go('Coffee') },
     { key: 'About', icon: 'document-text-outline', label: 'About App', route: 'About', run: () => go('About') },
     { key: 'Developer', icon: 'code-slash-outline', label: 'About Developer', route: 'Developer', run: () => go('Developer') },
+    { key: 'Privacy', icon: 'shield-checkmark-outline', label: 'Privacy Policy', route: 'Privacy', run: () => go('Privacy') },
     { key: 'Contact', icon: 'mail-outline', label: 'Contact Us', run: () => { hide(); openContactForm(); } },
     { key: 'Rate', icon: 'star-outline', label: 'Rate App', run: () => { hide(); rateApp(); } },
     { key: 'Share', icon: 'share-social-outline', label: 'Share App', run: () => { hide(); shareApp(); } },

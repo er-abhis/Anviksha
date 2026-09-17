@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../../navigation/types';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Gradient, GlassCard, Header, Logo, Screen, Text } from '../../../components';
@@ -20,7 +22,7 @@ const FEATURES = [
 
 export const AboutScreen: React.FC = () => {
   const { colors, radius, spacing, gradients, elevation } = useTheme();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   return (
     <Screen scroll contentContainerStyle={{ gap: spacing.xl }}>
@@ -66,6 +68,16 @@ export const AboutScreen: React.FC = () => {
           ))}
         </GlassCard>
       </Animated.View>
+
+      <GlassCard onPress={() => navigation.navigate('Privacy')}>
+        <View style={[styles.feature, { gap: spacing.md }]}>
+          <View style={[styles.featureIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.md, borderColor: colors.glassBorder }]}>
+            <Icon name="shield-checkmark-outline" size={19} color={colors.accent} />
+          </View>
+          <Text variant="body" style={styles.flex}>Privacy Policy</Text>
+          <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
+        </View>
+      </GlassCard>
 
       <Text variant="label" color="textSecondary" center style={{ marginTop: spacing.sm }}>
         Built with ❤️ in India
