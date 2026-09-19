@@ -1,7 +1,11 @@
 package com.abhishek.anviksha
 
+import android.graphics.Color
 import android.os.Bundle
+import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
@@ -9,10 +13,24 @@ import com.facebook.react.defaults.DefaultReactActivityDelegate
 
 class MainActivity : ReactActivity() {
 
-  // Swap the native SplashTheme back to AppTheme once the window exists,
-  // so the pre-JS splash drawable only covers the cold-start gap.
   override fun onCreate(savedInstanceState: Bundle?) {
-    enableEdgeToEdge()
+    // Official Android 15 & 16 Edge-to-Edge API using WindowCompat and SystemBarStyle
+    enableEdgeToEdge(
+      statusBarStyle = SystemBarStyle.auto(
+        lightScrim = Color.TRANSPARENT,
+        darkScrim = Color.TRANSPARENT
+      ),
+      navigationBarStyle = SystemBarStyle.auto(
+        lightScrim = Color.TRANSPARENT,
+        darkScrim = Color.TRANSPARENT
+      )
+    )
+    WindowCompat.setDecorFitsSystemWindows(window, false)
+
+    val controller = WindowInsetsControllerCompat(window, window.decorView)
+    controller.isAppearanceLightStatusBars = false
+    controller.isAppearanceLightNavigationBars = false
+
     setTheme(R.style.AppTheme)
     super.onCreate(savedInstanceState)
   }
