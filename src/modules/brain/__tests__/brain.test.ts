@@ -1,6 +1,16 @@
 import {
+  ATTENTION_PRESETS,
+  CNN_FILTERS,
   DEFAULT_WEIGHTS,
+  EMBEDDING_WORDS,
+  RAG_DATABASE,
+  biasVarianceCurve,
+  computeConvolutionStep,
+  computeKMeansStep,
+  cosineSimilarity,
   forwardPass,
+  sampleNextToken,
+  solveAnalogy,
   splitResult,
   tokenStats,
   tokenize,
@@ -61,6 +71,52 @@ describe('training curves', () => {
   });
 });
 
+describe('new interactive simulations logic', () => {
+  it('computes cosine similarity correctly', () => {
+    const sim = cosineSimilarity(EMBEDDING_WORDS[0], EMBEDDING_WORDS[1]);
+    expect(sim).toBeGreaterThan(0.5);
+  });
+
+  it('solves vector analogies (King - Man + Woman = Queen)', () => {
+    const analogy = solveAnalogy('king', 'man', 'woman');
+    expect(analogy.bestMatch.id).toBe('queen');
+  });
+
+  it('provides attention presets', () => {
+    expect(ATTENTION_PRESETS.length).toBeGreaterThanOrEqual(2);
+    expect(ATTENTION_PRESETS[0].tokens).toContain('it');
+  });
+
+  it('samples candidate tokens based on temperature and top-p', () => {
+    const candidates = sampleNextToken(0.7, 0.9);
+    expect(candidates).toHaveLength(7);
+    expect(candidates[0].token).toBe('the');
+  });
+
+  it('computes deterministic K-Means clustering steps', () => {
+    const step1 = computeKMeansStep(3, 1);
+    expect(step1.centroids).toHaveLength(3);
+    expect(step1.assigned).toHaveLength(12);
+  });
+
+  it('calculates bias-variance tradeoff curves', () => {
+    const low = biasVarianceCurve(1, 0.1);
+    expect(low.fitQuality).toContain('Underfit');
+    const high = biasVarianceCurve(9, 0.8);
+    expect(high.fitQuality).toContain('Overfit');
+  });
+
+  it('computes CNN convolution steps', () => {
+    const conv = computeConvolutionStep(CNN_FILTERS[0], 0, 0);
+    expect(conv.calcStr).toBeDefined();
+  });
+
+  it('provides RAG query answers and grounded database documents', () => {
+    expect(RAG_DATABASE.length).toBeGreaterThanOrEqual(2);
+    expect(RAG_DATABASE[0].docs).toHaveLength(3);
+  });
+});
+
 describe('content + missions', () => {
   it('every detective case has a valid answer index', () => {
     CASES.forEach(c => {
@@ -71,7 +127,8 @@ describe('content + missions', () => {
   it('mission selection is deterministic per date', () => {
     expect(missionForDay('2026-09-11')).toEqual(missionForDay('2026-09-11'));
   });
-  it('has at least 8 interactive experiences', () => {
-    expect(SIMS.length + CASES.length).toBeGreaterThanOrEqual(8);
+  it('has at least 18 interactive experiences', () => {
+    expect(SIMS.length + CASES.length).toBeGreaterThanOrEqual(18);
   });
 });
+

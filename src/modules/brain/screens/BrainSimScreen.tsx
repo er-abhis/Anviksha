@@ -11,6 +11,13 @@ import { TokenExplorer } from '../sims/TokenExplorer';
 import { NeuralNetwork } from '../sims/NeuralNetwork';
 import { DecisionTree } from '../sims/DecisionTree';
 import { TrainingLab } from '../sims/TrainingLab';
+import { EmbeddingSpace } from '../sims/EmbeddingSpace';
+import { AttentionMap } from '../sims/AttentionMap';
+import { TemperatureLab } from '../sims/TemperatureLab';
+import { KMeansClustering } from '../sims/KMeansClustering';
+import { BiasVariance } from '../sims/BiasVariance';
+import { CNNFilter } from '../sims/CNNFilter';
+import { RAGRetrieval } from '../sims/RAGRetrieval';
 
 const SIM_XP = 40;
 
@@ -19,6 +26,13 @@ const PANELS: Record<string, React.FC> = {
   'neural-network': NeuralNetwork,
   'decision-tree': DecisionTree,
   'training-lab': TrainingLab,
+  'embedding-space': EmbeddingSpace,
+  'attention-map': AttentionMap,
+  'temperature-lab': TemperatureLab,
+  'kmeans-clustering': KMeansClustering,
+  'bias-variance': BiasVariance,
+  'cnn-filter': CNNFilter,
+  'rag-retrieval': RAGRetrieval,
 };
 
 export const BrainSimScreen: React.FC = () => {

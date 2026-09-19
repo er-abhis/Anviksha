@@ -9,7 +9,14 @@ export type SimId =
   | 'neural-network'
   | 'decision-tree'
   | 'token-explorer'
-  | 'training-lab';
+  | 'training-lab'
+  | 'embedding-space'
+  | 'attention-map'
+  | 'temperature-lab'
+  | 'kmeans-clustering'
+  | 'bias-variance'
+  | 'cnn-filter'
+  | 'rag-retrieval';
 
 export interface SimMeta {
   id: SimId;
@@ -52,6 +59,62 @@ export const SIMS: SimMeta[] = [
     tagline: 'Tune a model and spot overfitting live.',
     icon: 'pulse',
     concept: 'Overfitting',
+    minutes: 4,
+  },
+  {
+    id: 'embedding-space',
+    title: 'Vector Embeddings',
+    tagline: 'Plot words in 2D space and solve vector math analogies.',
+    icon: 'compass',
+    concept: 'Vector embeddings',
+    minutes: 3,
+  },
+  {
+    id: 'attention-map',
+    title: 'Attention Visualizer',
+    tagline: 'See how Transformer attention connects related words.',
+    icon: 'eye',
+    concept: 'Self-attention',
+    minutes: 3,
+  },
+  {
+    id: 'temperature-lab',
+    title: 'Temperature & Sampling',
+    tagline: 'Control randomness, Top-P, and token probabilities.',
+    icon: 'thermometer',
+    concept: 'Temperature & sampling',
+    minutes: 3,
+  },
+  {
+    id: 'kmeans-clustering',
+    title: 'K-Means Clustering',
+    tagline: 'Cluster data points and relocate centroids step-by-step.',
+    icon: 'shapes',
+    concept: 'Clustering',
+    minutes: 3,
+  },
+  {
+    id: 'bias-variance',
+    title: 'Bias-Variance Tradeoff',
+    tagline: 'Adjust polynomial curves to balance under/overfitting.',
+    icon: 'options',
+    concept: 'Bias-variance tradeoff',
+    minutes: 3,
+  },
+  {
+    id: 'cnn-filter',
+    title: 'CNN Feature Filter',
+    tagline: 'Slide 3x3 kernels over pixels to extract visual edges.',
+    icon: 'grid',
+    concept: 'Convolutional filters',
+    minutes: 3,
+  },
+  {
+    id: 'rag-retrieval',
+    title: 'RAG Grounding Lab',
+    tagline: 'Compare raw hallucinated AI against vector document retrieval.',
+    icon: 'search',
+    concept: 'RAG & Retrieval',
     minutes: 4,
   },
 ];

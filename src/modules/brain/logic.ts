@@ -189,3 +189,294 @@ export const trainingCurves = (cfg: TrainingConfig): TrainingResult => {
     trainAsym < 0.72 ? 'Underfitting' : finalGap > 0.17 ? 'Overfitting' : 'Good fit';
   return { train, val, verdict, finalGap };
 };
+
+/* ----------------------------- Vector Embeddings ----------------------------- */
+export interface EmbeddingWord {
+  id: string;
+  word: string;
+  x: number; // 0..10
+  y: number; // 0..10
+  category: string;
+}
+
+export const EMBEDDING_WORDS: EmbeddingWord[] = [
+  { id: 'king', word: 'King 👑', x: 8.0, y: 8.5, category: 'Royalty' },
+  { id: 'queen', word: 'Queen 👸', x: 8.2, y: 4.5, category: 'Royalty' },
+  { id: 'man', word: 'Man 👨', x: 3.5, y: 8.5, category: 'People' },
+  { id: 'woman', word: 'Woman 👩', x: 3.7, y: 4.5, category: 'People' },
+  { id: 'apple', word: 'Apple 🍎', x: 1.5, y: 1.5, category: 'Fruit' },
+  { id: 'banana', word: 'Banana 🍌', x: 2.2, y: 2.0, category: 'Fruit' },
+  { id: 'cat', word: 'Cat 🐱', x: 7.5, y: 1.5, category: 'Animals' },
+  { id: 'dog', word: 'Dog 🐶', x: 8.2, y: 2.0, category: 'Animals' },
+];
+
+export const cosineSimilarity = (w1: EmbeddingWord, w2: EmbeddingWord): number => {
+  const dot = w1.x * w2.x + w1.y * w2.y;
+  const mag1 = Math.sqrt(w1.x * w1.x + w1.y * w1.y);
+  const mag2 = Math.sqrt(w2.x * w2.x + w2.y * w2.y);
+  if (mag1 === 0 || mag2 === 0) return 0;
+  return +(dot / (mag1 * mag2)).toFixed(3);
+};
+
+export const solveAnalogy = (aId: string, bId: string, cId: string) => {
+  const a = EMBEDDING_WORDS.find(w => w.id === aId)!;
+  const b = EMBEDDING_WORDS.find(w => w.id === bId)!;
+  const c = EMBEDDING_WORDS.find(w => w.id === cId)!;
+  // A - B + C = Target
+  const targetX = a.x - b.x + c.x;
+  const targetY = a.y - b.y + c.y;
+
+  let bestMatch = EMBEDDING_WORDS[0];
+  let bestDist = Infinity;
+
+  EMBEDDING_WORDS.forEach(w => {
+    if (w.id !== aId && w.id !== bId && w.id !== cId) {
+      const dist = Math.hypot(w.x - targetX, w.y - targetY);
+      if (dist < bestDist) {
+        bestDist = dist;
+        bestMatch = w;
+      }
+    }
+  });
+
+  return { targetX, targetY, bestMatch, distance: +bestDist.toFixed(2) };
+};
+
+/* ----------------------------- Self Attention ------------------------------ */
+export interface AttentionSentence {
+  id: string;
+  title: string;
+  tokens: string[];
+  weights: number[][]; // N x N attention matrix (0..1)
+}
+
+export const ATTENTION_PRESETS: AttentionSentence[] = [
+  {
+    id: 'pronoun',
+    title: 'Pronoun Resolution ("it")',
+    tokens: ['The', 'animal', "didn't", 'cross', 'the', 'street', 'because', 'it', 'was', 'tired'],
+    weights: [
+      [1.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+      [0.2, 1.0, 0.1, 0.1, 0.0, 0.0, 0.0, 0.1, 0.0, 0.1],
+      [0.0, 0.1, 1.0, 0.3, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0],
+      [0.0, 0.2, 0.2, 1.0, 0.1, 0.5, 0.0, 0.0, 0.0, 0.0],
+      [0.0, 0.0, 0.0, 0.1, 1.0, 0.4, 0.0, 0.0, 0.0, 0.0],
+      [0.0, 0.1, 0.1, 0.4, 0.3, 1.0, 0.1, 0.0, 0.0, 0.0],
+      [0.0, 0.1, 0.1, 0.1, 0.0, 0.1, 1.0, 0.2, 0.0, 0.1],
+      [0.1, 0.82, 0.0, 0.1, 0.0, 0.15, 0.1, 1.0, 0.1, 0.4], // "it" attends 82% to "animal"
+      [0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.1, 0.2, 1.0, 0.3],
+      [0.1, 0.6, 0.0, 0.1, 0.0, 0.0, 0.1, 0.3, 0.2, 1.0], // "tired" attends to "animal"
+    ],
+  },
+  {
+    id: 'context',
+    title: 'Word Sense Disambiguation ("bank")',
+    tokens: ['He', 'sat', 'by', 'the', 'river', 'bank', 'to', 'watch', 'the', 'sunset'],
+    weights: [
+      [1.0, 0.3, 0.1, 0.0, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0],
+      [0.3, 1.0, 0.4, 0.1, 0.2, 0.1, 0.1, 0.1, 0.0, 0.0],
+      [0.1, 0.4, 1.0, 0.2, 0.3, 0.2, 0.0, 0.0, 0.0, 0.0],
+      [0.0, 0.1, 0.2, 1.0, 0.4, 0.3, 0.0, 0.0, 0.0, 0.0],
+      [0.1, 0.2, 0.3, 0.4, 1.0, 0.88, 0.0, 0.1, 0.0, 0.2], // "river" strongly bound to "bank"
+      [0.0, 0.1, 0.2, 0.3, 0.88, 1.0, 0.1, 0.1, 0.0, 0.1], // "bank" attends 88% to "river"
+      [0.0, 0.1, 0.0, 0.0, 0.0, 0.1, 1.0, 0.4, 0.0, 0.0],
+      [0.1, 0.1, 0.0, 0.0, 0.1, 0.1, 0.4, 1.0, 0.2, 0.4],
+      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.2, 1.0, 0.5],
+      [0.0, 0.0, 0.0, 0.0, 0.2, 0.1, 0.0, 0.4, 0.5, 1.0],
+    ],
+  },
+];
+
+/* -------------------------- Temperature & Sampling ------------------------- */
+export interface CandidateToken {
+  token: string;
+  logit: number;
+  prob: number;
+  cumulativeProb: number;
+  inTopP: boolean;
+  selected: boolean;
+}
+
+const RAW_LOGITS = [
+  { token: 'the', logit: 4.2 },
+  { token: 'a', logit: 3.5 },
+  { token: 'one', logit: 2.1 },
+  { token: 'distant', logit: 1.8 },
+  { token: 'magic', logit: 1.2 },
+  { token: 'banana', logit: -0.5 },
+  { token: 'quantum', logit: -1.2 },
+];
+
+export const sampleNextToken = (temp: number, topP: number): CandidateToken[] => {
+  const scaled = RAW_LOGITS.map(l => ({ ...l, scaled: l.logit / Math.max(0.01, temp) }));
+  const maxLogit = Math.max(...scaled.map(s => s.scaled));
+  const exps = scaled.map(s => Math.exp(s.scaled - maxLogit));
+  const sumExp = exps.reduce((a, b) => a + b, 0);
+
+  let cum = 0;
+  return scaled.map((s, i) => {
+    const prob = exps[i] / sumExp;
+    cum += prob;
+    const inTopP = i === 0 || cum - prob <= topP;
+    return {
+      token: s.token,
+      logit: s.logit,
+      prob: +prob.toFixed(4),
+      cumulativeProb: +cum.toFixed(4),
+      inTopP,
+      selected: i === 0, // top token default
+    };
+  });
+};
+
+/* ---------------------------- K-Means Clustering --------------------------- */
+export interface ClusterPoint {
+  x: number;
+  y: number;
+  cluster: number;
+}
+
+export const KMEANS_DATA: ClusterPoint[] = [
+  { x: 2, y: 8, cluster: 0 }, { x: 3, y: 7, cluster: 0 }, { x: 2.5, y: 9, cluster: 0 },
+  { x: 8, y: 2, cluster: 1 }, { x: 9, y: 3, cluster: 1 }, { x: 8.5, y: 1.5, cluster: 1 },
+  { x: 8, y: 8, cluster: 2 }, { x: 9, y: 9, cluster: 2 }, { x: 7.5, y: 8.5, cluster: 2 },
+  { x: 3, y: 2, cluster: 0 }, { x: 2, y: 3, cluster: 0 }, { x: 8.5, y: 7.5, cluster: 2 },
+];
+
+export const computeKMeansStep = (k: number, step: number) => {
+  // Deterministic centroid positions by step
+  const centroids = Array.from({ length: k }, (_, i) => {
+    const angle = (i * 2 * Math.PI) / k + step * 0.4;
+    return {
+      x: +(5 + 3.5 * Math.cos(angle)).toFixed(1),
+      y: +(5 + 3.5 * Math.sin(angle)).toFixed(1),
+    };
+  });
+
+  const assigned = KMEANS_DATA.map(p => {
+    let closestIndex = 0;
+    let minD = Infinity;
+    centroids.forEach((c, idx) => {
+      const d = Math.hypot(p.x - c.x, p.y - c.y);
+      if (d < minD) {
+        minD = d;
+        closestIndex = idx;
+      }
+    });
+    return { ...p, cluster: closestIndex };
+  });
+
+  // Calculate inertia (within-cluster sum of squares)
+  const inertia = +assigned.reduce((sum, p) => {
+    const c = centroids[p.cluster];
+    return sum + (p.x - c.x) ** 2 + (p.y - c.y) ** 2;
+  }, 0).toFixed(1);
+
+  return { centroids, assigned, inertia };
+};
+
+/* -------------------------- Bias-Variance Tradeoff ------------------------- */
+export const biasVarianceCurve = (degree: number, noise: number) => {
+  // degree 1..9
+  const bias = Math.max(0.05, +(1 / degree).toFixed(2));
+  const variance = Math.max(0.05, +((degree / 9) ** 2 * (0.3 + noise * 0.7)).toFixed(2));
+  const totalError = +(bias * 0.6 + variance * 0.4).toFixed(2);
+  const fitQuality = degree === 3 || degree === 4 ? 'Optimal Fit' : degree < 3 ? 'High Bias (Underfit)' : 'High Variance (Overfit)';
+  return { bias, variance, totalError, fitQuality };
+};
+
+/* --------------------------- Convolution Filter --------------------------- */
+export interface FilterMatrix {
+  id: string;
+  name: string;
+  kernel: number[][]; // 3x3
+}
+
+export const CNN_FILTERS: FilterMatrix[] = [
+  {
+    id: 'vertical-edge',
+    name: 'Vertical Edge Detect',
+    kernel: [
+      [-1, 0, 1],
+      [-1, 0, 1],
+      [-1, 0, 1],
+    ],
+  },
+  {
+    id: 'horizontal-edge',
+    name: 'Horizontal Edge Detect',
+    kernel: [
+      [-1, -1, -1],
+      [0, 0, 0],
+      [1, 1, 1],
+    ],
+  },
+  {
+    id: 'sharpen',
+    name: 'Sharpen Kernel',
+    kernel: [
+      [0, -1, 0],
+      [-1, 5, -1],
+      [0, -1, 0],
+    ],
+  },
+];
+
+export const CNN_INPUT_GRID = [
+  [0, 0, 1, 1, 1],
+  [0, 0, 1, 1, 1],
+  [0, 0, 1, 1, 1],
+  [0, 0, 1, 1, 1],
+  [0, 0, 1, 1, 1],
+];
+
+export const computeConvolutionStep = (filter: FilterMatrix, startX: number, startY: number) => {
+  let sum = 0;
+  const terms: string[] = [];
+  for (let r = 0; r < 3; r++) {
+    for (let c = 0; c < 3; c++) {
+      const pixel = CNN_INPUT_GRID[startY + r][startX + c];
+      const weight = filter.kernel[r][c];
+      sum += pixel * weight;
+      if (weight !== 0) {
+        terms.push(`(${pixel}×${weight})`);
+      }
+    }
+  }
+  return { sum, calcStr: terms.join(' + ') + ` = ${sum}` };
+};
+
+/* ----------------------------- RAG Retrieval ----------------------------- */
+export interface RAGQuery {
+  id: string;
+  question: string;
+  docs: { id: string; text: string; score: number }[];
+  ragAnswer: string;
+  rawAnswer: string;
+}
+
+export const RAG_DATABASE: RAGQuery[] = [
+  {
+    id: 'return-policy',
+    question: 'What is the refund policy for digital courses?',
+    docs: [
+      { id: 'd1', text: 'Anviksha digital items offer a 30-day no-questions-asked refund.', score: 0.94 },
+      { id: 'd2', text: 'All progress data is stored locally on device and never uploaded.', score: 0.42 },
+      { id: 'd3', text: 'Contact support via the menu for purchase receipt inquiries.', score: 0.78 },
+    ],
+    ragAnswer: 'Based on our knowledge base, Anviksha digital courses offer a 30-day no-questions-asked full refund.',
+    rawAnswer: 'Digital courses generally vary. Many providers do not allow refunds once downloaded or accessed.',
+  },
+  {
+    id: 'offline-mode',
+    question: 'Does the app require an internet connection or account?',
+    docs: [
+      { id: 'd4', text: 'Anviksha is fully offline-first: no accounts, no sign-in, no cloud execution.', score: 0.96 },
+      { id: 'd5', text: 'Local notifications are generated on-device without push servers.', score: 0.81 },
+      { id: 'd6', text: 'External links open in your browser for optional resources.', score: 0.55 },
+    ],
+    ragAnswer: 'No! Anviksha runs 100% offline with zero account requirements, zero cloud APIs, and zero data collection.',
+    rawAnswer: 'Most modern learning apps require creating an account to sync progress to the cloud.',
+  },
+];
+
