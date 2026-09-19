@@ -92,8 +92,22 @@ android {
         applicationId "com.abhishek.anviksha"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 6
-        versionName "1.0.5"
+        versionCode 7
+        versionName "1.0.6"
+
+        externalNativeBuild {
+            cmake {
+                arguments "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON", "-DCMAKE_SHARED_LINKER_FLAGS=-Wl,-z,max-page-size=16384"
+            }
+            ndkBuild {
+                arguments "APP_LDFLAGS+=-Wl,-z,max-page-size=16384"
+            }
+        }
+    }
+    packaging {
+        jniLibs {
+            useLegacyPackaging = false
+        }
     }
     signingConfigs {
         debug {
