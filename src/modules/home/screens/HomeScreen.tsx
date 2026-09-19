@@ -56,7 +56,7 @@ import { ActivityRow } from '../components/ActivityRow';
 export const HomeScreen: React.FC = () => {
   const { colors, spacing, radius, gradients, elevation } = useTheme();
   const mode = useThemeMode();
-  const { isTablet } = useResponsive();
+  const { isTablet, cellWidthPercent } = useResponsive();
   const tabBarHeight = useBottomTabBarHeight();
   const openDrawer = useDrawerStore(s => s.show);
   const navigation =
@@ -76,15 +76,12 @@ export const HomeScreen: React.FC = () => {
   const due = useMemo(() => dueForReview(concepts, Date.now()), [concepts]);
   const mission = missionForDay(todayISO());
 
+  // Show only 4 curated simulations on Homepage
   const quickSims = [
     'neural-network',
     'embedding-space',
     'attention-map',
     'temperature-lab',
-    'decision-tree',
-    'training-lab',
-    'kmeans-clustering',
-    'rag-retrieval',
   ]
     .map(id => SIMS.find(s => s.id === id)!)
     .filter(Boolean);
@@ -260,12 +257,11 @@ export const HomeScreen: React.FC = () => {
             actionLabel="Details"
             onAction={() => navigation.navigate('Main', { screen: 'Profile' })}
           />
-          <View style={styles.progressRow}>
-            <ProgressTile icon="flash" value={`${xp}`} label="XP" tint={colors.xp} />
-            <ProgressTile icon="ribbon" value={`${level}`} label="Level" tint={colors.primary} />
-            <ProgressTile icon="flask" value={`${simsDone}/${SIMS.length}`} label="Sims" tint={colors.accent} />
-            <ProgressTile icon="sparkles" value={`${mastered}`} label="Concepts" tint={colors.accentAlt} />
-            <ProgressTile icon="flame" value={`${streakDays}d`} label="Streak" tint={colors.streak} />
+          <View style={styles.progressGrid}>
+            <ProgressTileCard icon="flash" value={`${xp} XP`} label="Total Experience" tint={colors.xp} widthPercent={cellWidthPercent} />
+            <ProgressTileCard icon="ribbon" value={`Level ${level}`} label="Mastery Tier" tint={colors.primary} widthPercent={cellWidthPercent} />
+            <ProgressTileCard icon="flask" value={`${simsDone}/${SIMS.length} Sims`} label="Interactive Labs" tint={colors.accent} widthPercent={cellWidthPercent} />
+            <ProgressTileCard icon="sparkles" value={`${mastered} Concepts`} label="Concepts Mastered" tint={colors.accentAlt} widthPercent={cellWidthPercent} />
           </View>
         </Padded>
 
@@ -281,7 +277,7 @@ export const HomeScreen: React.FC = () => {
               <Pressable
                 key={s.id}
                 onPress={() => navigation.navigate('BrainSim', { simId: s.id })}
-                style={({ pressed }) => [styles.quickCell, { opacity: pressed ? 0.75 : 1 }]}
+                style={({ pressed }) => [styles.quickCell, { width: cellWidthPercent as any, opacity: pressed ? 0.75 : 1 }]}
               >
                 <GlassCard elevation="md" style={styles.quickCardInner}>
                   <View style={styles.quickRow2}>
@@ -304,6 +300,26 @@ export const HomeScreen: React.FC = () => {
               </Pressable>
             ))}
           </View>
+
+          {/* View All 20 Simulations Action Banner */}
+          <GlassCard
+            elevation="sm"
+            onPress={() => navigation.navigate('Brain')}
+            style={[styles.allSimsBanner, { marginTop: spacing.md, backgroundColor: colors.surface }]}
+          >
+            <View style={styles.rowBetweenFlex}>
+              <View style={styles.rowGap}>
+                <View style={[styles.quickIcon, { backgroundColor: colors.accentMuted, borderRadius: radius.md }]}>
+                  <Icon name="grid-outline" size={20} color={colors.accent} />
+                </View>
+                <View>
+                  <Text variant="bodyStrong">Explore All {SIMS.length} Interactive Sims</Text>
+                  <Text variant="caption" color="textSecondary">Deep-dive into models, transformers, and ML labs</Text>
+                </View>
+              </View>
+              <Icon name="arrow-forward" size={18} color={colors.primary} />
+            </View>
+          </GlassCard>
         </Padded>
 
         {/* Today's Mission */}
@@ -572,19 +588,40 @@ const Padded: React.FC<{ children: React.ReactNode; style?: any }> = ({ children
   return <View style={[{ paddingHorizontal: spacing.lg }, style]}>{children}</View>;
 };
 
-const ProgressTile: React.FC<{ icon: string; value: string; label: string; tint: string }> = ({
-  icon,
-  value,
-  label,
-  tint,
-}) => {
-  const { colors, radius } = useTheme();
+const ProgressTileCard: React.FC<{
+  icon: string;
+  value: string;
+  label: string;
+  tint: string;
+  widthPercent: string;
+}> = ({ icon, value, label, tint, widthPercent }) => {
+  const { colors, radius, spacing } = useTheme();
   return (
-    <View style={[styles.progressTile, { backgroundColor: colors.glass, borderColor: colors.glassBorder, borderRadius: radius.md }]}>
-      <Icon name={icon} size={18} color={tint} />
-      <Text variant="bodyStrong" style={{ color: tint, marginTop: 2 }}>{value}</Text>
-      <Text variant="caption" color="textTertiary" style={{ fontSize: 10 }}>{label}</Text>
-    </View>
+    <GlassCard
+      elevation="sm"
+      style={[
+        styles.progressTileCard,
+        {
+          width: widthPercent as any,
+          backgroundColor: colors.surface,
+          borderColor: colors.glassBorder,
+          borderRadius: radius.lg,
+          padding: spacing.md,
+        },
+      ]}
+    >
+      <View style={styles.progressRowHeader}>
+        <View style={[styles.progressIconBox, { backgroundColor: tint + '18' }]}>
+          <Icon name={icon} size={20} color={tint} />
+        </View>
+      </View>
+      <Text variant="h2" style={{ color: tint, marginTop: 6, fontSize: 18 }}>
+        {value}
+      </Text>
+      <Text variant="caption" color="textSecondary" style={{ marginTop: 2 }}>
+        {label}
+      </Text>
+    </GlassCard>
   );
 };
 
@@ -598,6 +635,7 @@ const styles = StyleSheet.create({
   glossaryIcon: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   activityIcon: { width: 48, height: 48, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   rowGap: { flexDirection: 'row', alignItems: 'center', gap: 14 },
+  rowBetweenFlex: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 4 },
   headerRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   brandMark: { borderRadius: 10 },
   stats: { flexDirection: 'row', alignItems: 'center' },
@@ -629,7 +667,10 @@ const styles = StyleSheet.create({
   quickRow2: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   quickIcon: { width: 42, height: 42, alignItems: 'center', justifyContent: 'center' },
   doneBadge: { padding: 4, borderRadius: 999 },
-  progressRow: { flexDirection: 'row', gap: 8 },
-  progressTile: { flex: 1, alignItems: 'center', gap: 2, paddingVertical: 10, borderWidth: StyleSheet.hairlineWidth },
+  progressGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+  progressTileCard: { minHeight: 92, justifyContent: 'center' },
+  progressRowHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  progressIconBox: { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+  allSimsBanner: { padding: 12 },
   arenaEmoji: { fontSize: 34 },
 });

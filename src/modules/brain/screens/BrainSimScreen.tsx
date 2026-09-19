@@ -18,6 +18,15 @@ import { KMeansClustering } from '../sims/KMeansClustering';
 import { BiasVariance } from '../sims/BiasVariance';
 import { CNNFilter } from '../sims/CNNFilter';
 import { RAGRetrieval } from '../sims/RAGRetrieval';
+import { ActivationFunctions } from '../sims/ActivationFunctions';
+import { GradientDescent } from '../sims/GradientDescent';
+import { PromptPlayground } from '../sims/PromptPlayground';
+import { QuantizationLab } from '../sims/QuantizationLab';
+import { LossFunctions } from '../sims/LossFunctions';
+import { NaiveBayes } from '../sims/NaiveBayes';
+import { TokenGeneration } from '../sims/TokenGeneration';
+import { FineTuning } from '../sims/FineTuning';
+import { AIAgent } from '../sims/AIAgent';
 
 const SIM_XP = 40;
 
@@ -33,6 +42,15 @@ const PANELS: Record<string, React.FC> = {
   'bias-variance': BiasVariance,
   'cnn-filter': CNNFilter,
   'rag-retrieval': RAGRetrieval,
+  'activation-functions': ActivationFunctions,
+  'gradient-descent': GradientDescent,
+  'prompt-playground': PromptPlayground,
+  'quantization-lab': QuantizationLab,
+  'loss-functions': LossFunctions,
+  'naive-bayes': NaiveBayes,
+  'token-generation': TokenGeneration,
+  'fine-tuning': FineTuning,
+  'ai-agent': AIAgent,
 };
 
 export const BrainSimScreen: React.FC = () => {

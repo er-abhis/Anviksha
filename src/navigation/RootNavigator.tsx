@@ -36,6 +36,7 @@ import { AboutDeveloperScreen } from '../modules/about/screens/AboutDeveloperScr
 import { PrivacyPolicyScreen } from '../modules/legal/screens/PrivacyPolicyScreen';
 import { BrainScreen } from '../modules/brain/screens/BrainScreen';
 import { BrainSimScreen } from '../modules/brain/screens/BrainSimScreen';
+import { AIGamesScreen } from '../modules/brain/screens/AIGamesScreen';
 import { DetectiveScreen } from '../modules/brain/screens/DetectiveScreen';
 import { AppDrawer } from './AppDrawer';
 
@@ -163,6 +164,11 @@ export const RootNavigator: React.FC = () => {
         <Stack.Screen
           name="BrainSim"
           component={BrainSimScreen}
+          options={{ animation: 'slide_from_bottom' }}
+        />
+        <Stack.Screen
+          name="AIGames"
+          component={AIGamesScreen}
           options={{ animation: 'slide_from_bottom' }}
         />
         <Stack.Screen

@@ -480,3 +480,263 @@ export const RAG_DATABASE: RAGQuery[] = [
   },
 ];
 
+/* ------------------------- Activation Functions ------------------------- */
+export const calcActivation = (func: 'sigmoid' | 'relu' | 'leaky_relu' | 'gelu', x: number) => {
+  let y = 0;
+  let derivative = 0;
+  if (func === 'sigmoid') {
+    y = 1 / (1 + Math.exp(-x));
+    derivative = y * (1 - y);
+  } else if (func === 'relu') {
+    y = Math.max(0, x);
+    derivative = x > 0 ? 1 : 0;
+  } else if (func === 'leaky_relu') {
+    y = x > 0 ? x : 0.1 * x;
+    derivative = x > 0 ? 1 : 0.1;
+  } else {
+    // GELU approximation: 0.5 * x * (1 + tanh(sqrt(2/pi)*(x + 0.044715*x^3)))
+    const c = Math.sqrt(2 / Math.PI);
+    const inner = c * (x + 0.044715 * Math.pow(x, 3));
+    y = 0.5 * x * (1 + Math.tanh(inner));
+    derivative = 0.5 * (1 + Math.tanh(inner)) + 0.5 * x * (1 - Math.pow(Math.tanh(inner), 2)) * c * (1 + 0.134145 * Math.pow(x, 2));
+  }
+  return { y: +y.toFixed(3), derivative: +derivative.toFixed(3) };
+};
+
+/* --------------------------- Gradient Descent --------------------------- */
+export const calcGradientDescentStep = (
+  x: number,
+  lr: number,
+  momentum: number,
+  velocity: number,
+) => {
+  // Loss bowl: L(x) = x^2 - 4x + 5 (minimum at x = 2)
+  const loss = Math.pow(x, 2) - 4 * x + 5;
+  const grad = 2 * x - 4;
+  const newVelocity = momentum * velocity + lr * grad;
+  const nextX = x - newVelocity;
+  const nextLoss = Math.pow(nextX, 2) - 4 * nextX + 5;
+  return {
+    loss: +loss.toFixed(3),
+    grad: +grad.toFixed(3),
+    velocity: +newVelocity.toFixed(3),
+    nextX: +nextX.toFixed(3),
+    nextLoss: +nextLoss.toFixed(3),
+  };
+};
+
+/* -------------------------- Prompt Engineering -------------------------- */
+export interface PromptStyleMeta {
+  type: 'zero-shot' | 'few-shot' | 'chain-of-thought';
+  title: string;
+  template: string;
+  output: string;
+  reasoningSteps: string[];
+  accuracyScore: number;
+}
+
+export const PROMPT_STYLES: Record<string, PromptStyleMeta> = {
+  'zero-shot': {
+    type: 'zero-shot',
+    title: 'Zero-Shot Prompting',
+    template: 'Q: Roger has 5 tennis balls. He buys 2 more cans of 3 balls each. How many does he have?',
+    output: 'A: Roger has 11 tennis balls.',
+    reasoningSteps: ['Direct inference without prior examples or explicit step extraction.'],
+    accuracyScore: 72,
+  },
+  'few-shot': {
+    type: 'few-shot',
+    title: 'Few-Shot Exemplars',
+    template: 'Q: Sara has 3 apples. Gets 4 more. Total? A: 7\nQ: Roger has 5 balls. Gets 2 cans of 3.',
+    output: 'A: Roger has 11 tennis balls.',
+    reasoningSteps: ['In-context pattern matching from 2 target demonstration pairs.'],
+    accuracyScore: 86,
+  },
+  'chain-of-thought': {
+    type: 'chain-of-thought',
+    title: 'Chain-of-Thought (CoT)',
+    template: 'Q: Roger has 5 tennis balls. He buys 2 cans of 3 balls. Let’s think step by step.',
+    output: 'Step 1: 5 initial balls.\nStep 2: 2 cans × 3 = 6 balls.\nStep 3: 5 + 6 = 11. Final: 11.',
+    reasoningSteps: [
+      'Decompose initial state (5 balls).',
+      'Compute multiplication (2 × 3 = 6).',
+      'Aggregate final sum (5 + 6 = 11).',
+    ],
+    accuracyScore: 98,
+  },
+};
+
+/* --------------------------- Model Quantization --------------------------- */
+export const calcQuantizationMetrics = (bits: 32 | 16 | 8 | 4) => {
+  const baseVRAMGB = 14.0; // 7B FP32 baseline
+  const compressionRatio = 32 / bits;
+  const vramGB = +(baseVRAMGB / compressionRatio).toFixed(1);
+  const perplexityPenalty = bits === 32 ? 0 : bits === 16 ? 0.02 : bits === 8 ? 0.15 : 0.85;
+  const speedupFactor = +(1 + (32 - bits) / 16).toFixed(1);
+  return {
+    bits,
+    vramGB,
+    perplexityPenalty: +perplexityPenalty.toFixed(2),
+    speedupFactor,
+    memorySavingsPercent: Math.round(((baseVRAMGB - vramGB) / baseVRAMGB) * 100),
+  };
+};
+
+/* ----------------------------- Loss Functions ----------------------------- */
+export const calcLossMetrics = (yTrue: number, yPred: number, delta: number = 1.0) => {
+  const diff = yPred - yTrue;
+  const absDiff = Math.abs(diff);
+  const mse = Math.pow(diff, 2);
+  const mae = absDiff;
+
+  // Huber Loss
+  let huber = 0;
+  if (absDiff <= delta) {
+    huber = 0.5 * Math.pow(diff, 2);
+  } else {
+    huber = delta * (absDiff - 0.5 * delta);
+  }
+
+  // Cross-Entropy Loss for probability yPred (clipped 0.001..0.999)
+  const p = Math.max(0.001, Math.min(0.999, yPred));
+  const crossEntropy = yTrue === 1 ? -Math.log(p) : -Math.log(1 - p);
+
+  return {
+    diff: +diff.toFixed(2),
+    mse: +mse.toFixed(3),
+    mae: +mae.toFixed(3),
+    huber: +huber.toFixed(3),
+    crossEntropy: +crossEntropy.toFixed(3),
+  };
+};
+
+/* ------------------------ Naive Bayes Classifier ------------------------ */
+export const NAIVE_BAYES_WORDS: Record<string, { spamProb: number; hamProb: number }> = {
+  WINNER: { spamProb: 0.85, hamProb: 0.05 },
+  FREE: { spamProb: 0.90, hamProb: 0.08 },
+  CLAIM: { spamProb: 0.80, hamProb: 0.04 },
+  MEETING: { spamProb: 0.05, hamProb: 0.70 },
+  URGENT: { spamProb: 0.75, hamProb: 0.15 },
+  PROJECT: { spamProb: 0.02, hamProb: 0.80 },
+};
+
+export const calcSpamProbability = (selectedWords: string[]) => {
+  let spamPrior = 0.5;
+  let hamPrior = 0.5;
+
+  let pSpamGivenWords = spamPrior;
+  let pHamGivenWords = hamPrior;
+
+  selectedWords.forEach(w => {
+    const meta = NAIVE_BAYES_WORDS[w];
+    if (meta) {
+      pSpamGivenWords *= meta.spamProb;
+      pHamGivenWords *= meta.hamProb;
+    }
+  });
+
+  const total = pSpamGivenWords + pHamGivenWords;
+  const spamPercentage = Math.round((pSpamGivenWords / total) * 100);
+  return {
+    spamScore: +pSpamGivenWords.toExponential(2),
+    hamScore: +pHamGivenWords.toExponential(2),
+    spamPercentage,
+    isSpam: spamPercentage >= 50,
+  };
+};
+
+/* ----------------------- Decoding & Token Generation ----------------------- */
+export interface TokenCandidate {
+  token: string;
+  prob: number;
+}
+
+export const calcDecodingCandidates = (strategy: 'greedy' | 'top_k' | 'nucleus', temp: number) => {
+  const raw: TokenCandidate[] = [
+    { token: 'intelligence', prob: 0.45 },
+    { token: 'models', prob: 0.25 },
+    { token: 'agents', prob: 0.15 },
+    { token: 'networks', prob: 0.10 },
+    { token: 'hallucinations', prob: 0.05 },
+  ];
+
+  // Apply temperature scaling: prob_i = exp(logit / T) / sum
+  const logits = raw.map(r => Math.log(r.prob) / Math.max(0.1, temp));
+  const maxLogit = Math.max(...logits);
+  const exps = logits.map(l => Math.exp(l - maxLogit));
+  const sumExp = exps.reduce((a, b) => a + b, 0);
+
+  let scaled = raw.map((r, i) => ({
+    token: r.token,
+    prob: +(exps[i] / sumExp).toFixed(3),
+  }));
+
+  if (strategy === 'greedy') {
+    scaled = [scaled[0]];
+  } else if (strategy === 'top_k') {
+    scaled = scaled.slice(0, 2);
+  }
+
+  return scaled;
+};
+
+/* --------------------------- LoRA Fine-Tuning --------------------------- */
+export const calcLoRAMetrics = (rank: number, alpha: number) => {
+  const dModel = 4096;
+  const baseMatrixParams = dModel * dModel; // 16.7M per layer matrix
+  const loraParams = 2 * dModel * rank; // A + B matrices
+  const paramReduction = +((1 - loraParams / baseMatrixParams) * 100).toFixed(2);
+  const scalingFactor = +(alpha / rank).toFixed(2);
+
+  return {
+    dModel,
+    rank,
+    alpha,
+    baseMatrixParams,
+    loraParams,
+    paramReduction,
+    scalingFactor,
+  };
+};
+
+/* ----------------------------- AI Agent Loop ----------------------------- */
+export interface AgentStep {
+  stepIndex: number;
+  phase: 'PERCEIVE' | 'REASON' | 'TOOL_CALL' | 'FEEDBACK';
+  title: string;
+  description: string;
+  icon: string;
+}
+
+export const AGENT_STEPS: AgentStep[] = [
+  {
+    stepIndex: 0,
+    phase: 'PERCEIVE',
+    title: 'Input Perception',
+    description: 'User prompt: "What is 45 * 12 and is it higher than average revenue?"',
+    icon: 'eye-outline',
+  },
+  {
+    stepIndex: 1,
+    phase: 'REASON',
+    title: 'Chain-of-Thought Planning',
+    description: 'Reasoning: Must calculate 45 * 12 first, then search local DB for average revenue.',
+    icon: 'bulb-outline',
+  },
+  {
+    stepIndex: 2,
+    phase: 'TOOL_CALL',
+    title: 'Tool Dispatch: Math Calculator',
+    description: 'Executed tool: calculator.compute({ a: 45, b: 12, op: "*" }) -> Result: 540',
+    icon: 'calculator-outline',
+  },
+  {
+    stepIndex: 3,
+    phase: 'FEEDBACK',
+    title: 'Environment Reflection & Answer Synthesis',
+    description: '540 is higher than target average revenue (500). Final output synthesized!',
+    icon: 'checkmark-done-circle-outline',
+  },
+];
+
+

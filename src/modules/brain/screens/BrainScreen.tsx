@@ -13,11 +13,13 @@ import {
   useBrainStore,
   useProgressStore,
 } from '../../../store';
-import { CASES, SIMS, missionForDay } from '../data';
+import { useResponsive } from '../../../hooks/useResponsive';
+import { CASES, SIMS, SimMeta, missionForDay } from '../data';
 import { todayISO } from '../../../content';
 
 export const BrainScreen: React.FC = () => {
   const { colors, radius, spacing, gradients } = useTheme();
+  const { cellWidthPercent } = useResponsive();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const xp = useProgressStore(s => s.xp);
@@ -38,6 +40,13 @@ export const BrainScreen: React.FC = () => {
 
   // Map a due concept back to the sim that teaches it, for the review CTA.
   const reviewTarget = (concept: string) => SIMS.find(s => s.concept === concept);
+
+  const categories: SimMeta['category'][] = [
+    'Core Models',
+    'LLMs & Transformers',
+    'Classic ML',
+    'Optimization & Systems',
+  ];
 
   return (
     <Screen scroll backdropIntensity={0.5} contentContainerStyle={{ gap: spacing.xl }}>
@@ -107,32 +116,56 @@ export const BrainScreen: React.FC = () => {
         );
       })()}
 
-      {/* Simulations */}
+      {/* Categorized 20 Interactive Simulations */}
+      {categories.map(cat => {
+        const catSims = SIMS.filter(s => s.category === cat);
+        if (catSims.length === 0) return null;
+        return (
+          <View key={cat}>
+            <SectionTitle title={cat} />
+            <View style={styles.grid}>
+              {catSims.map(s => {
+                const done = Boolean(simsCompleted[s.id]);
+                return (
+                  <Pressable
+                    key={s.id}
+                    onPress={() => navigation.navigate('BrainSim', { simId: s.id })}
+                    style={({ pressed }) => [styles.cell, { width: cellWidthPercent as any, opacity: pressed ? 0.7 : 1 }]}
+                  >
+                    <GlassCard elevation="md" style={styles.simCardInner}>
+                      <View style={[styles.simIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.md }]}>
+                        <Icon name={s.icon} size={22} color={colors.primary} />
+                      </View>
+                      <View style={styles.simTitleRow}>
+                        <Text variant="bodyStrong" numberOfLines={1} style={styles.flex}>{s.title}</Text>
+                        {done && <Icon name="checkmark-circle" size={16} color={colors.success} />}
+                      </View>
+                      <Text variant="caption" color="textSecondary" numberOfLines={2} style={{ marginTop: 2 }}>{s.tagline}</Text>
+                    </GlassCard>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
+        );
+      })}
+
+      {/* AI Arcade Games */}
       <View>
-        <SectionTitle title="Simulations" />
-        <View style={styles.grid}>
-          {SIMS.map(s => {
-            const done = Boolean(simsCompleted[s.id]);
-            return (
-              <Pressable
-                key={s.id}
-                onPress={() => navigation.navigate('BrainSim', { simId: s.id })}
-                style={({ pressed }) => [styles.cell, { opacity: pressed ? 0.7 : 1 }]}
-              >
-                <GlassCard elevation="md">
-                  <View style={[styles.simIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.md }]}>
-                    <Icon name={s.icon} size={24} color={colors.primary} />
-                  </View>
-                  <View style={styles.simTitleRow}>
-                    <Text variant="bodyStrong" style={styles.flex}>{s.title}</Text>
-                    {done && <Icon name="checkmark-circle" size={16} color={colors.success} />}
-                  </View>
-                  <Text variant="caption" color="textSecondary" numberOfLines={2}>{s.tagline}</Text>
-                </GlassCard>
-              </Pressable>
-            );
-          })}
-        </View>
+        <SectionTitle title="AI Arcade Games 🎮" />
+        <GlassCard elevation="glow" onPress={() => navigation.navigate('AIGames')}>
+          <View style={styles.row}>
+            <View style={[styles.icon, { backgroundColor: colors.accentMuted, borderRadius: radius.md }]}>
+              <Icon name="game-controller-outline" size={24} color={colors.accent} />
+            </View>
+            <View style={styles.flex}>
+              <Text variant="label" color="accent">INTERACTIVE MINI-GAMES</Text>
+              <Text variant="bodyStrong">Prompt Master & Transformer Builder</Text>
+              <Text variant="caption" color="textSecondary">Test your AI skills in fun, gamified challenges.</Text>
+            </View>
+            <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
+          </View>
+        </GlassCard>
       </View>
 
       {/* Detective */}
@@ -182,7 +215,8 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   icon: { width: 48, height: 48, alignItems: 'center', justifyContent: 'center' },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
-  cell: { width: '47.5%' },
+  cell: { minHeight: 120 },
+  simCardInner: { padding: 14, minHeight: 120, justifyContent: 'space-between' },
   simIcon: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center', marginBottom: 10 },
   simTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   caseEmoji: { fontSize: 30 },

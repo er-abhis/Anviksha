@@ -87,12 +87,12 @@ const styles = StyleSheet.create({
   eyebrow: { letterSpacing: 1.1, opacity: 0.95 },
   sub: { opacity: 0.92, lineHeight: 20 },
   arrowCircle: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     backgroundColor: 'rgba(255, 255, 255, 0.25)',
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
   progressHeader: {
     flexDirection: 'row',

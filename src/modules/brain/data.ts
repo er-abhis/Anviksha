@@ -16,7 +16,16 @@ export type SimId =
   | 'kmeans-clustering'
   | 'bias-variance'
   | 'cnn-filter'
-  | 'rag-retrieval';
+  | 'rag-retrieval'
+  | 'activation-functions'
+  | 'gradient-descent'
+  | 'prompt-playground'
+  | 'quantization-lab'
+  | 'loss-functions'
+  | 'naive-bayes'
+  | 'token-generation'
+  | 'fine-tuning'
+  | 'ai-agent';
 
 export interface SimMeta {
   id: SimId;
@@ -24,81 +33,29 @@ export interface SimMeta {
   tagline: string;
   icon: string; // Ionicons
   concept: string;
+  category: 'Core Models' | 'LLMs & Transformers' | 'Classic ML' | 'Optimization & Systems';
   /** ~minutes, used in UI copy. */
   minutes: number;
 }
 
 export const SIMS: SimMeta[] = [
+  // --- Core Models ---
   {
     id: 'neural-network',
     title: 'Neural Network',
     tagline: 'Feed inputs through neurons and watch them fire.',
     icon: 'git-network',
     concept: 'Neural networks',
+    category: 'Core Models',
     minutes: 3,
   },
   {
-    id: 'decision-tree',
-    title: 'Decision Tree',
-    tagline: 'Split a dataset and see the accuracy change.',
-    icon: 'git-branch',
-    concept: 'Decision trees',
-    minutes: 3,
-  },
-  {
-    id: 'token-explorer',
-    title: 'Token Explorer',
-    tagline: 'See how a model chops your text into tokens.',
-    icon: 'text',
-    concept: 'Tokenization',
-    minutes: 2,
-  },
-  {
-    id: 'training-lab',
-    title: 'Training Lab',
-    tagline: 'Tune a model and spot overfitting live.',
-    icon: 'pulse',
-    concept: 'Overfitting',
-    minutes: 4,
-  },
-  {
-    id: 'embedding-space',
-    title: 'Vector Embeddings',
-    tagline: 'Plot words in 2D space and solve vector math analogies.',
-    icon: 'compass',
-    concept: 'Vector embeddings',
-    minutes: 3,
-  },
-  {
-    id: 'attention-map',
-    title: 'Attention Visualizer',
-    tagline: 'See how Transformer attention connects related words.',
-    icon: 'eye',
-    concept: 'Self-attention',
-    minutes: 3,
-  },
-  {
-    id: 'temperature-lab',
-    title: 'Temperature & Sampling',
-    tagline: 'Control randomness, Top-P, and token probabilities.',
-    icon: 'thermometer',
-    concept: 'Temperature & sampling',
-    minutes: 3,
-  },
-  {
-    id: 'kmeans-clustering',
-    title: 'K-Means Clustering',
-    tagline: 'Cluster data points and relocate centroids step-by-step.',
-    icon: 'shapes',
-    concept: 'Clustering',
-    minutes: 3,
-  },
-  {
-    id: 'bias-variance',
-    title: 'Bias-Variance Tradeoff',
-    tagline: 'Adjust polynomial curves to balance under/overfitting.',
-    icon: 'options',
-    concept: 'Bias-variance tradeoff',
+    id: 'activation-functions',
+    title: 'Activation Explorer',
+    tagline: 'Compare Sigmoid, ReLU & GELU curves and gradient flow.',
+    icon: 'pulse-outline',
+    concept: 'Activation functions',
+    category: 'Core Models',
     minutes: 3,
   },
   {
@@ -107,7 +64,64 @@ export const SIMS: SimMeta[] = [
     tagline: 'Slide 3x3 kernels over pixels to extract visual edges.',
     icon: 'grid',
     concept: 'Convolutional filters',
+    category: 'Core Models',
     minutes: 3,
+  },
+  {
+    id: 'token-explorer',
+    title: 'Token Explorer',
+    tagline: 'See how a model chops your text into tokens.',
+    icon: 'text',
+    concept: 'Tokenization',
+    category: 'Core Models',
+    minutes: 2,
+  },
+
+  // --- LLMs & Transformers ---
+  {
+    id: 'embedding-space',
+    title: 'Vector Embeddings',
+    tagline: 'Plot words in 2D space and solve vector math analogies.',
+    icon: 'compass',
+    concept: 'Vector embeddings',
+    category: 'LLMs & Transformers',
+    minutes: 3,
+  },
+  {
+    id: 'attention-map',
+    title: 'Attention Visualizer',
+    tagline: 'See how Transformer attention connects related words.',
+    icon: 'eye',
+    concept: 'Self-attention',
+    category: 'LLMs & Transformers',
+    minutes: 3,
+  },
+  {
+    id: 'temperature-lab',
+    title: 'Temperature & Sampling',
+    tagline: 'Control randomness, Top-P, and token probabilities.',
+    icon: 'thermometer',
+    concept: 'Temperature & sampling',
+    category: 'LLMs & Transformers',
+    minutes: 3,
+  },
+  {
+    id: 'token-generation',
+    title: 'Token Generation',
+    tagline: 'Compare Greedy, Top-K, Nucleus & Beam Search step-by-step.',
+    icon: 'git-commit-outline',
+    concept: 'Decoding strategies',
+    category: 'LLMs & Transformers',
+    minutes: 3,
+  },
+  {
+    id: 'prompt-playground',
+    title: 'Prompt Engineering',
+    tagline: 'Test Zero-shot, Few-shot & Chain-of-Thought reasoning.',
+    icon: 'chatbubbles-outline',
+    concept: 'Prompt engineering',
+    category: 'LLMs & Transformers',
+    minutes: 4,
   },
   {
     id: 'rag-retrieval',
@@ -115,6 +129,101 @@ export const SIMS: SimMeta[] = [
     tagline: 'Compare raw hallucinated AI against vector document retrieval.',
     icon: 'search',
     concept: 'RAG & Retrieval',
+    category: 'LLMs & Transformers',
+    minutes: 4,
+  },
+  {
+    id: 'ai-agent',
+    title: 'AI Agent Loop',
+    tagline: 'Watch an agent perceive, reason, call tools & act.',
+    icon: 'hardware-chip-outline',
+    concept: 'AI Agents',
+    category: 'LLMs & Transformers',
+    minutes: 4,
+  },
+
+  // --- Classic ML ---
+  {
+    id: 'decision-tree',
+    title: 'Decision Tree',
+    tagline: 'Split a dataset and see the accuracy change.',
+    icon: 'git-branch',
+    concept: 'Decision trees',
+    category: 'Classic ML',
+    minutes: 3,
+  },
+  {
+    id: 'kmeans-clustering',
+    title: 'K-Means Clustering',
+    tagline: 'Cluster data points and relocate centroids step-by-step.',
+    icon: 'shapes',
+    concept: 'Clustering',
+    category: 'Classic ML',
+    minutes: 3,
+  },
+  {
+    id: 'naive-bayes',
+    title: 'Naive Bayes Classifier',
+    tagline: 'Calculate word probabilities to separate spam from ham.',
+    icon: 'mail-unread-outline',
+    concept: 'Bayesian classification',
+    category: 'Classic ML',
+    minutes: 3,
+  },
+  {
+    id: 'bias-variance',
+    title: 'Bias-Variance Tradeoff',
+    tagline: 'Adjust polynomial curves to balance under/overfitting.',
+    icon: 'options',
+    concept: 'Bias-variance tradeoff',
+    category: 'Classic ML',
+    minutes: 3,
+  },
+
+  // --- Optimization & Systems ---
+  {
+    id: 'training-lab',
+    title: 'Training Lab',
+    tagline: 'Tune a model and spot overfitting live.',
+    icon: 'pulse',
+    concept: 'Overfitting',
+    category: 'Optimization & Systems',
+    minutes: 4,
+  },
+  {
+    id: 'gradient-descent',
+    title: 'Gradient Descent',
+    tagline: 'Adjust learning rate & momentum to minimize loss.',
+    icon: 'trending-down-outline',
+    concept: 'Gradient descent',
+    category: 'Optimization & Systems',
+    minutes: 3,
+  },
+  {
+    id: 'loss-functions',
+    title: 'Loss Functions',
+    tagline: 'Compare MSE, Cross-Entropy & Huber penalty curves.',
+    icon: 'analytics-outline',
+    concept: 'Loss functions',
+    category: 'Optimization & Systems',
+    minutes: 3,
+  },
+  {
+    id: 'quantization-lab',
+    title: 'Model Quantization',
+    tagline: 'Compress FP32 models to INT4 and measure accuracy vs memory.',
+    icon: 'speedometer-outline',
+    concept: 'Quantization',
+    category: 'Optimization & Systems',
+    minutes: 3,
+  },
+  {
+    id: 'fine-tuning',
+    title: 'LoRA Fine-Tuning',
+    tagline: 'Adapt base models using low-rank matrices.',
+    icon: 'layers-outline',
+    concept: 'Fine-tuning & LoRA',
+    category: 'Optimization & Systems',
     minutes: 4,
   },
 ];

@@ -38,6 +38,7 @@ export type RootStackParamList = {
   };
   Brain: undefined;
   BrainSim: { simId: string };
+  AIGames: undefined;
   Detective: { caseId: string };
   BuildAI: undefined;
   WhatToBuild: undefined;

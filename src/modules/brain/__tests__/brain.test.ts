@@ -3,8 +3,16 @@ import {
   CNN_FILTERS,
   DEFAULT_WEIGHTS,
   EMBEDDING_WORDS,
+  PROMPT_STYLES,
   RAG_DATABASE,
   biasVarianceCurve,
+  calcActivation,
+  calcDecodingCandidates,
+  calcGradientDescentStep,
+  calcLoRAMetrics,
+  calcLossMetrics,
+  calcQuantizationMetrics,
+  calcSpamProbability,
   computeConvolutionStep,
   computeKMeansStep,
   cosineSimilarity,
@@ -71,7 +79,7 @@ describe('training curves', () => {
   });
 });
 
-describe('new interactive simulations logic', () => {
+describe('interactive 20 simulations logic suite', () => {
   it('computes cosine similarity correctly', () => {
     const sim = cosineSimilarity(EMBEDDING_WORDS[0], EMBEDDING_WORDS[1]);
     expect(sim).toBeGreaterThan(0.5);
@@ -115,6 +123,51 @@ describe('new interactive simulations logic', () => {
     expect(RAG_DATABASE.length).toBeGreaterThanOrEqual(2);
     expect(RAG_DATABASE[0].docs).toHaveLength(3);
   });
+
+  it('computes activation function outputs and derivatives', () => {
+    const relu = calcActivation('relu', 2.0);
+    expect(relu.y).toBe(2.0);
+    expect(relu.derivative).toBe(1.0);
+    const sigmoid = calcActivation('sigmoid', 0.0);
+    expect(sigmoid.y).toBe(0.5);
+  });
+
+  it('computes gradient descent steps accurately', () => {
+    const step = calcGradientDescentStep(0.0, 0.1, 0.0, 0.0);
+    expect(step.grad).toBe(-4.0);
+    expect(step.nextX).toBeGreaterThan(0.0);
+  });
+
+  it('evaluates prompt engineering styles', () => {
+    expect(PROMPT_STYLES['chain-of-thought'].accuracyScore).toBe(98);
+  });
+
+  it('calculates model quantization memory savings', () => {
+    const q4 = calcQuantizationMetrics(4);
+    expect(q4.vramGB).toBe(1.8);
+    expect(q4.memorySavingsPercent).toBeGreaterThan(80);
+  });
+
+  it('computes loss function penalties', () => {
+    const loss = calcLossMetrics(1.0, 0.2);
+    expect(loss.mse).toBe(0.64);
+    expect(loss.mae).toBe(0.8);
+  });
+
+  it('calculates naive bayes spam probabilities', () => {
+    const spam = calcSpamProbability(['WINNER', 'FREE']);
+    expect(spam.isSpam).toBe(true);
+  });
+
+  it('generates autoregressive token candidates', () => {
+    const greedy = calcDecodingCandidates('greedy', 1.0);
+    expect(greedy).toHaveLength(1);
+  });
+
+  it('calculates LoRA parameter reductions', () => {
+    const lora = calcLoRAMetrics(8, 16);
+    expect(lora.paramReduction).toBeGreaterThan(99);
+  });
 });
 
 describe('content + missions', () => {
@@ -127,8 +180,9 @@ describe('content + missions', () => {
   it('mission selection is deterministic per date', () => {
     expect(missionForDay('2026-09-11')).toEqual(missionForDay('2026-09-11'));
   });
-  it('has at least 18 interactive experiences', () => {
-    expect(SIMS.length + CASES.length).toBeGreaterThanOrEqual(18);
+  it('has at least 20 interactive simulations', () => {
+    expect(SIMS.length).toBe(20);
+    expect(SIMS.length + CASES.length).toBeGreaterThanOrEqual(27);
   });
 });
 
