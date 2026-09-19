@@ -14,6 +14,7 @@ import { useTheme } from '../theme/ThemeProvider';
 import { easing } from '../theme/animations';
 import { HomeScreen } from '../modules/home/screens/HomeScreen';
 import { PlaygroundScreen } from '../modules/playground/screens/PlaygroundScreen';
+import { AIGamesScreen } from '../modules/brain/screens/AIGamesScreen';
 import { AILabScreen } from '../modules/ailab/screens/AILabScreen';
 import { AchievementsScreen } from '../modules/achievements/screens/AchievementsScreen';
 import { ProfileScreen } from '../modules/profile/screens/ProfileScreen';
@@ -23,6 +24,7 @@ const Tab = createBottomTabNavigator<MainTabParamList>();
 const ICONS: Record<keyof MainTabParamList, { on: string; off: string }> = {
   Home: { on: 'home', off: 'home-outline' },
   Playground: { on: 'flask', off: 'flask-outline' },
+  Games: { on: 'game-controller', off: 'game-controller-outline' },
   AILab: { on: 'hardware-chip', off: 'hardware-chip-outline' },
   Achievements: { on: 'trophy', off: 'trophy-outline' },
   Profile: { on: 'person', off: 'person-outline' },
@@ -90,6 +92,11 @@ export const MainTabs: React.FC = () => {
     >
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Playground" component={PlaygroundScreen} />
+      <Tab.Screen
+        name="Games"
+        component={AIGamesScreen}
+        options={{ tabBarLabel: 'Games' }}
+      />
       <Tab.Screen
         name="AILab"
         component={AILabScreen}

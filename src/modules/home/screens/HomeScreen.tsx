@@ -322,7 +322,7 @@ export const HomeScreen: React.FC = () => {
           </GlassCard>
         </Padded>
 
-        {/* Today's Mission */}
+        {/* Today's Mission & Daily Challenge */}
         <Padded>
           <SectionTitle title="Today’s Mission" />
           <GlassCard elevation="md" onPress={openMission}>
@@ -342,6 +342,22 @@ export const HomeScreen: React.FC = () => {
               <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
             </View>
           </GlassCard>
+        </Padded>
+
+        {/* Daily Challenge Card */}
+        <Padded>
+          <SectionTitle title="Daily Challenge" />
+          <DailyChallengeCard
+            data={{
+              title: 'Today’s challenge',
+              description: dailyDone
+                ? 'Nice work — you’ve completed today’s challenge.'
+                : `${daily.questionIds.length} quick questions from your unlocked lessons. Earn up to ${daily.xpReward} XP.`,
+              xpReward: daily.xpReward,
+              completed: dailyDone,
+            }}
+            onStart={() => navigation.navigate('DailyChallenge')}
+          />
         </Padded>
 
         {/* Spaced Revision Nudge */}
@@ -395,22 +411,6 @@ export const HomeScreen: React.FC = () => {
             </Padded>
           )}
         </View>
-
-        {/* Daily Challenge Card */}
-        <Padded>
-          <SectionTitle title="Daily Challenge" />
-          <DailyChallengeCard
-            data={{
-              title: 'Today’s challenge',
-              description: dailyDone
-                ? 'Nice work — you’ve completed today’s challenge.'
-                : `${daily.questionIds.length} quick questions from your unlocked lessons. Earn up to ${daily.xpReward} XP.`,
-              xpReward: daily.xpReward,
-              completed: dailyDone,
-            }}
-            onStart={() => navigation.navigate('DailyChallenge')}
-          />
-        </Padded>
 
         {/* Daily Spotlight */}
         <Padded>

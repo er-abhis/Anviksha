@@ -4,6 +4,7 @@ import { NavigatorScreenParams } from '@react-navigation/native';
 export type MainTabParamList = {
   Home: undefined;
   Playground: undefined;
+  Games: undefined;
   AILab: undefined;
   Achievements: undefined;
   Profile: undefined;

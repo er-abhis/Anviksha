@@ -23,14 +23,16 @@ export const DailyChallengeCard: React.FC<{
           >
             <Icon name="sparkles" size={20} color={colors.primary} />
           </View>
-          <View style={{ flex: 1 }}>
-            <Text variant="bodyStrong">{data.title}</Text>
-            <Text variant="caption" color="textSecondary">
+          <View style={styles.titleCol}>
+            <Text variant="bodyStrong" numberOfLines={1}>{data.title}</Text>
+            <Text variant="caption" color="textSecondary" numberOfLines={1}>
               {data.completed ? 'Daily Hook Complete' : 'Quick Revision Challenge'}
             </Text>
           </View>
         </View>
-        <XPBadge value={data.xpReward} kind="xp" />
+        <View style={styles.badgeWrap}>
+          <XPBadge value={data.xpReward} kind="xp" />
+        </View>
       </View>
 
       <Text variant="body" color="textSecondary" style={{ marginTop: spacing.sm, lineHeight: 20 }}>
@@ -60,7 +62,7 @@ export const DailyChallengeCard: React.FC<{
           size="md"
           onPress={onStart}
           right={<Icon name="arrow-forward" size={16} color={colors.onPrimary} />}
-          style={{ marginTop: spacing.md }}
+          style={{ marginTop: spacing.md, alignSelf: 'stretch' }}
         />
       )}
     </GlassCard>
@@ -72,13 +74,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: 12,
+    gap: 10,
   },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 },
+  titleCol: { flex: 1, minWidth: 0 },
+  badgeWrap: { flexShrink: 0 },
   spark: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
   completedBadge: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: 8,
     padding: 12,
     borderWidth: 1,

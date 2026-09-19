@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { ScrollView, Pressable, StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -57,10 +57,14 @@ const ActionRow: React.FC<{
   );
 };
 
-const THEME_OPTIONS: { key: ThemePreference; label: string }[] = [
-  { key: 'light', label: 'Light' },
-  { key: 'dark', label: 'Dark' },
-  { key: 'system', label: 'System' },
+const THEME_OPTIONS: { key: ThemePreference; label: string; icon: string }[] = [
+  { key: 'dark', label: 'Dark Neon', icon: 'moon' },
+  { key: 'midnight', label: 'Midnight', icon: 'sparkles' },
+  { key: 'cyberpunk', label: 'Cyberpunk', icon: 'flash' },
+  { key: 'emerald', label: 'Emerald', icon: 'leaf' },
+  { key: 'sunset', label: 'Sunset', icon: 'flame' },
+  { key: 'light', label: 'Solar Light', icon: 'sunny' },
+  { key: 'system', label: 'System', icon: 'hardware-chip' },
 ];
 
 export const SettingsScreen: React.FC = () => {
@@ -80,16 +84,16 @@ export const SettingsScreen: React.FC = () => {
 
       {/* Appearance */}
       <Animated.View>
-        <SectionTitle title="Appearance" />
+        <SectionTitle title="Appearance & Themes 🎨" />
         <GlassCard>
           <Text variant="label" color="textSecondary" style={{ marginBottom: spacing.sm }}>
-            Theme
+            Choose Color Theme (7 Options)
           </Text>
-          <View
-            style={[
-              styles.segment,
-              { backgroundColor: colors.surfaceAlt, borderRadius: radius.lg },
-            ]}
+
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={[styles.themeRow, { gap: spacing.xs }]}
           >
             {THEME_OPTIONS.map(opt => {
               const active = preference === opt.key;
@@ -98,25 +102,33 @@ export const SettingsScreen: React.FC = () => {
                   key={opt.key}
                   onPress={() => setPreference(opt.key)}
                   style={[
-                    styles.segmentItem,
+                    styles.themeBtn,
                     {
-                      borderRadius: radius.md,
-                      backgroundColor: active ? colors.primaryMuted : 'transparent',
-                      borderWidth: active ? StyleSheet.hairlineWidth : 0,
-                      borderColor: colors.accent,
+                      borderRadius: radius.lg,
+                      backgroundColor: active ? colors.primary : colors.surfaceAlt,
+                      borderColor: active ? colors.accent : colors.glassBorder,
+                      borderWidth: active ? 2 : StyleSheet.hairlineWidth,
                     },
                   ]}
                 >
+                  <Icon
+                    name={opt.icon}
+                    size={18}
+                    color={active ? colors.onPrimary : colors.text}
+                  />
                   <Text
                     variant="label"
-                    color={active ? 'accent' : 'textSecondary'}
+                    style={{
+                      color: active ? colors.onPrimary : colors.text,
+                      fontWeight: active ? '700' : '500',
+                    }}
                   >
                     {opt.label}
                   </Text>
                 </Pressable>
               );
             })}
-          </View>
+          </ScrollView>
         </GlassCard>
       </Animated.View>
 
@@ -191,11 +203,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  segment: { flexDirection: 'row', padding: 4, gap: 4 },
-  segmentItem: {
-    flex: 1,
+  themeRow: { paddingVertical: 4 },
+  themeBtn: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 10,
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
   },
 });

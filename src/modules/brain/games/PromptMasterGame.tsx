@@ -5,13 +5,17 @@ import { Button, GlassCard, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { useProgressStore } from '../../../store';
 
+interface Option {
+  text: string;
+  explanation: string;
+}
+
 interface GameQuestion {
   id: number;
   targetOutput: string;
   systemPrompt: string;
-  options: string[];
+  options: Option[];
   correctIndex: number;
-  explanation: string;
 }
 
 const QUESTIONS: GameQuestion[] = [
@@ -19,25 +23,73 @@ const QUESTIONS: GameQuestion[] = [
     id: 1,
     targetOutput: '{\n  "sentiment": "positive",\n  "confidence": 0.98\n}',
     systemPrompt: 'System: You are an API backend. Output ONLY valid JSON without markdown.',
-    options: ['"Tell me how you feel about this movie!"', '"Respond with JSON format strictly"', '"Write a poem about positivity"', '"Explain sentiment analysis"'],
     correctIndex: 1,
-    explanation: 'Strict structural constraints in the system prompt force deterministic JSON output.',
+    options: [
+      {
+        text: '"Tell me how you feel about this movie!"',
+        explanation: 'Incorrect: Open-ended conversational prompts lead to freeform prose text rather than structured JSON.',
+      },
+      {
+        text: '"Respond with JSON format strictly"',
+        explanation: 'Correct! Structural instructions like "Respond with JSON format strictly" force the LLM to format token logits into JSON syntax.',
+      },
+      {
+        text: '"Write a poem about positivity"',
+        explanation: 'Incorrect: Stanza and rhyme requests trigger creative generation instead of structured keys.',
+      },
+      {
+        text: '"Explain sentiment analysis"',
+        explanation: 'Incorrect: Explanatory prompts cause the LLM to write an essay on how sentiment classification works.',
+      },
+    ],
   },
   {
     id: 2,
     targetOutput: 'Step 1: Calculate 15 * 4 = 60.\nStep 2: Add 8 to 60 = 68.\nFinal Answer: 68',
     systemPrompt: 'System: Solve the mathematical word problem.',
-    options: ['"Give me just the final number directly."', '"Let\'s think step by step."', '"Do not show any intermediate work."', '"Write in Spanish."'],
     correctIndex: 1,
-    explanation: 'The trigger phrase "Let\'s think step by step" enables Chain-of-Thought (CoT) reasoning.',
+    options: [
+      {
+        text: '"Give me just the final number directly."',
+        explanation: 'Incorrect: Suppressing intermediate reasoning increases mathematical hallucination rates on complex arithmetic.',
+      },
+      {
+        text: '"Let\'s think step by step."',
+        explanation: 'Correct! The classic "Let\'s think step by step" phrase activates Chain-of-Thought (CoT) reasoning, breaking complex tasks into sequential tokens.',
+      },
+      {
+        text: '"Do not show any intermediate work."',
+        explanation: 'Incorrect: Direct answers bypass the multi-step reasoning steps required for math precision.',
+      },
+      {
+        text: '"Write in Spanish."',
+        explanation: 'Incorrect: Translation commands change the output language, not the reasoning methodology.',
+      },
+    ],
   },
   {
     id: 3,
     targetOutput: 'The patient presents with acute hypertension. Recommended dosage: 10mg Lisinopril.',
     systemPrompt: 'System: You are a board-certified medical specialist practitioner.',
-    options: ['"Explain high blood pressure like I am 5 years old."', '"Adopt a casual gamer tone."', '"Act as a clinical medical expert."', '"Write a fantasy story."'],
     correctIndex: 2,
-    explanation: 'Role prompting ("Act as a clinical medical expert") sets vocabulary, domain depth, and persona.',
+    options: [
+      {
+        text: '"Explain high blood pressure like I am 5 years old."',
+        explanation: 'Incorrect: Simplified ELI5 prompts produce elementary analogies rather than clinical medical terminology.',
+      },
+      {
+        text: '"Adopt a casual gamer tone."',
+        explanation: 'Incorrect: Informal persona prompts inject slang and casual conversational speech.',
+      },
+      {
+        text: '"Act as a clinical medical expert."',
+        explanation: 'Correct! Role-based persona prompting establishes domain expertise, academic vocabulary, and professional context.',
+      },
+      {
+        text: '"Write a fantasy story."',
+        explanation: 'Incorrect: Fiction prompts alter the domain completely away from medical diagnostics.',
+      },
+    ],
   },
 ];
 
@@ -49,7 +101,6 @@ export const PromptMasterGame: React.FC = () => {
   const [completed, setCompleted] = useState(false);
 
   const addXp = useProgressStore(s => s.addXp);
-
   const q = QUESTIONS[currentIdx];
 
   const handleSelect = (idx: number) => {
@@ -92,6 +143,9 @@ export const PromptMasterGame: React.FC = () => {
     );
   }
 
+  const isAnswered = selectedOpt !== null;
+  const isCorrect = selectedOpt === q.correctIndex;
+
   return (
     <GlassCard elevation="md" style={styles.card}>
       <View style={styles.header}>
@@ -117,41 +171,63 @@ export const PromptMasterGame: React.FC = () => {
         <Text variant="label" color="textSecondary">WHICH PROMPT PRODUCED THIS RESULT?</Text>
         {q.options.map((opt, idx) => {
           const isSelected = selectedOpt === idx;
-          const isCorrect = idx === q.correctIndex;
+          const isRight = idx === q.correctIndex;
           let bgColor = colors.surfaceAlt;
           let textColor = colors.text;
 
-          if (selectedOpt !== null) {
-            if (isCorrect) {
+          if (isAnswered) {
+            if (isRight) {
               bgColor = colors.success + '33';
               textColor = colors.success;
             } else if (isSelected) {
-              bgColor = colors.warning + '33';
-              textColor = colors.warning;
+              bgColor = colors.error + '33';
+              textColor = colors.error;
             }
           }
 
           return (
             <Pressable
-              key={opt}
+              key={opt.text}
+              disabled={isAnswered}
               onPress={() => handleSelect(idx)}
               style={[
                 styles.optBtn,
-                { backgroundColor: bgColor, borderRadius: radius.md, borderColor: colors.glassBorder },
+                { backgroundColor: bgColor, borderRadius: radius.md, borderColor: isAnswered && (isRight || isSelected) ? textColor : colors.glassBorder },
               ]}
             >
-              <Text variant="body" style={{ color: textColor, fontWeight: isSelected ? '700' : '400' }}>
-                {opt}
+              <Text variant="body" style={{ color: textColor, fontWeight: isSelected || isRight ? '700' : '400' }}>
+                {opt.text}
               </Text>
             </Pressable>
           );
         })}
       </View>
 
-      {selectedOpt !== null && (
-        <View style={[styles.explainBox, { backgroundColor: colors.primaryMuted, borderRadius: radius.md }]}>
-          <Text variant="caption" color="primary">{q.explanation}</Text>
-          <Button label="Next Round ➔" size="sm" onPress={handleNext} style={{ marginTop: 8 }} />
+      {/* Clear Explanation Box for both correct and incorrect selections */}
+      {isAnswered && (
+        <View style={[styles.explainBox, { backgroundColor: isCorrect ? colors.success + '22' : colors.warning + '22', borderRadius: radius.md }]}>
+          <View style={styles.explainHeader}>
+            <Icon
+              name={isCorrect ? 'checkmark-circle-outline' : 'close-circle-outline'}
+              size={20}
+              color={isCorrect ? colors.success : colors.warning}
+            />
+            <Text variant="bodyStrong" color={isCorrect ? 'success' : 'warning'}>
+              {isCorrect ? '🎯 Bingo! That is Correct' : '❌ Incorrect Choice'}
+            </Text>
+          </View>
+
+          <Text variant="caption" color="text" style={{ marginTop: 4 }}>
+            {q.options[selectedOpt].explanation}
+          </Text>
+
+          {!isCorrect && (
+            <Text variant="caption" color="success" style={{ marginTop: 6, fontWeight: '600' }}>
+              💡 Correct Answer: {q.options[q.correctIndex].text} — {q.options[q.correctIndex].explanation}
+            </Text>
+          )}
+
+          <Button label="Next Round ➔" size="sm" onPress={handleNext} style={{ marginTop: 10 }} />
         </View>
       )}
     </GlassCard>
@@ -168,5 +244,6 @@ const styles = StyleSheet.create({
   optsCol: { gap: 8 },
   optBtn: { padding: 12, borderWidth: StyleSheet.hairlineWidth },
   explainBox: { padding: 12 },
+  explainHeader: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   centerCol: { alignItems: 'center', padding: 16 },
 });

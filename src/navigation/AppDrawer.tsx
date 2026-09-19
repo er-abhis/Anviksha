@@ -70,6 +70,7 @@ export const AppDrawer: React.FC = () => {
 
   const items: Item[] = [
     { key: 'Home', icon: 'home-outline', label: 'Home', route: 'Main', run: () => { hide(); navigationRef.isReady() && navigationRef.navigate('Main', { screen: 'Home' }); } },
+    { key: 'Games', icon: 'game-controller-outline', label: 'AI Games 🎮', route: 'AIGames', run: () => go('AIGames') },
     { key: 'Search', icon: 'search-outline', label: 'Search', route: 'Search', run: () => go('Search') },
     { key: 'LearnMore', icon: 'library-outline', label: 'Learn More', route: 'LearnMore', run: () => go('LearnMore') },
     { key: 'Coffee', icon: 'cafe-outline', label: 'Support the Developer', route: 'Coffee', run: () => go('Coffee') },

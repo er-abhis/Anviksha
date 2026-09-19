@@ -17,13 +17,14 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   const systemScheme = useColorScheme();
 
   const value = useMemo<ThemeContextValue>(() => {
-    const mode: ThemeMode =
-      preference === 'system'
-        ? systemScheme === 'dark'
-          ? 'dark'
-          : 'light'
-        : preference;
-    return { theme: themes[mode], mode };
+    let mode: ThemeMode = 'dark';
+    if (preference === 'system') {
+      mode = systemScheme === 'light' ? 'light' : 'dark';
+    } else if (themes[preference as ThemeMode]) {
+      mode = preference as ThemeMode;
+    }
+
+    return { theme: themes[mode] || themes.dark, mode };
   }, [preference, systemScheme]);
 
   return (
