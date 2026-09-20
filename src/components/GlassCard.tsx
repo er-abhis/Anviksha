@@ -40,7 +40,14 @@ export const GlassCard: React.FC<GlassCardProps> = ({
   const padVal = padding !== undefined ? padding : padded ? spacing.md : 0;
 
   const inner = (
-    <View style={padVal > 0 ? { padding: padVal } : undefined}>{children}</View>
+    <View
+      style={[
+        styles.innerContainer,
+        padVal > 0 && { padding: padVal },
+      ]}
+    >
+      {children}
+    </View>
   );
 
   if (onPress) {
@@ -62,3 +69,7 @@ export const GlassCard: React.FC<GlassCardProps> = ({
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  innerContainer: { flex: 1, width: '100%', height: '100%' },
+});

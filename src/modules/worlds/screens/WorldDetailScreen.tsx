@@ -40,20 +40,23 @@ export const WorldDetailScreen: React.FC = () => {
 
   const lessons = lessonsForWorld(world.id);
 
+  const accentColor = world.gradient ? world.gradient[0] : colors.primary;
+
   return (
     <Screen scroll contentContainerStyle={{ gap: spacing.lg }}>
       <Header title={world.title} onBack={() => navigation.goBack()} />
 
       <Gradient
         colors={world.gradient ?? gradients.cool}
-        style={{ borderRadius: radius.lg, ...elevation.glow }}
+        style={{ borderRadius: radius.xl, ...elevation.glow, overflow: 'hidden' }}
       >
-        <View style={{ padding: spacing.xl }}>
-          <Icon name={world.icon} size={28} color="#FFFFFF" />
+        <View style={{ padding: spacing.xl, gap: spacing.xs }}>
+          <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(255,255,255,0.22)', alignItems: 'center', justifyContent: 'center', marginBottom: 4 }}>
+            <Icon name={world.icon} size={26} color="#FFFFFF" />
+          </View>
           <Text
             variant="h2"
             color="textInverse"
-            style={{ marginTop: spacing.sm }}
           >
             {world.title}
           </Text>
@@ -61,9 +64,12 @@ export const WorldDetailScreen: React.FC = () => {
             {world.description}
           </Text>
           {lessons.length > 0 && (
-            <Text variant="label" color="textInverse" style={{ marginTop: spacing.md, opacity: 0.9 }}>
-              {`${lessons.filter(l => l.id in completed).length} / ${lessons.length} lessons complete`}
-            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: spacing.md, backgroundColor: 'rgba(0,0,0,0.22)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: radius.pill, alignSelf: 'flex-start' }}>
+              <Icon name="sparkles" size={14} color="#FFFFFF" />
+              <Text variant="label" color="textInverse" style={{ opacity: 0.95, fontSize: 11 }}>
+                {`${lessons.filter(l => l.id in completed).length} / ${lessons.length} lessons complete`}
+              </Text>
+            </View>
           )}
         </View>
       </Gradient>
@@ -79,33 +85,38 @@ export const WorldDetailScreen: React.FC = () => {
         lessons.map((lesson, i) => {
           const done = lesson.id in completed;
           const unlocked = isLessonUnlocked(lesson, completed);
-          const bg = done ? colors.success : unlocked ? colors.primaryMuted : colors.surfaceAlt;
-          // Intro is always open; a locked lesson shows a book (readable), not a barrier.
+          const bg = done ? colors.success : unlocked ? accentColor : colors.surfaceAlt;
           const iconName = done ? 'checkmark' : unlocked ? 'play' : 'book-outline';
-          const iconColor = done ? '#FFFFFF' : unlocked ? colors.primary : colors.textSecondary;
+          const iconColor = done ? '#FFFFFF' : unlocked ? '#FFFFFF' : colors.textSecondary;
+
           return (
-            <Animated.View
-              key={lesson.id}
-            >
+            <Animated.View key={lesson.id}>
               <GlassCard
-                elevation="sm"
+                elevation="glow"
+                style={{
+                  borderColor: done ? colors.success + '44' : unlocked ? accentColor + '44' : colors.border,
+                  borderWidth: 1,
+                  borderRadius: radius.lg,
+                }}
                 onPress={() => navigation.navigate('LessonIntro', { lessonId: lesson.id })}
               >
                 <View style={[styles.row, { gap: spacing.md }]}>
-                  <View style={[styles.badge, { backgroundColor: bg, borderRadius: radius.sm }]}>
+                  <View style={[styles.badge, { backgroundColor: bg, borderRadius: radius.md }]}>
                     <Icon name={iconName} size={18} color={iconColor} />
                   </View>
                   <View style={styles.flex}>
                     <Text variant="bodyStrong">{`${lesson.order}. ${lesson.title}`}</Text>
-                    <Text variant="caption" color="textSecondary">
+                    <Text variant="caption" color="textSecondary" style={{ marginTop: 2 }}>
                       {done
                         ? `Completed · ${lesson.estimatedMinutes} min`
                         : unlocked
-                        ? `${lesson.estimatedMinutes} min · ${lesson.difficulty} · ${lesson.xp} XP`
-                        : 'Complete the previous lesson to unlock — you’re one step away'}
+                        ? `${lesson.estimatedMinutes} min · ${lesson.difficulty} · +${lesson.xp} XP`
+                        : 'Complete previous lesson to unlock'}
                     </Text>
                   </View>
-                  <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
+                  <View style={{ backgroundColor: accentColor + '18', padding: 6, borderRadius: radius.pill }}>
+                    <Icon name="chevron-forward" size={16} color={accentColor} />
+                  </View>
                 </View>
               </GlassCard>
             </Animated.View>

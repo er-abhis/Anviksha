@@ -13,6 +13,7 @@ import { LabArchitecture } from '../types';
 import { getMission } from '../data/missions';
 import { getComponent } from '../data/components';
 import { samplesFor } from '../simulator/scenarios';
+import { LightweightAIEngine } from '../engine/LightweightAIEngine';
 
 export class LocalSimulationProvider implements AIProvider {
   readonly id = 'local-sim';
@@ -24,7 +25,7 @@ export class LocalSimulationProvider implements AIProvider {
   ): Promise<SimTurn> {
     const mission = getMission(architecture.missionId);
     const placed = architecture.components;
-    const trace = placed.map(id => getComponent(id).label);
+    const trace = placed.map(id => getComponent(id)?.label ?? id);
 
     // Nothing built yet.
     if (placed.length === 0) {
@@ -36,26 +37,9 @@ export class LocalSimulationProvider implements AIProvider {
       };
     }
 
-    // Free Build (no fixed mission): a working AI needs a Brain; otherwise run
-    // the input through whatever pipeline the learner assembled.
+    // Free Build (no fixed mission): use Lightweight AI Engine
     if (!mission) {
-      if (!placed.includes('brain')) {
-        return {
-          input,
-          output:
-            "⚠️ This AI has no AI Brain, so it can't decide how to respond. Add an AI Brain.",
-          trace,
-          degraded: true,
-        };
-      }
-      return {
-        input,
-        output: `✅ Your AI ran the input through its pipeline (${trace.join(
-          ' → ',
-        )}) and produced a response.`,
-        trace,
-        degraded: false,
-      };
+      return LightweightAIEngine.generateResponse(architecture, input);
     }
 
     // Missing a required block → stop early and explain the break honestly.
@@ -70,19 +54,19 @@ export class LocalSimulationProvider implements AIProvider {
       };
     }
 
-    // A working build: reply with a matching (or first) sample exchange.
+    // A working build: if matching sample exists, use it; otherwise run Lightweight AI Engine!
     const samples = samplesFor(mission.id);
-    const match =
-      samples.find(s => s.input === input) ?? samples[0] ?? {
-        input,
-        output: 'Working! (No sample response is defined for this input.)',
+    const match = samples.find(s => s.input === input);
+    if (match) {
+      return {
+        input: match.input,
+        output: match.output,
+        trace,
+        degraded: false,
       };
-    return {
-      input: match.input,
-      output: match.output,
-      trace,
-      degraded: false,
-    };
+    }
+
+    return LightweightAIEngine.generateResponse(architecture, input);
   }
 }
 

@@ -22,6 +22,8 @@ import { useDrawerStore } from '../store';
 import { navigationRef } from './navigationRef';
 import { openContactForm, rateApp, shareApp } from '../utils/appLinks';
 
+import { useTranslation } from '../i18n/useTranslation';
+
 const { width } = Dimensions.get('window');
 const PANEL_W = Math.min(320, width * 0.84);
 
@@ -43,6 +45,7 @@ export const AppDrawer: React.FC = () => {
   const { colors, radius, spacing } = useTheme();
   const open = useDrawerStore(s => s.open);
   const hide = useDrawerStore(s => s.hide);
+  const { t } = useTranslation();
 
   const p = useSharedValue(0);
   useEffect(() => {
@@ -69,17 +72,17 @@ export const AppDrawer: React.FC = () => {
     : undefined;
 
   const items: Item[] = [
-    { key: 'Home', icon: 'home-outline', label: 'Home', route: 'Main', run: () => { hide(); navigationRef.isReady() && navigationRef.navigate('Main', { screen: 'Home' }); } },
-    { key: 'Games', icon: 'game-controller-outline', label: 'AI Games 🎮', route: 'AIGames', run: () => go('AIGames') },
-    { key: 'Search', icon: 'search-outline', label: 'Search', route: 'Search', run: () => go('Search') },
-    { key: 'LearnMore', icon: 'library-outline', label: 'Learn More', route: 'LearnMore', run: () => go('LearnMore') },
-    { key: 'Coffee', icon: 'cafe-outline', label: 'Support the Developer', route: 'Coffee', run: () => go('Coffee') },
-    { key: 'About', icon: 'document-text-outline', label: 'About App', route: 'About', run: () => go('About') },
-    { key: 'Developer', icon: 'code-slash-outline', label: 'About Developer', route: 'Developer', run: () => go('Developer') },
-    { key: 'Privacy', icon: 'shield-checkmark-outline', label: 'Privacy Policy', route: 'Privacy', run: () => go('Privacy') },
-    { key: 'Contact', icon: 'mail-outline', label: 'Contact Us', run: () => { hide(); openContactForm(); } },
-    { key: 'Rate', icon: 'star-outline', label: 'Rate App', run: () => { hide(); rateApp(); } },
-    { key: 'Share', icon: 'share-social-outline', label: 'Share App', run: () => { hide(); shareApp(); } },
+    { key: 'Home', icon: 'home-outline', label: t('home'), route: 'Main', run: () => { hide(); navigationRef.isReady() && navigationRef.navigate('Main', { screen: 'Home' }); } },
+    { key: 'Games', icon: 'game-controller-outline', label: `${t('games')} 🎮`, route: 'AIGames', run: () => go('AIGames') },
+    { key: 'Search', icon: 'search-outline', label: t('search'), route: 'Search', run: () => go('Search') },
+    { key: 'LearnMore', icon: 'library-outline', label: t('learn_more'), route: 'LearnMore', run: () => go('LearnMore') },
+    { key: 'Coffee', icon: 'cafe-outline', label: t('support_dev'), route: 'Coffee', run: () => go('Coffee') },
+    { key: 'About', icon: 'document-text-outline', label: t('about'), route: 'About', run: () => go('About') },
+    { key: 'Developer', icon: 'code-slash-outline', label: t('about'), route: 'Developer', run: () => go('Developer') },
+    { key: 'Privacy', icon: 'shield-checkmark-outline', label: t('privacy_policy'), route: 'Privacy', run: () => go('Privacy') },
+    { key: 'Contact', icon: 'mail-outline', label: t('contact_us'), run: () => { hide(); openContactForm(); } },
+    { key: 'Rate', icon: 'star-outline', label: t('rate_app'), run: () => { hide(); rateApp(); } },
+    { key: 'Share', icon: 'share-social-outline', label: t('share_app'), run: () => { hide(); shareApp(); } },
   ];
 
   // Home is "active" on the tab shell (route name 'Main') too.

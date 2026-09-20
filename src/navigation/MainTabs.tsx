@@ -19,6 +19,8 @@ import { AILabScreen } from '../modules/ailab/screens/AILabScreen';
 import { AchievementsScreen } from '../modules/achievements/screens/AchievementsScreen';
 import { ProfileScreen } from '../modules/profile/screens/ProfileScreen';
 
+import { useTranslation } from '../i18n/useTranslation';
+
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 const ICONS: Record<keyof MainTabParamList, { on: string; off: string }> = {
@@ -69,6 +71,7 @@ const TabIcon: React.FC<{
 export const MainTabs: React.FC = () => {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
 
   return (
     <Tab.Navigator
@@ -90,20 +93,36 @@ export const MainTabs: React.FC = () => {
         ),
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Playground" component={PlaygroundScreen} />
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{ tabBarLabel: t('home') }}
+      />
+      <Tab.Screen
+        name="Playground"
+        component={PlaygroundScreen}
+        options={{ tabBarLabel: t('playground') }}
+      />
       <Tab.Screen
         name="Games"
         component={AIGamesScreen}
-        options={{ tabBarLabel: 'Games' }}
+        options={{ tabBarLabel: t('games') }}
       />
       <Tab.Screen
         name="AILab"
         component={AILabScreen}
-        options={{ tabBarLabel: 'AI Lab' }}
+        options={{ tabBarLabel: t('ai_lab') }}
       />
-      <Tab.Screen name="Achievements" component={AchievementsScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen
+        name="Achievements"
+        component={AchievementsScreen}
+        options={{ tabBarLabel: t('achievements') }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{ tabBarLabel: t('profile') }}
+      />
     </Tab.Navigator>
   );
 };

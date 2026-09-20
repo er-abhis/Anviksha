@@ -55,6 +55,27 @@ export const GlossaryScreen: React.FC = () => {
     <Screen scroll contentContainerStyle={{ gap: spacing.md }}>
       <Header title="AI Glossary" onBack={() => navigation.goBack()} />
 
+      {/* Hero Header Banner */}
+      <Animated.View>
+        <GlassCard elevation="glow" padded={false} style={{ borderRadius: radius.xl, overflow: 'hidden' }}>
+          <Gradient colors={gradients.cool} style={StyleSheet.absoluteFill} />
+          <View style={{ padding: spacing.lg, gap: spacing.xs }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <Icon name="book" size={18} color="#FFFFFF" />
+              <Text variant="label" color="textInverse" style={{ opacity: 0.9, letterSpacing: 1 }}>
+                DICTIONARY & CONCEPTS
+              </Text>
+            </View>
+            <Text variant="h2" color="textInverse">
+              AI Glossary ({GLOSSARY.length} Terms)
+            </Text>
+            <Text variant="caption" color="textInverse" style={{ opacity: 0.92, lineHeight: 16 }}>
+              Clear, simple explanations and technical definitions for key machine learning and AI terms.
+            </Text>
+          </View>
+        </GlassCard>
+      </Animated.View>
+
       <SearchBar
         value={query}
         onChangeText={setQuery}
@@ -78,12 +99,12 @@ export const GlossaryScreen: React.FC = () => {
                   setQuery(t.name);
                   setOpen(t.slug);
                 }}
-                style={[styles.suggestChip, { borderColor: colors.border, borderRadius: radius.pill }]}
+                style={[styles.suggestChip, { borderColor: colors.accent + '44', backgroundColor: colors.accent + '12', borderRadius: radius.pill }]}
                 accessibilityRole="button"
                 accessibilityLabel={`Show ${t.name}`}
               >
-                <Icon name={t.icon} size={14} color={colors.primary} />
-                <Text variant="caption" color="primary">{t.name}</Text>
+                <Icon name={t.icon} size={14} color={colors.accent} />
+                <Text variant="caption" color="accent" style={{ fontWeight: '600' }}>{t.name}</Text>
               </Pressable>
             ))}
           </View>
@@ -95,6 +116,7 @@ export const GlossaryScreen: React.FC = () => {
           >
             <TermCard
               term={term}
+              index={i}
               expanded={open === term.slug}
               onToggle={() => setOpen(open === term.slug ? null : term.slug)}
               onRelated={slug => setOpen(slug)}
@@ -108,16 +130,20 @@ export const GlossaryScreen: React.FC = () => {
 
 const TermCard: React.FC<{
   term: GlossaryTerm;
+  index: number;
   expanded: boolean;
   onToggle: () => void;
   onRelated: (slug: string) => void;
-}> = ({ term, expanded, onToggle, onRelated }) => {
+}> = ({ term, index, expanded, onToggle, onRelated }) => {
   const { colors, radius, spacing } = useTheme();
+  const themeColors = [colors.primary, colors.accent, colors.accentAlt, colors.success, colors.warning];
+  const itemColor = themeColors[index % themeColors.length];
+
   return (
-    <GlassCard elevation="sm" onPress={onToggle}>
+    <GlassCard elevation="glow" onPress={onToggle} style={{ borderColor: itemColor + '33', borderWidth: 1 }}>
       <View style={styles.termHead}>
-        <View style={[styles.termIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.md }]}>
-          <Icon name={term.icon} size={20} color={colors.primary} />
+        <View style={[styles.termIcon, { backgroundColor: itemColor + '18', borderRadius: radius.md }]}>
+          <Icon name={term.icon} size={20} color={itemColor} />
         </View>
         <View style={styles.flex}>
           <Text variant="bodyStrong">{term.name}</Text>
@@ -125,7 +151,7 @@ const TermCard: React.FC<{
             {term.simple}
           </Text>
         </View>
-        <Icon name={expanded ? 'chevron-up' : 'chevron-down'} size={18} color={colors.textTertiary} />
+        <Icon name={expanded ? 'chevron-up' : 'chevron-down'} size={18} color={itemColor} />
       </View>
 
       {expanded && (

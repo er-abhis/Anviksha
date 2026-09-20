@@ -117,9 +117,18 @@ export const BrainScreen: React.FC = () => {
       })()}
 
       {/* Categorized 20 Interactive Simulations */}
-      {categories.map(cat => {
+      {categories.map((cat, idx) => {
         const catSims = SIMS.filter(s => s.category === cat);
         if (catSims.length === 0) return null;
+
+        const categoryTheme: Record<string, { bg: string; color: string; border: string }> = {
+          'Core Models': { bg: colors.primaryMuted, color: colors.primary, border: colors.primary + '44' },
+          'LLMs & Transformers': { bg: 'rgba(255,46,147,0.18)', color: colors.accentAlt, border: colors.accentAlt + '44' },
+          'Classic ML': { bg: 'rgba(18,209,142,0.18)', color: colors.success, border: colors.success + '44' },
+          'Optimization & Systems': { bg: 'rgba(245,158,11,0.18)', color: colors.warning, border: colors.warning + '44' },
+        };
+        const theme = categoryTheme[cat] || { bg: colors.primaryMuted, color: colors.primary, border: colors.border };
+
         return (
           <View key={cat}>
             <SectionTitle title={cat} />
@@ -132,9 +141,9 @@ export const BrainScreen: React.FC = () => {
                     onPress={() => navigation.navigate('BrainSim', { simId: s.id })}
                     style={({ pressed }) => [styles.cell, { width: cellWidthPercent as any, opacity: pressed ? 0.7 : 1 }]}
                   >
-                    <GlassCard elevation="md" style={styles.simCardInner}>
-                      <View style={[styles.simIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.md }]}>
-                        <Icon name={s.icon} size={22} color={colors.primary} />
+                    <GlassCard elevation="glow" style={[styles.simCardInner, { borderColor: theme.border, borderWidth: 1 }]}>
+                      <View style={[styles.simIcon, { backgroundColor: theme.bg, borderRadius: radius.md }]}>
+                        <Icon name={s.icon} size={20} color={theme.color} />
                       </View>
                       <View style={styles.simTitleRow}>
                         <Text variant="bodyStrong" numberOfLines={1} style={styles.flex}>{s.title}</Text>
@@ -153,13 +162,13 @@ export const BrainScreen: React.FC = () => {
       {/* AI Arcade Games */}
       <View>
         <SectionTitle title="AI Arcade Games 🎮" />
-        <GlassCard elevation="glow" onPress={() => navigation.navigate('AIGames')}>
+        <GlassCard elevation="glow" onPress={() => navigation.navigate('AIGames')} style={{ borderColor: colors.accent + '44', borderWidth: 1 }}>
           <View style={styles.row}>
-            <View style={[styles.icon, { backgroundColor: colors.accentMuted, borderRadius: radius.md }]}>
-              <Icon name="game-controller-outline" size={24} color={colors.accent} />
+            <View style={[styles.icon, { backgroundColor: colors.accentAlt + '22', borderRadius: radius.md }]}>
+              <Icon name="game-controller-outline" size={24} color={colors.accentAlt} />
             </View>
             <View style={styles.flex}>
-              <Text variant="label" color="accent">INTERACTIVE MINI-GAMES</Text>
+              <Text variant="label" color="accentAlt">INTERACTIVE MINI-GAMES</Text>
               <Text variant="bodyStrong">Prompt Master & Transformer Builder</Text>
               <Text variant="caption" color="textSecondary">Test your AI skills in fun, gamified challenges.</Text>
             </View>
@@ -175,7 +184,7 @@ export const BrainScreen: React.FC = () => {
           {CASES.map(c => {
             const solved = Boolean(casesState[c.id]?.solved);
             return (
-              <GlassCard key={c.id} elevation="md" onPress={() => navigation.navigate('Detective', { caseId: c.id })}>
+              <GlassCard key={c.id} elevation="glow" onPress={() => navigation.navigate('Detective', { caseId: c.id })} style={{ borderColor: colors.warning + '33', borderWidth: 1 }}>
                 <View style={styles.row}>
                   <Text style={styles.caseEmoji}>{c.emoji}</Text>
                   <View style={styles.flex}>

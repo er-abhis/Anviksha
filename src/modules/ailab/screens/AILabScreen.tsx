@@ -21,10 +21,12 @@ import { builderLevelForXp, xpToNextLevel } from '../scoring/score';
 import { MissionCard } from '../components/MissionCard';
 import { SavedProjects } from '../components/SavedProjects';
 import { categoryFromMissionId } from '../freebuild/categories';
+import { useTranslation } from '../../../i18n/useTranslation';
 
 export const AILabScreen: React.FC = () => {
   const { colors, spacing, radius, gradients } = useTheme();
   const tabBarHeight = useBottomTabBarHeight();
+  const { t } = useTranslation();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const aiLabXp = useAILabStore(s => s.aiLabXp);
@@ -51,7 +53,7 @@ export const AILabScreen: React.FC = () => {
             pointerEvents="none"
           />
           <View style={{ padding: spacing.md, gap: spacing.xxs }}>
-            <Header title="🧪 AI Lab" />
+            <Header title={`🧪 ${t('ai_lab')}`} />
             <Text variant="caption" style={{ color: colors.onPrimary, opacity: 0.9, lineHeight: 16 }}>
               Build, experiment and learn how AI works. Pick a mission and
               assemble a working AI from the ground up.

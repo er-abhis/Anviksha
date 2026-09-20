@@ -76,7 +76,7 @@ const Blob: React.FC<{
     >
       <Gradient
         radial
-        colors={[...spec.colors, 'rgba(0,0,0,0)']}
+        colors={[...spec.colors, 'transparent']}
         opacities={[0.9, 0.5, 0]}
         style={StyleSheet.absoluteFill}
       />

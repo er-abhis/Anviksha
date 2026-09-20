@@ -20,7 +20,12 @@ export const SHARE_MESSAGE =
   'Download Anviksha:';
 
 export const SUPPORTED_LANGUAGES = [
-  { code: 'en', label: 'English' },
+  { code: 'en', label: 'English', flag: '🇬🇧' },
+  { code: 'fr', label: 'Français', flag: '🇫🇷' },
+  { code: 'ja', label: '日本語', flag: '🇯🇵' },
+  { code: 'es', label: 'Español', flag: '🇪🇸' },
+  { code: 'de', label: 'Deutsch', flag: '🇩🇪' },
+  { code: 'hi', label: 'हिन्दी', flag: '🇮🇳' },
 ] as const;
 
 export type LanguageCode = (typeof SUPPORTED_LANGUAGES)[number]['code'];

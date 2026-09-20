@@ -133,7 +133,7 @@ export const darkColors: ColorPalette = {
   glow: palette.violet500,
 
   skeleton: palette.gray800,
-  shadow: 'rgba(0,0,0,0.6)',
+  shadow: 'transparent',
 };
 
 export const darkGradients: Gradients = {
@@ -178,7 +178,7 @@ export const midnightColors: ColorPalette = {
   glow: '#0284C7',
 
   skeleton: '#1E293B',
-  shadow: 'rgba(2,132,199,0.4)',
+  shadow: 'transparent',
 };
 
 export const midnightGradients: Gradients = {
@@ -223,7 +223,7 @@ export const cyberpunkColors: ColorPalette = {
   glow: '#FACC15',
 
   skeleton: '#1B1B22',
-  shadow: 'rgba(250,204,21,0.35)',
+  shadow: 'transparent',
 };
 
 export const cyberpunkGradients: Gradients = {
@@ -268,7 +268,7 @@ export const emeraldColors: ColorPalette = {
   glow: '#10B981',
 
   skeleton: '#0F261B',
-  shadow: 'rgba(16,185,129,0.4)',
+  shadow: 'transparent',
 };
 
 export const emeraldGradients: Gradients = {
@@ -313,7 +313,7 @@ export const sunsetColors: ColorPalette = {
   glow: '#EC4899',
 
   skeleton: '#271738',
-  shadow: 'rgba(236,72,153,0.4)',
+  shadow: 'transparent',
 };
 
 export const sunsetGradients: Gradients = {
@@ -358,7 +358,7 @@ export const lightColors: ColorPalette = {
   glow: palette.violet500,
 
   skeleton: palette.gray200,
-  shadow: 'rgba(76,33,217,0.35)',
+  shadow: 'transparent',
 };
 
 export const lightGradients: Gradients = {

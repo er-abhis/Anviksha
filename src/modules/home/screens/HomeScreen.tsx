@@ -53,10 +53,19 @@ import { LessonCard } from '../components/LessonCard';
 import { SpotlightCard } from '../components/SpotlightCard';
 import { AchievementChip } from '../components/AchievementChip';
 import { ActivityRow } from '../components/ActivityRow';
+import { useTranslation } from '../../../i18n/useTranslation';
+
+const QUICK_SIM_GRADIENTS: Record<string, readonly string[]> = {
+  'neural-network': ['#FF2E93', '#7C5CFF'],
+  'embedding-space': ['#06D6C4', '#3B82F6'],
+  'attention-map': ['#F59E0B', '#FF5FA2'],
+  'temperature-lab': ['#12D18E', '#06D6C4'],
+};
 
 export const HomeScreen: React.FC = () => {
   const { colors, spacing, radius, gradients, elevation } = useTheme();
   const mode = useThemeMode();
+  const { t } = useTranslation();
   const { isTablet, cellWidthPercent } = useResponsive();
   const tabBarHeight = useBottomTabBarHeight();
   const openDrawer = useDrawerStore(s => s.show);
@@ -198,9 +207,9 @@ export const HomeScreen: React.FC = () => {
                 </Pressable>
                 <View style={styles.flex}>
                   <Text variant="label" color="textInverse" style={styles.heroEyebrow}>
-                    ANVIKSHA AI LAB
+                    ANVIKSHA AI PLATFORM
                   </Text>
-                  <Text variant="h2" color="textInverse">Learn AI by Playing</Text>
+                  <Text variant="h2" color="textInverse">{t('app_tagline')}</Text>
                 </View>
                 <View style={styles.headerButtons}>
                   <IconButton
@@ -230,111 +239,227 @@ export const HomeScreen: React.FC = () => {
           </Animated.View>
         </Padded>
 
-        {/* Primary Interactive AI Brain Banner */}
+        {/* ================= BOLD FEATURED HIGHLIGHTS GRID ================= */}
         <Padded>
-          <GlassCard elevation="glow" onPress={() => navigation.navigate('Brain')} padded={false} style={styles.brainCard}>
-            <Gradient colors={gradients.cool} style={StyleSheet.absoluteFill} borderRadius={radius.lg} />
-            <View style={styles.brainInner}>
-              <View style={styles.brainTop}>
-                <View style={styles.brainIconContainer}>
-                  <Text style={styles.brainEmoji}>🧠</Text>
-                </View>
-                <View style={styles.flex}>
-                  <Text variant="label" color="textInverse" style={{ opacity: 0.9, letterSpacing: 1 }}>
-                    INSIDE THE AI BRAIN
+          <SectionTitle
+            title={t('featured_hubs')}
+            subtitle="Explore our top interactive experiences"
+          />
+          <View style={styles.featuredGrid}>
+            {/* Hub 1: AI Arcade */}
+            <Pressable
+              onPress={() => navigation.navigate('Main', { screen: 'Games' })}
+              style={({ pressed }) => [styles.featuredCard, { opacity: pressed ? 0.85 : 1 }]}
+            >
+              <GlassCard elevation="glow" padded={false} style={styles.featuredCardInner}>
+                <Gradient colors={gradients.brand} style={StyleSheet.absoluteFill} borderRadius={radius.lg} />
+                <View style={styles.featuredPadding}>
+                  <View style={styles.featuredHeader}>
+                    <View style={styles.featuredIconWrap}>
+                      <Icon name="game-controller" size={20} color="#FFFFFF" />
+                    </View>
+                    <View style={styles.liveTag}>
+                      <Text variant="caption" color="textInverse" style={{ fontSize: 10, fontWeight: '700' }}>10+ GAMES</Text>
+                    </View>
+                  </View>
+                  <Text variant="h3" color="textInverse" numberOfLines={1} style={{ marginTop: spacing.xs, fontSize: 15 }}>
+                    AI Arcade
                   </Text>
-                  <Text variant="h2" color="textInverse">
-                    {SIMS.length + CASES.length}+ interactive AI simulations
+                  <Text variant="caption" color="textInverse" style={{ opacity: 0.9, marginTop: 2, fontSize: 11 }} numberOfLines={2}>
+                    Vector Shooter, Neural Pong & MythBusters
                   </Text>
                 </View>
-              </View>
-              <View style={styles.brainCtaRow}>
-                <View style={[styles.brainCta, { borderRadius: radius.pill }]}>
-                  <Text variant="button" color="primary">
-                    {simsDone > 0 ? 'Continue Exploring' : 'Launch AI Playground'}
+              </GlassCard>
+            </Pressable>
+
+            {/* Hub 2: AI Architecture Lab */}
+            <Pressable
+              onPress={() => navigation.navigate('BuildAI')}
+              style={({ pressed }) => [styles.featuredCard, { opacity: pressed ? 0.85 : 1 }]}
+            >
+              <GlassCard elevation="glow" padded={false} style={styles.featuredCardInner}>
+                <Gradient colors={gradients.warm} style={StyleSheet.absoluteFill} borderRadius={radius.lg} />
+                <View style={styles.featuredPadding}>
+                  <View style={styles.featuredHeader}>
+                    <View style={styles.featuredIconWrap}>
+                      <Icon name="construct" size={20} color="#FFFFFF" />
+                    </View>
+                    <View style={styles.liveTag}>
+                      <Text variant="caption" color="textInverse" style={{ fontSize: 10, fontWeight: '700' }}>16 BLOCKS</Text>
+                    </View>
+                  </View>
+                  <Text variant="h3" color="textInverse" numberOfLines={1} style={{ marginTop: spacing.xs, fontSize: 15 }}>
+                    AI Architecture Lab
                   </Text>
-                  <Icon name="arrow-forward" size={16} color={colors.primary} />
+                  <Text variant="caption" color="textInverse" style={{ opacity: 0.9, marginTop: 2, fontSize: 11 }} numberOfLines={2}>
+                    Build Chatbots, Voice AIs & RAG Search
+                  </Text>
                 </View>
-              </View>
-            </View>
-          </GlassCard>
+              </GlassCard>
+            </Pressable>
+
+            {/* Hub 3: Inside the AI Brain */}
+            <Pressable
+              onPress={() => navigation.navigate('Brain')}
+              style={({ pressed }) => [styles.featuredCard, { opacity: pressed ? 0.85 : 1 }]}
+            >
+              <GlassCard elevation="glow" padded={false} style={styles.featuredCardInner}>
+                <Gradient colors={gradients.cool} style={StyleSheet.absoluteFill} borderRadius={radius.lg} />
+                <View style={styles.featuredPadding}>
+                  <View style={styles.featuredHeader}>
+                    <View style={styles.featuredIconWrap}>
+                      <Text style={{ fontSize: 18 }}>🧠</Text>
+                    </View>
+                    <View style={styles.liveTag}>
+                      <Text variant="caption" color="textInverse" style={{ fontSize: 10, fontWeight: '700' }}>22 SIMS</Text>
+                    </View>
+                  </View>
+                  <Text variant="h3" color="textInverse" numberOfLines={1} style={{ marginTop: spacing.xs, fontSize: 15 }}>
+                    Neural Playground
+                  </Text>
+                  <Text variant="caption" color="textInverse" style={{ opacity: 0.9, marginTop: 2, fontSize: 11 }} numberOfLines={2}>
+                    Attention Heatmaps & Sandbox
+                  </Text>
+                </View>
+              </GlassCard>
+            </Pressable>
+
+            {/* Hub 4: AI Detective */}
+            <Pressable
+              onPress={() => navigation.navigate('Detective', { caseId: arenaCase.id })}
+              style={({ pressed }) => [styles.featuredCard, { opacity: pressed ? 0.85 : 1 }]}
+            >
+              <GlassCard elevation="glow" padded={false} style={styles.featuredCardInner}>
+                <Gradient colors={gradients.success} style={StyleSheet.absoluteFill} borderRadius={radius.lg} />
+                <View style={styles.featuredPadding}>
+                  <View style={styles.featuredHeader}>
+                    <View style={styles.featuredIconWrap}>
+                      <Text style={{ fontSize: 18 }}>🕵️</Text>
+                    </View>
+                    <View style={styles.liveTag}>
+                      <Text variant="caption" color="textInverse" style={{ fontSize: 10, fontWeight: '700' }}>MYSTERY CASES</Text>
+                    </View>
+                  </View>
+                  <Text variant="h3" color="textInverse" numberOfLines={1} style={{ marginTop: spacing.xs, fontSize: 15 }}>
+                    AI Detective
+                  </Text>
+                  <Text variant="caption" color="textInverse" style={{ opacity: 0.9, marginTop: 2, fontSize: 11 }} numberOfLines={2}>
+                    Investigate flawed AI output scenarios
+                  </Text>
+                </View>
+              </GlassCard>
+            </Pressable>
+          </View>
         </Padded>
 
         {/* Progress Snapshot Grid */}
         <Padded>
           <SectionTitle
-            title="Your Progress"
+            title={t('your_progress')}
             actionLabel="Details"
             onAction={() => navigation.navigate('Main', { screen: 'Profile' })}
           />
           <View style={styles.progressGrid}>
-            <ProgressTileCard icon="flash" value={`${xp} XP`} label="Total Experience" tint={colors.xp} widthPercent={cellWidthPercent} />
-            <ProgressTileCard icon="ribbon" value={`Level ${level}`} label="Mastery Tier" tint={colors.primary} widthPercent={cellWidthPercent} />
-            <ProgressTileCard icon="flask" value={`${simsDone}/${SIMS.length} Sims`} label="Interactive Labs" tint={colors.accent} widthPercent={cellWidthPercent} />
-            <ProgressTileCard icon="sparkles" value={`${mastered} Concepts`} label="Concepts Mastered" tint={colors.accentAlt} widthPercent={cellWidthPercent} />
+            <View style={[styles.progressCell, { width: cellWidthPercent as any }]}>
+              <ProgressTileCard icon="flash" value={`${xp} XP`} label="Total Experience" gradient={gradients.brand} onPress={() => navigation.navigate('Main', { screen: 'Profile' })} />
+            </View>
+            <View style={[styles.progressCell, { width: cellWidthPercent as any }]}>
+              <ProgressTileCard icon="ribbon" value={`Level ${level}`} label="Mastery Tier" gradient={gradients.warm} onPress={() => navigation.navigate('Main', { screen: 'Profile' })} />
+            </View>
+            <View style={[styles.progressCell, { width: cellWidthPercent as any }]}>
+              <ProgressTileCard icon="flask" value={`${simsDone}/${SIMS.length} Sims`} label="Interactive Labs" gradient={gradients.cool} onPress={() => navigation.navigate('Brain')} />
+            </View>
+            <View style={[styles.progressCell, { width: cellWidthPercent as any }]}>
+              <ProgressTileCard icon="sparkles" value={`${mastered} Concepts`} label="Concepts Mastered" gradient={gradients.success} onPress={() => navigation.navigate('Glossary')} />
+            </View>
           </View>
         </Padded>
 
         {/* ================= HUB 2: INTERACTIVE AI PLAYGROUND ================= */}
         <Padded>
           <SectionTitle
-            title="Quick Playground"
+            title={t('quick_playground')}
             actionLabel={`All ${SIMS.length} sims`}
             onAction={() => navigation.navigate('Brain')}
           />
           <View style={styles.quickGrid}>
-            {quickSims.map(s => (
-              <Pressable
-                key={s.id}
-                onPress={() => navigation.navigate('BrainSim', { simId: s.id })}
-                style={({ pressed }) => [styles.quickCell, { width: cellWidthPercent as any, opacity: pressed ? 0.75 : 1 }]}
-              >
-                <GlassCard elevation="md" style={styles.quickCardInner}>
-                  <View style={styles.quickRow2}>
-                    <View style={[styles.quickIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.md }]}>
-                      <Icon name={s.icon} size={22} color={colors.primary} />
-                    </View>
-                    {simsCompletedMap[s.id] && (
-                      <View style={[styles.doneBadge, { backgroundColor: colors.success + '22' }]}>
-                        <Icon name="checkmark-circle" size={14} color={colors.success} />
+            {quickSims.map((s, idx) => {
+              const grad = QUICK_SIM_GRADIENTS[s.id] ?? gradients.cool;
+              const isDone = Boolean(simsCompletedMap[s.id]);
+              return (
+                <View
+                  key={s.id}
+                  style={[styles.quickCell, { width: cellWidthPercent as any }]}
+                >
+                  <GlassCard
+                    elevation="glow"
+                    padded={false}
+                    onPress={() => navigation.navigate('BrainSim', { simId: s.id })}
+                    style={styles.quickCardInner}
+                  >
+                    <Gradient
+                      colors={grad}
+                      style={StyleSheet.absoluteFill}
+                      borderRadius={radius.lg}
+                    />
+                    <View style={styles.quickCardPadding}>
+                      <View style={styles.quickRow2}>
+                        <View style={styles.quickIconWrap}>
+                          <Icon name={s.icon} size={18} color="#FFFFFF" />
+                        </View>
+                        {isDone && (
+                          <View style={styles.doneBadgeWhite}>
+                            <Icon name="checkmark-circle" size={14} color="#FFFFFF" />
+                          </View>
+                        )}
                       </View>
-                    )}
-                  </View>
-                  <Text variant="bodyStrong" numberOfLines={1} style={{ marginTop: spacing.sm }}>
-                    {s.title}
-                  </Text>
-                  <Text variant="caption" color="textSecondary" numberOfLines={1} style={{ marginTop: 2 }}>
-                    {s.concept}
-                  </Text>
-                </GlassCard>
-              </Pressable>
-            ))}
+                      <Text variant="bodyStrong" color="textInverse" numberOfLines={1} style={{ marginTop: spacing.xs, fontSize: 14 }}>
+                        {s.title}
+                      </Text>
+                      <Text variant="caption" color="textInverse" numberOfLines={1} style={{ opacity: 0.9, marginTop: 2, fontSize: 11 }}>
+                        {s.concept}
+                      </Text>
+                    </View>
+                  </GlassCard>
+                </View>
+              );
+            })}
           </View>
 
           {/* View All 20 Simulations Action Banner */}
           <GlassCard
-            elevation="sm"
+            elevation="glow"
+            padded={false}
             onPress={() => navigation.navigate('Brain')}
-            style={[styles.allSimsBanner, { marginTop: spacing.md, backgroundColor: colors.surface }]}
+            style={[styles.allSimsBanner, { marginTop: spacing.md, height: 60 }]}
           >
-            <View style={styles.rowBetweenFlex}>
+            <Gradient
+              colors={gradients.brand}
+              style={StyleSheet.absoluteFill}
+              borderRadius={radius.lg}
+            />
+            <View style={styles.allSimsPadding}>
               <View style={styles.rowGap}>
-                <View style={[styles.quickIcon, { backgroundColor: colors.accentMuted, borderRadius: radius.md }]}>
-                  <Icon name="grid-outline" size={20} color={colors.accent} />
+                <View style={styles.quickIconWrap}>
+                  <Icon name="grid-outline" size={20} color="#FFFFFF" />
                 </View>
                 <View>
-                  <Text variant="bodyStrong">Explore All {SIMS.length} Interactive Sims</Text>
-                  <Text variant="caption" color="textSecondary">Deep-dive into models, transformers, and ML labs</Text>
+                  <Text variant="bodyStrong" color="textInverse" style={{ fontSize: 14 }}>
+                    Explore All {SIMS.length} Interactive Sims
+                  </Text>
+                  <Text variant="caption" color="textInverse" style={{ opacity: 0.9, fontSize: 11 }}>
+                    Deep-dive into models, transformers, and ML labs
+                  </Text>
                 </View>
               </View>
-              <Icon name="arrow-forward" size={18} color={colors.primary} />
+              <Icon name="arrow-forward" size={18} color="#FFFFFF" />
             </View>
           </GlassCard>
         </Padded>
 
         {/* Today's Mission & Daily Challenge */}
         <Padded>
-          <SectionTitle title="Today’s Mission" />
+          <SectionTitle title={t('daily_mission')} />
           <GlassCard elevation="md" onPress={openMission}>
             <View style={styles.rowGap}>
               <View style={[styles.activityIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.md }]}>
@@ -356,7 +481,7 @@ export const HomeScreen: React.FC = () => {
 
         {/* Daily Challenge Card */}
         <Padded>
-          <SectionTitle title="Daily Challenge" />
+          <SectionTitle title={t('daily_challenge')} />
           <DailyChallengeCard
             data={{
               title: 'Today’s challenge',
@@ -605,35 +730,35 @@ const ProgressTileCard: React.FC<{
   icon: string;
   value: string;
   label: string;
-  tint: string;
-  widthPercent: string;
-}> = ({ icon, value, label, tint, widthPercent }) => {
-  const { colors, radius } = useTheme();
+  gradient: readonly string[];
+  onPress?: () => void;
+}> = ({ icon, value, label, gradient, onPress }) => {
+  const { radius } = useTheme();
   return (
     <GlassCard
-      elevation="sm"
-      style={[
-        styles.progressTileCard,
-        {
-          width: widthPercent as any,
-          backgroundColor: colors.surface,
-          borderColor: colors.glassBorder,
-          borderRadius: radius.md,
-          padding: 10,
-        },
-      ]}
+      elevation="glow"
+      padded={false}
+      onPress={onPress}
+      style={styles.progressCardInner}
     >
-      <View style={styles.progressRowHeader}>
-        <View style={[styles.progressIconBox, { backgroundColor: tint + '18' }]}>
-          <Icon name={icon} size={16} color={tint} />
+      <Gradient
+        colors={gradient}
+        style={StyleSheet.absoluteFill}
+        borderRadius={radius.lg}
+      />
+      <View style={styles.progressInnerPadding}>
+        <View style={styles.progressRowHeader}>
+          <View style={styles.progressIconBox}>
+            <Icon name={icon} size={16} color="#FFFFFF" />
+          </View>
         </View>
+        <Text variant="bodyStrong" color="textInverse" style={{ marginTop: 4, fontSize: 16, fontWeight: '700' }}>
+          {value}
+        </Text>
+        <Text variant="caption" color="textInverse" style={{ opacity: 0.9, marginTop: 1, fontSize: 11 }} numberOfLines={1}>
+          {label}
+        </Text>
       </View>
-      <Text variant="bodyStrong" style={{ color: tint, marginTop: 4, fontSize: 16 }}>
-        {value}
-      </Text>
-      <Text variant="caption" color="textSecondary" style={{ marginTop: 1, fontSize: 11 }}>
-        {label}
-      </Text>
     </GlassCard>
   );
 };
@@ -677,14 +802,25 @@ const styles = StyleSheet.create({
   },
   quickGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   quickCell: { width: '48%' },
-  quickCardInner: { padding: 10 },
+  quickCardInner: { overflow: 'hidden', height: 105 },
+  quickCardPadding: { padding: 12, flex: 1, justifyContent: 'space-between' },
   quickRow2: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  quickIcon: { width: 34, height: 34, alignItems: 'center', justifyContent: 'center' },
-  doneBadge: { padding: 3, borderRadius: 999 },
-  progressGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  progressTileCard: { minHeight: 68, justifyContent: 'center' },
-  progressRowHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  progressIconBox: { width: 30, height: 30, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
-  allSimsBanner: { padding: 10 },
+  quickIconWrap: { width: 32, height: 32, borderRadius: 8, backgroundColor: 'rgba(255,255,255,0.25)', alignItems: 'center', justifyContent: 'center' },
+  doneBadgeWhite: { backgroundColor: 'rgba(255,255,255,0.25)', padding: 3, borderRadius: 999 },
+  allSimsBanner: { overflow: 'hidden' },
+  allSimsPadding: { paddingHorizontal: 12, paddingVertical: 10, flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   arenaEmoji: { fontSize: 28 },
+  progressGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  progressCell: { width: '48%' },
+  progressCardInner: { overflow: 'hidden', height: 85 },
+  progressInnerPadding: { padding: 10, flex: 1, justifyContent: 'space-between' },
+  progressRowHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  progressIconBox: { width: 28, height: 28, borderRadius: 8, backgroundColor: 'rgba(255,255,255,0.25)', alignItems: 'center', justifyContent: 'center' },
+  featuredGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  featuredCard: { width: '48%' },
+  featuredCardInner: { overflow: 'hidden', height: 130 },
+  featuredPadding: { padding: 12, flex: 1, justifyContent: 'space-between' },
+  featuredHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  featuredIconWrap: { width: 34, height: 34, borderRadius: 10, backgroundColor: 'rgba(255,255,255,0.25)', alignItems: 'center', justifyContent: 'center' },
+  liveTag: { backgroundColor: 'rgba(255,255,255,0.25)', paddingHorizontal: 7, paddingVertical: 3, borderRadius: 999 },
 });

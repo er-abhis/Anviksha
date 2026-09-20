@@ -19,10 +19,12 @@ import { useTheme } from '../../../theme/ThemeProvider';
 import { RootStackParamList } from '../../../navigation/types';
 import { useAchievementsStore, useProgressStore } from '../../../store';
 import { BADGES, LESSONS, WORLDS, isWorldUnlocked } from '../../../content';
+import { useTranslation } from '../../../i18n/useTranslation';
 
 export const ProfileScreen: React.FC = () => {
   const { colors, radius, spacing, gradients, elevation } = useTheme();
   const tabBarHeight = useBottomTabBarHeight();
+  const { t } = useTranslation();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
@@ -37,24 +39,24 @@ export const ProfileScreen: React.FC = () => {
   const badgesEarned = BADGES.filter(b => unlocked[b.slug]).length;
 
   const stats = [
-    { icon: 'book', label: 'Lessons', value: `${lessonsDone}/${LESSONS.length}` },
-    { icon: 'planet', label: 'Worlds', value: `${worldsUnlocked}/${WORLDS.length}` },
-    { icon: 'trophy', label: 'Badges', value: `${badgesEarned}/${BADGES.length}` },
+    { icon: 'book', label: t('learn'), value: `${lessonsDone}/${LESSONS.length}`, color: colors.primary },
+    { icon: 'planet', label: 'Worlds', value: `${worldsUnlocked}/${WORLDS.length}`, color: colors.accent },
+    { icon: 'trophy', label: t('achievements'), value: `${badgesEarned}/${BADGES.length}`, color: colors.coins },
   ];
 
-  const menu: { icon: string; label: string; onPress: () => void }[] = [
-    { icon: 'share-social-outline', label: 'Share Achievement Card 🏆', onPress: () => setShareOpen(true) },
-    { icon: 'map-outline', label: 'My Worlds', onPress: () => navigation.navigate('Worlds') },
-    { icon: 'book-outline', label: 'AI Glossary', onPress: () => navigation.navigate('Glossary') },
-    { icon: 'library-outline', label: 'Learn More', onPress: () => navigation.navigate('LearnMore') },
-    { icon: 'cafe-outline', label: '☕ Buy Me a Coffee', onPress: () => navigation.navigate('Coffee') },
-    { icon: 'settings-outline', label: 'Settings', onPress: () => navigation.navigate('Settings') },
+  const menu: { icon: string; label: string; color: string; onPress: () => void }[] = [
+    { icon: 'share-social-outline', label: `${t('share_app')} 🏆`, color: colors.success, onPress: () => setShareOpen(true) },
+    { icon: 'map-outline', label: 'My Worlds', color: colors.accent, onPress: () => navigation.navigate('Worlds') },
+    { icon: 'book-outline', label: 'AI Glossary', color: colors.coins, onPress: () => navigation.navigate('Glossary') },
+    { icon: 'library-outline', label: t('learn_more'), color: colors.primary, onPress: () => navigation.navigate('LearnMore') },
+    { icon: 'cafe-outline', label: `☕ ${t('support_dev')}`, color: colors.accentAlt, onPress: () => navigation.navigate('Coffee') },
+    { icon: 'settings-outline', label: t('settings'), color: '#9B85FF', onPress: () => navigation.navigate('Settings') },
   ];
 
   return (
     <Screen scroll contentContainerStyle={{ gap: spacing.xl, paddingBottom: tabBarHeight + spacing.lg }}>
       <Header
-        title="Profile"
+        title={t('profile')}
         large
         right={
           <IconButton
@@ -109,7 +111,7 @@ export const ProfileScreen: React.FC = () => {
       )}
 
       <Animated.View>
-        <GlassCard padded={false}>
+        <GlassCard padded={false} elevation="glow">
           <View style={styles.statsRow}>
             {stats.map((s, i) => (
               <Animated.View
@@ -119,8 +121,8 @@ export const ProfileScreen: React.FC = () => {
                   i < stats.length - 1 && { borderRightWidth: StyleSheet.hairlineWidth, borderRightColor: colors.glassBorder },
                 ]}
               >
-                <View style={[styles.statIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.md }]}>
-                  <Icon name={s.icon} size={18} color={colors.primary} />
+                <View style={[styles.statIcon, { backgroundColor: s.color + '22', borderRadius: radius.md }]}>
+                  <Icon name={s.icon} size={18} color={s.color} />
                 </View>
                 <Text variant="h3">{s.value}</Text>
                 <Text variant="caption" color="textSecondary">{s.label}</Text>
@@ -131,7 +133,7 @@ export const ProfileScreen: React.FC = () => {
       </Animated.View>
 
       <Animated.View>
-        <GlassCard padded={false} style={{ paddingHorizontal: spacing.lg }}>
+        <GlassCard padded={false} elevation="glow" style={{ paddingHorizontal: spacing.lg }}>
           {menu.map((m, i) => (
             <Pressable
               key={m.label}
@@ -144,8 +146,8 @@ export const ProfileScreen: React.FC = () => {
                 i < menu.length - 1 && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.glassBorder },
               ]}
             >
-              <View style={[styles.menuIcon, { backgroundColor: colors.surfaceAlt, borderRadius: radius.md }]}>
-                <Icon name={m.icon} size={18} color={colors.text} />
+              <View style={[styles.menuIcon, { backgroundColor: m.color + '20', borderRadius: radius.md }]}>
+                <Icon name={m.icon} size={18} color={m.color} />
               </View>
               <Text variant="body" style={styles.flex}>{m.label}</Text>
               <Icon name="chevron-forward" size={18} color={colors.textTertiary} />

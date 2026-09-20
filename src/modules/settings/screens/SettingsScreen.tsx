@@ -12,8 +12,9 @@ import {
 } from '../../../store';
 import { ThemePreference } from '../../../store';
 import { SettingRow } from '../components/SettingRow';
-import { APP } from '../../../constants/app';
+import { APP, SUPPORTED_LANGUAGES } from '../../../constants/app';
 import { rateApp, shareApp } from '../../../utils/appLinks';
+import { useTranslation } from '../../../i18n/useTranslation';
 
 const ActionRow: React.FC<{
   icon: string;
@@ -57,19 +58,20 @@ const ActionRow: React.FC<{
   );
 };
 
-const THEME_OPTIONS: { key: ThemePreference; label: string; icon: string }[] = [
-  { key: 'dark', label: 'Dark Neon', icon: 'moon' },
-  { key: 'midnight', label: 'Midnight', icon: 'sparkles' },
-  { key: 'cyberpunk', label: 'Cyberpunk', icon: 'flash' },
-  { key: 'emerald', label: 'Emerald', icon: 'leaf' },
-  { key: 'sunset', label: 'Sunset', icon: 'flame' },
-  { key: 'light', label: 'Solar Light', icon: 'sunny' },
-  { key: 'system', label: 'System', icon: 'hardware-chip' },
+const THEME_OPTIONS: { key: ThemePreference; label: string; icon: string; colors: [string, string] }[] = [
+  { key: 'dark', label: 'Dark Neon', icon: 'moon', colors: ['#7C5CFF', '#06D6C4'] },
+  { key: 'midnight', label: 'Midnight', icon: 'sparkles', colors: ['#0284C7', '#6366F1'] },
+  { key: 'cyberpunk', label: 'Cyberpunk', icon: 'flash', colors: ['#FACC15', '#FF2E93'] },
+  { key: 'emerald', label: 'Emerald', icon: 'leaf', colors: ['#059669', '#34D399'] },
+  { key: 'sunset', label: 'Sunset', icon: 'flame', colors: ['#EC4899', '#F59E0B'] },
+  { key: 'light', label: 'Solar Light', icon: 'sunny', colors: ['#6438F5', '#06D6C4'] },
+  { key: 'system', label: 'System', icon: 'hardware-chip', colors: ['#494F63', '#969CB3'] },
 ];
 
 export const SettingsScreen: React.FC = () => {
-  const { colors, radius, spacing } = useTheme();
+  const { colors, radius, spacing, gradients } = useTheme();
   const navigation = useNavigation();
+  const { t } = useTranslation();
 
   const preference = useThemeStore(s => s.preference);
   const setPreference = useThemeStore(s => s.setPreference);
@@ -80,14 +82,35 @@ export const SettingsScreen: React.FC = () => {
 
   return (
     <Screen scroll contentContainerStyle={{ gap: spacing.xl }}>
-      <Header title="Settings" onBack={() => navigation.goBack()} />
+      <Header title={t('settings')} onBack={() => navigation.goBack()} />
+
+      {/* Hero Banner */}
+      <Animated.View>
+        <GlassCard elevation="glow" padded={false} style={{ borderRadius: radius.xl, overflow: 'hidden' }}>
+          <Gradient colors={gradients.brand} style={StyleSheet.absoluteFill} />
+          <View style={{ padding: spacing.lg, gap: spacing.xs }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <Icon name="options-outline" size={18} color="#FFFFFF" />
+              <Text variant="label" color="textInverse" style={{ opacity: 0.9, letterSpacing: 1 }}>
+                APP PREFERENCES
+              </Text>
+            </View>
+            <Text variant="h2" color="textInverse">
+              Customization & Themes
+            </Text>
+            <Text variant="caption" color="textInverse" style={{ opacity: 0.92, lineHeight: 16 }}>
+              Tailor color themes, languages, audio effects, and accessibility settings.
+            </Text>
+          </View>
+        </GlassCard>
+      </Animated.View>
 
       {/* Appearance */}
       <Animated.View>
-        <SectionTitle title="Appearance & Themes 🎨" />
-        <GlassCard>
+        <SectionTitle title={`${t('appearance')} 🎨`} />
+        <GlassCard elevation="glow">
           <Text variant="label" color="textSecondary" style={{ marginBottom: spacing.sm }}>
-            Choose Color Theme (7 Options)
+            Choose Color Theme (7 Vibrant Options)
           </Text>
 
           <ScrollView
@@ -108,12 +131,21 @@ export const SettingsScreen: React.FC = () => {
                       backgroundColor: active ? colors.primary : colors.surfaceAlt,
                       borderColor: active ? colors.accent : colors.glassBorder,
                       borderWidth: active ? 2 : StyleSheet.hairlineWidth,
+                      paddingHorizontal: 12,
+                      paddingVertical: 8,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 6,
                     },
                   ]}
                 >
+                  <View style={{ flexDirection: 'row', width: 14, height: 14, borderRadius: 7, overflow: 'hidden' }}>
+                    <View style={{ flex: 1, backgroundColor: opt.colors[0] }} />
+                    <View style={{ flex: 1, backgroundColor: opt.colors[1] }} />
+                  </View>
                   <Icon
                     name={opt.icon}
-                    size={18}
+                    size={16}
                     color={active ? colors.onPrimary : colors.text}
                   />
                   <Text
@@ -132,27 +164,73 @@ export const SettingsScreen: React.FC = () => {
         </GlassCard>
       </Animated.View>
 
+      {/* Language */}
+      <Animated.View>
+        <SectionTitle title={`${t('language')} 🌐`} />
+        <GlassCard>
+          <Text variant="label" color="textSecondary" style={{ marginBottom: spacing.sm }}>
+            Choose App Language (6 Languages)
+          </Text>
+
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={[styles.themeRow, { gap: spacing.xs }]}
+          >
+            {SUPPORTED_LANGUAGES.map(lang => {
+              const active = (settings.language || 'en') === lang.code;
+              return (
+                <Pressable
+                  key={lang.code}
+                  onPress={() => settings.setLanguage(lang.code as any)}
+                  style={[
+                    styles.themeBtn,
+                    {
+                      borderRadius: radius.lg,
+                      backgroundColor: active ? colors.primary : colors.surfaceAlt,
+                      borderColor: active ? colors.accent : colors.glassBorder,
+                      borderWidth: active ? 2 : StyleSheet.hairlineWidth,
+                    },
+                  ]}
+                >
+                  <Text style={{ fontSize: 16 }}>{lang.flag}</Text>
+                  <Text
+                    variant="label"
+                    style={{
+                      color: active ? colors.onPrimary : colors.text,
+                      fontWeight: active ? '700' : '500',
+                    }}
+                  >
+                    {lang.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+        </GlassCard>
+      </Animated.View>
+
       {/* Preferences */}
       <Animated.View>
         <SectionTitle title="Preferences" />
         <GlassCard padded={false} style={{ paddingHorizontal: spacing.lg }}>
           <SettingRow
             icon="volume-high-outline"
-            label="Sound"
+            label={t('sound')}
             description="Play sounds during simulations"
             value={settings.sound}
             onValueChange={settings.setSound}
           />
           <SettingRow
             icon="phone-portrait-outline"
-            label="Haptics"
+            label={t('haptics')}
             description="Vibration feedback"
             value={settings.haptics}
             onValueChange={settings.setHaptics}
           />
           <SettingRow
             icon="notifications-outline"
-            label="Notifications"
+            label={t('notifications')}
             description="Reminders and streak nudges"
             value={settings.notifications}
             onValueChange={settings.setNotifications}
@@ -201,7 +279,7 @@ export const SettingsScreen: React.FC = () => {
 
       {/* About */}
       <Animated.View>
-        <SectionTitle title="About" />
+        <SectionTitle title={t('about')} />
         <GlassCard padded={false} style={{ paddingHorizontal: spacing.lg }}>
           <ActionRow
             icon="share-social-outline"

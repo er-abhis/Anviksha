@@ -46,10 +46,28 @@ export const WorldsScreen: React.FC = () => {
 
   return (
     <Screen scroll contentContainerStyle={{ gap: spacing.md }}>
-      <Header title="Explore topics" onBack={() => navigation.goBack()} />
-      <Text variant="body" color="textSecondary">
-        Every topic is open — pick any one and learn at your own pace.
-      </Text>
+      <Header title="Explore Topics" onBack={() => navigation.goBack()} />
+
+      {/* Hero Banner */}
+      <Animated.View>
+        <GlassCard elevation="glow" padded={false} style={{ borderRadius: radius.xl, overflow: 'hidden' }}>
+          <Gradient colors={gradients.cool} style={StyleSheet.absoluteFill} />
+          <View style={{ padding: spacing.lg, gap: spacing.xs }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <Icon name="planet-outline" size={18} color="#FFFFFF" />
+              <Text variant="label" color="textInverse" style={{ opacity: 0.9, letterSpacing: 1 }}>
+                LEARNING WORLDS
+              </Text>
+            </View>
+            <Text variant="h2" color="textInverse">
+              Explore AI Topics
+            </Text>
+            <Text variant="caption" color="textInverse" style={{ opacity: 0.92, lineHeight: 16 }}>
+              Every topic is open — pick any world and learn at your own pace with interactive lessons, quizzes, and simulations.
+            </Text>
+          </View>
+        </GlassCard>
+      </Animated.View>
 
       <SearchBar
         value={query}
@@ -85,13 +103,17 @@ export const WorldsScreen: React.FC = () => {
               ? 'Revisit lessons'
               : 'Continue Learning';
 
+          const accentColor = world.gradient ? world.gradient[0] : colors.primary;
+
           return (
-            <Animated.View
-              key={world.id}
-            >
+            <Animated.View key={world.id}>
               <GlassCard
-                elevation="md"
-                // Every world is open — no cross-world locks.
+                elevation="glow"
+                style={{
+                  borderColor: accentColor + '44',
+                  borderWidth: 1,
+                  borderRadius: radius.lg,
+                }}
                 onPress={() => navigation.navigate('WorldDetail', { worldId: world.id })}
               >
                 <View style={[styles.row, { gap: spacing.sm }]}>
@@ -99,7 +121,7 @@ export const WorldsScreen: React.FC = () => {
                     colors={world.gradient}
                     style={{ ...styles.badge, borderRadius: radius.md, ...elevation.glow }}
                   >
-                    <Icon name={world.icon} size={20} color="#FFFFFF" />
+                    <Icon name={world.icon} size={22} color="#FFFFFF" />
                   </Gradient>
                   <View style={styles.flex}>
                     <View style={styles.titleRow}>
@@ -107,11 +129,17 @@ export const WorldsScreen: React.FC = () => {
                       {state === 'done' && (
                         <View style={[styles.donePill, { backgroundColor: colors.success, borderRadius: radius.pill }]}>
                           <Icon name="checkmark" size={10} color="#FFFFFF" />
-                          <Text variant="caption" color="textInverse" style={{ fontSize: 10 }}>Completed</Text>
+                          <Text variant="caption" color="textInverse" style={{ fontSize: 10, fontWeight: '700' }}>Completed</Text>
+                        </View>
+                      )}
+                      {state === 'progress' && (
+                        <View style={[styles.donePill, { backgroundColor: colors.accent, borderRadius: radius.pill }]}>
+                          <Icon name="flash" size={10} color="#FFFFFF" />
+                          <Text variant="caption" color="textInverse" style={{ fontSize: 10, fontWeight: '700' }}>In Progress</Text>
                         </View>
                       )}
                     </View>
-                    <Text variant="caption" color="textSecondary" numberOfLines={2} style={{ fontSize: 11, lineHeight: 14 }}>
+                    <Text variant="caption" color="textSecondary" numberOfLines={2} style={{ fontSize: 11, lineHeight: 15, marginTop: 2 }}>
                       {world.description || world.subtitle}
                     </Text>
                   </View>
@@ -120,10 +148,10 @@ export const WorldsScreen: React.FC = () => {
                 {lessons.length > 0 && (
                   <>
                     <View style={styles.metaRow}>
-                      <Meta icon={diff.icon} label={diff.label} />
-                      <Meta icon="book-outline" label={`${summary.lessonCount} Lessons`} />
-                      <Meta icon="time-outline" label={`${summary.minutes} min`} />
-                      <Meta icon="star" label={`${summary.xp} XP`} />
+                      <Meta icon={diff.icon} label={diff.label} color={accentColor} />
+                      <Meta icon="book-outline" label={`${summary.lessonCount} Lessons`} color={colors.textSecondary} />
+                      <Meta icon="time-outline" label={`${summary.minutes} min`} color={colors.textSecondary} />
+                      <Meta icon="star" label={`${summary.xp} XP`} color={colors.coins} />
                     </View>
 
                     <View style={{ marginTop: spacing.sm, gap: 2 }}>
@@ -135,18 +163,20 @@ export const WorldsScreen: React.FC = () => {
                             ? 'Not started'
                             : 'In progress'}
                         </Text>
-                        <Text variant="caption" color="textSecondary" style={{ fontSize: 11 }}>
+                        <Text variant="caption" color="textSecondary" style={{ fontSize: 11, fontWeight: '600' }}>
                           {`${doneCount} / ${summary.lessonCount}`}
                         </Text>
                       </View>
-                      <ProgressBar progress={progress} fillColor={state === 'done' ? 'success' : 'primary'} height={5} />
+                      <ProgressBar progress={progress} fillColor={state === 'done' ? 'success' : 'primary'} height={6} />
                     </View>
                   </>
                 )}
 
                 <View style={[styles.ctaRow, { marginTop: spacing.sm }]}>
-                  <Text variant="label" color="primary">{cta}</Text>
-                  <Icon name="arrow-forward" size={14} color={colors.primary} />
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: accentColor + '18', paddingHorizontal: 10, paddingVertical: 4, borderRadius: radius.pill }}>
+                    <Text variant="label" style={{ color: accentColor, fontSize: 11, fontWeight: '700' }}>{cta}</Text>
+                    <Icon name="arrow-forward" size={13} color={accentColor} />
+                  </View>
                 </View>
               </GlassCard>
             </Animated.View>
@@ -157,17 +187,17 @@ export const WorldsScreen: React.FC = () => {
   );
 };
 
-const Meta: React.FC<{ icon: string; label: string }> = ({ icon, label }) => {
+const Meta: React.FC<{ icon: string; label: string; color?: string }> = ({ icon, label, color }) => {
   const { colors, radius, spacing } = useTheme();
   return (
     <View
       style={[
         styles.metaChip,
-        { backgroundColor: colors.surfaceAlt, borderRadius: radius.pill, paddingHorizontal: spacing.xs },
+        { backgroundColor: (color ? color + '15' : colors.surfaceAlt), borderRadius: radius.pill, paddingHorizontal: spacing.xs },
       ]}
     >
-      <Icon name={icon} size={11} color={colors.textSecondary} />
-      <Text variant="caption" color="textSecondary" style={{ fontSize: 10 }}>{label}</Text>
+      <Icon name={icon} size={11} color={color || colors.textSecondary} />
+      <Text variant="caption" style={{ fontSize: 10, color: color || colors.textSecondary, fontWeight: color ? '600' : '400' }}>{label}</Text>
     </View>
   );
 };

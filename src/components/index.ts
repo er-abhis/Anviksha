@@ -44,3 +44,5 @@ export type { CarouselProps } from './Carousel';
 export { ErrorBoundary } from './ErrorBoundary';
 export { GlobalSearchModal } from './GlobalSearchModal';
 export { ShareCardModal } from './ShareCardModal';
+export { ShareAchievementModal } from './ShareAchievementModal';
+export type { ShareAchievementModalProps } from './ShareAchievementModal';

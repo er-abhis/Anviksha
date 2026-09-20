@@ -142,9 +142,12 @@ const GAMES: GameInfo[] = [
   },
 ];
 
+import { useTranslation } from '../../../i18n/useTranslation';
+
 export const AIGamesScreen: React.FC = () => {
   const { colors, spacing, radius } = useTheme();
   const navigation = useNavigation();
+  const { t } = useTranslation();
   const [activeIdx, setActiveIdx] = useState<number>(0);
   const scrollRef = useRef<ScrollView>(null);
 
@@ -172,7 +175,7 @@ export const AIGamesScreen: React.FC = () => {
   return (
     <Screen ref={scrollRef} scroll contentContainerStyle={{ gap: spacing.md, paddingBottom: spacing.giant }}>
       <Header
-        title="AI Arcade Games 🎮"
+        title={`${t('games')} 🎮`}
         subtitle="10 interactive games with live reactive UI ambiance"
         onBack={() => navigation.goBack()}
       />

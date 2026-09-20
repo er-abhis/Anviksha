@@ -70,36 +70,39 @@ export const DailyChallengeScreen: React.FC = () => {
       <Header title="Daily Challenge" onBack={() => navigation.goBack()} />
 
       <Animated.View>
-      <GlassCard elevation="lg">
-        <View style={[styles.head, { marginBottom: spacing.md }]}>
-          <View style={[styles.icon, { backgroundColor: colors.primaryMuted }]}>
-            <Icon name="sparkles" size={26} color={colors.primary} />
-          </View>
-          <View style={styles.flex}>
-            <Text variant="h2">Today’s Challenge</Text>
-            <Text variant="label" color="textSecondary">
-              {`${questions.length} questions from your unlocked lessons`}
-            </Text>
-          </View>
-        </View>
+        <GlassCard elevation="glow" padded={false} style={{ borderRadius: radius.xl, overflow: 'hidden', borderColor: colors.accentAlt + '55', borderWidth: 1 }}>
+          <Gradient colors={gradients.warm} style={StyleSheet.absoluteFill} />
+          <View style={{ padding: spacing.xl, gap: spacing.md }}>
+            <View style={styles.head}>
+              <View style={[styles.icon, { backgroundColor: 'rgba(255,255,255,0.22)', borderRadius: radius.md }]}>
+                <Icon name="sparkles" size={26} color="#FFFFFF" />
+              </View>
+              <View style={styles.flex}>
+                <Text variant="h2" color="textInverse">Today’s Challenge</Text>
+                <Text variant="label" color="textInverse" style={{ opacity: 0.9 }}>
+                  {`${questions.length} questions from your unlocked lessons`}
+                </Text>
+              </View>
+            </View>
 
-        {doneToday ? (
-          <View style={[styles.doneBanner, { backgroundColor: colors.glass, borderColor: colors.glassBorder, borderWidth: StyleSheet.hairlineWidth }]}>
-            <Icon name="checkmark-done-circle" size={20} color={colors.success} />
-            <Text variant="body" color="textSecondary" style={styles.flex}>
-              Completed today. Come back tomorrow for a fresh set — or practise now (no rewards).
-            </Text>
+            {doneToday ? (
+              <View style={[styles.doneBanner, { backgroundColor: 'rgba(0,0,0,0.25)', borderColor: 'rgba(255,255,255,0.2)', borderWidth: StyleSheet.hairlineWidth, borderRadius: radius.md }]}>
+                <Icon name="checkmark-done-circle" size={22} color={colors.success} />
+                <Text variant="body" color="textInverse" style={styles.flex}>
+                  Completed today! Come back tomorrow for fresh XP & coins — or practise now.
+                </Text>
+              </View>
+            ) : (
+              <View style={[styles.rewardRow, { gap: spacing.sm, backgroundColor: 'rgba(0,0,0,0.2)', padding: spacing.sm, borderRadius: radius.md }]}>
+                <XPBadge value={daily.xpReward} kind="xp" />
+                <XPBadge value={daily.coinReward} kind="coins" />
+                <Text variant="caption" color="textInverse" style={[styles.flex, { opacity: 0.9, fontWeight: '600' }]}>
+                  Earn rewards per correct answer
+                </Text>
+              </View>
+            )}
           </View>
-        ) : (
-          <View style={[styles.rewardRow, { gap: spacing.sm }]}>
-            <XPBadge value={daily.xpReward} kind="xp" />
-            <XPBadge value={daily.coinReward} kind="coins" />
-            <Text variant="caption" color="textTertiary" style={styles.flex}>
-              Earn per correct answer
-            </Text>
-          </View>
-        )}
-      </GlassCard>
+        </GlassCard>
       </Animated.View>
 
       <View style={{ gap: spacing.sm }}>
