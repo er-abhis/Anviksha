@@ -7,6 +7,7 @@ import { PressableScale } from './PressableScale';
 export interface GlassCardProps extends ViewProps {
   elevation?: ElevationLevel;
   padded?: boolean;
+  padding?: number;
   onPress?: () => void;
   style?: StyleProp<ViewStyle>;
 }
@@ -19,6 +20,7 @@ export interface GlassCardProps extends ViewProps {
 export const GlassCard: React.FC<GlassCardProps> = ({
   elevation = 'md',
   padded = true,
+  padding,
   onPress,
   style,
   children,
@@ -35,8 +37,10 @@ export const GlassCard: React.FC<GlassCardProps> = ({
     ...shadows[elevation],
   };
 
+  const padVal = padding !== undefined ? padding : padded ? spacing.md : 0;
+
   const inner = (
-    <View style={padded ? { padding: spacing.lg } : undefined}>{children}</View>
+    <View style={padVal > 0 ? { padding: padVal } : undefined}>{children}</View>
   );
 
   if (onPress) {

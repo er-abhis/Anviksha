@@ -94,24 +94,24 @@ export const WorldsScreen: React.FC = () => {
                 // Every world is open — no cross-world locks.
                 onPress={() => navigation.navigate('WorldDetail', { worldId: world.id })}
               >
-                <View style={[styles.row, { gap: spacing.md }]}>
+                <View style={[styles.row, { gap: spacing.sm }]}>
                   <Gradient
                     colors={world.gradient}
                     style={{ ...styles.badge, borderRadius: radius.md, ...elevation.glow }}
                   >
-                    <Icon name={world.icon} size={24} color="#FFFFFF" />
+                    <Icon name={world.icon} size={20} color="#FFFFFF" />
                   </Gradient>
                   <View style={styles.flex}>
                     <View style={styles.titleRow}>
                       <Text variant="bodyStrong" style={styles.flex}>{world.title}</Text>
                       {state === 'done' && (
                         <View style={[styles.donePill, { backgroundColor: colors.success, borderRadius: radius.pill }]}>
-                          <Icon name="checkmark" size={11} color="#FFFFFF" />
-                          <Text variant="caption" color="textInverse">Completed</Text>
+                          <Icon name="checkmark" size={10} color="#FFFFFF" />
+                          <Text variant="caption" color="textInverse" style={{ fontSize: 10 }}>Completed</Text>
                         </View>
                       )}
                     </View>
-                    <Text variant="caption" color="textSecondary" numberOfLines={2}>
+                    <Text variant="caption" color="textSecondary" numberOfLines={2} style={{ fontSize: 11, lineHeight: 14 }}>
                       {world.description || world.subtitle}
                     </Text>
                   </View>
@@ -126,27 +126,27 @@ export const WorldsScreen: React.FC = () => {
                       <Meta icon="star" label={`${summary.xp} XP`} />
                     </View>
 
-                    <View style={{ marginTop: spacing.md, gap: spacing.xs }}>
+                    <View style={{ marginTop: spacing.sm, gap: 2 }}>
                       <View style={styles.progressLabels}>
-                        <Text variant="caption" color="textSecondary">
+                        <Text variant="caption" color="textSecondary" style={{ fontSize: 11 }}>
                           {state === 'done'
                             ? `Earned ${summary.xp} XP`
                             : state === 'new'
                             ? 'Not started'
                             : 'In progress'}
                         </Text>
-                        <Text variant="caption" color="textSecondary">
+                        <Text variant="caption" color="textSecondary" style={{ fontSize: 11 }}>
                           {`${doneCount} / ${summary.lessonCount}`}
                         </Text>
                       </View>
-                      <ProgressBar progress={progress} fillColor={state === 'done' ? 'success' : 'primary'} />
+                      <ProgressBar progress={progress} fillColor={state === 'done' ? 'success' : 'primary'} height={5} />
                     </View>
                   </>
                 )}
 
-                <View style={[styles.ctaRow, { marginTop: spacing.md }]}>
+                <View style={[styles.ctaRow, { marginTop: spacing.sm }]}>
                   <Text variant="label" color="primary">{cta}</Text>
-                  <Icon name="arrow-forward" size={16} color={colors.primary} />
+                  <Icon name="arrow-forward" size={14} color={colors.primary} />
                 </View>
               </GlassCard>
             </Animated.View>
@@ -163,11 +163,11 @@ const Meta: React.FC<{ icon: string; label: string }> = ({ icon, label }) => {
     <View
       style={[
         styles.metaChip,
-        { backgroundColor: colors.surfaceAlt, borderRadius: radius.pill, paddingHorizontal: spacing.sm },
+        { backgroundColor: colors.surfaceAlt, borderRadius: radius.pill, paddingHorizontal: spacing.xs },
       ]}
     >
-      <Icon name={icon} size={12} color={colors.textSecondary} />
-      <Text variant="caption" color="textSecondary">{label}</Text>
+      <Icon name={icon} size={11} color={colors.textSecondary} />
+      <Text variant="caption" color="textSecondary" style={{ fontSize: 10 }}>{label}</Text>
     </View>
   );
 };
@@ -175,11 +175,11 @@ const Meta: React.FC<{ icon: string; label: string }> = ({ icon, label }) => {
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center' },
   flex: { flex: 1 },
-  badge: { width: 52, height: 52, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  badge: { width: 38, height: 38, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   titleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  donePill: { flexDirection: 'row', alignItems: 'center', gap: 3, paddingHorizontal: 8, paddingVertical: 3 },
-  metaRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 12 },
-  metaChip: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 5 },
+  donePill: { flexDirection: 'row', alignItems: 'center', gap: 2, paddingHorizontal: 6, paddingVertical: 2 },
+  metaRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginTop: 8 },
+  metaChip: { flexDirection: 'row', alignItems: 'center', gap: 3, paddingVertical: 3 },
   progressLabels: { flexDirection: 'row', justifyContent: 'space-between' },
-  ctaRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  ctaRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
 });

@@ -24,7 +24,7 @@ export const CurrentWorldCard: React.FC<{
         colors={data.gradient}
         style={{ borderRadius: radius.xl, overflow: 'hidden' }}
       >
-        <View style={{ padding: spacing.xl, minHeight: 165, justifyContent: 'space-between' }}>
+        <View style={{ padding: spacing.md, minHeight: 125, justifyContent: 'space-between' }}>
           <View style={styles.eyebrowRow}>
             <View style={styles.eyebrowBadge}>
               <Text variant="label" color="textInverse" style={styles.eyebrow}>
@@ -32,30 +32,30 @@ export const CurrentWorldCard: React.FC<{
               </Text>
             </View>
             <View style={styles.arrowCircle}>
-              <Icon name="chevron-forward" size={16} color="#FFFFFF" />
+              <Icon name="chevron-forward" size={14} color="#FFFFFF" />
             </View>
           </View>
 
-          <View style={{ marginVertical: spacing.xs }}>
-            <Text variant="h2" color="textInverse">
+          <View style={{ marginVertical: 2 }}>
+            <Text variant="bodyStrong" color="textInverse" style={{ fontSize: 17, fontWeight: 'bold' }}>
               {data.title}
             </Text>
             <Text
-              variant="body"
+              variant="caption"
               color="textInverse"
-              numberOfLines={2}
-              style={[styles.sub, { marginTop: spacing.xxs }]}
+              numberOfLines={1}
+              style={[styles.sub, { marginTop: 1 }]}
             >
               {data.subtitle}
             </Text>
           </View>
 
-          <View style={{ gap: spacing.xs }}>
+          <View style={{ gap: 2 }}>
             <View style={styles.progressHeader}>
-              <Text variant="caption" color="textInverse" style={{ opacity: 0.9 }}>
+              <Text variant="caption" color="textInverse" style={{ opacity: 0.9, fontSize: 11 }}>
                 World Progress
               </Text>
-              <Text variant="caption" color="textInverse" style={{ fontWeight: 'bold' }}>
+              <Text variant="caption" color="textInverse" style={{ fontWeight: 'bold', fontSize: 11 }}>
                 {pct}%
               </Text>
             </View>
@@ -63,7 +63,7 @@ export const CurrentWorldCard: React.FC<{
               progress={data.progress}
               trackColor="overlay"
               fillColor="textInverse"
-              height={8}
+              height={5}
             />
           </View>
         </View>
@@ -80,16 +80,16 @@ const styles = StyleSheet.create({
   },
   eyebrowBadge: {
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
     borderRadius: 999,
   },
-  eyebrow: { letterSpacing: 1.1, opacity: 0.95 },
-  sub: { opacity: 0.92, lineHeight: 20 },
+  eyebrow: { letterSpacing: 1.1, opacity: 0.95, fontSize: 10 },
+  sub: { opacity: 0.92, lineHeight: 16 },
   arrowCircle: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
     backgroundColor: 'rgba(255, 255, 255, 0.25)',
     alignItems: 'center',
     justifyContent: 'center',

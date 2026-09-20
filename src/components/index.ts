@@ -42,3 +42,4 @@ export { QuestionMedia } from './QuestionMedia';
 export { Carousel } from './Carousel';
 export type { CarouselProps } from './Carousel';
 export { ErrorBoundary } from './ErrorBoundary';
+export { GlobalSearchModal } from './GlobalSearchModal';

@@ -38,7 +38,7 @@ export const AILabScreen: React.FC = () => {
     <Screen
       scroll
       contentContainerStyle={{
-        gap: spacing.xl,
+        gap: spacing.md,
         paddingBottom: tabBarHeight + spacing.lg,
       }}
     >
@@ -50,16 +50,16 @@ export const AILabScreen: React.FC = () => {
             style={StyleSheet.absoluteFill}
             pointerEvents="none"
           />
-          <View style={{ padding: spacing.lg, gap: spacing.xs }}>
-            <Header title="🧪 AI Lab" large />
-            <Text variant="body" style={{ color: colors.onPrimary, opacity: 0.9 }}>
+          <View style={{ padding: spacing.md, gap: spacing.xxs }}>
+            <Header title="🧪 AI Lab" />
+            <Text variant="caption" style={{ color: colors.onPrimary, opacity: 0.9, lineHeight: 16 }}>
               Build, experiment and learn how AI works. Pick a mission and
               assemble a working AI from the ground up.
             </Text>
             <View
               style={[
                 styles.statsRow,
-                { gap: spacing.md, marginTop: spacing.sm },
+                { gap: spacing.sm, marginTop: spacing.xs },
               ]}
             >
               <View
@@ -68,17 +68,16 @@ export const AILabScreen: React.FC = () => {
                   { backgroundColor: '#FFFFFF22', borderRadius: radius.pill },
                 ]}
               >
-                <Icon name="hardware-chip" size={18} color={colors.onPrimary} />
-                <Text variant="bodyStrong" style={{ color: colors.onPrimary }}>
+                <Icon name="hardware-chip" size={15} color={colors.onPrimary} />
+                <Text variant="bodyStrong" style={{ color: colors.onPrimary, fontSize: 12 }}>
                   {' '}Lvl {builderLevelForXp(aiLabXp)}
                 </Text>
               </View>
               <Text
                 variant="caption"
-                style={[styles.flex, { color: colors.onPrimary, opacity: 0.9 }]}
+                style={[styles.flex, { color: colors.onPrimary, opacity: 0.9, fontSize: 11 }]}
               >
-                {aiLabXp} XP · {completedCount}/{MISSIONS.length} missions built
-                · {xpToNextLevel(aiLabXp)} XP to next level
+                {aiLabXp} XP · {completedCount}/{MISSIONS.length} built
               </Text>
             </View>
           </View>

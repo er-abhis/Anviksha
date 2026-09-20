@@ -49,26 +49,26 @@ export const BrainScreen: React.FC = () => {
   ];
 
   return (
-    <Screen scroll backdropIntensity={0.5} contentContainerStyle={{ gap: spacing.xl }}>
+    <Screen scroll backdropIntensity={0.5} contentContainerStyle={{ gap: spacing.md }}>
       <Header title="" onBack={() => navigation.goBack()} />
 
       {/* Hero */}
       <View style={[styles.hero, { borderRadius: radius.xl, overflow: 'hidden' }]}>
         <Gradient colors={gradients.brand} style={StyleSheet.absoluteFill} />
-        <View style={{ padding: spacing.xl }}>
+        <View style={{ padding: spacing.md }}>
           <Text variant="label" color="textInverse" style={{ opacity: 0.9, letterSpacing: 1 }}>INSIDE THE AI BRAIN</Text>
-          <Text variant="h1" color="textInverse" style={{ marginTop: spacing.xs }}>
+          <Text variant="h2" color="textInverse" style={{ marginTop: spacing.xxs }}>
             Learn AI by Playing
           </Text>
-          <Text variant="body" color="textInverse" style={{ opacity: 0.92, marginTop: spacing.sm }}>
-            {SIMS.length + CASES.length}+ interactive simulations and detective cases. No theory dumps — poke the model and watch it react.
+          <Text variant="caption" color="textInverse" style={{ opacity: 0.92, marginTop: spacing.xs, lineHeight: 16 }}>
+            {SIMS.length + CASES.length}+ interactive simulations and detective cases. Poke the model and watch it react.
           </Text>
-          <View style={[styles.pills, { marginTop: spacing.lg }]}>
+          <View style={[styles.pills, { marginTop: spacing.sm }]}>
             <Pill icon="flash" value={`${xp} XP`} />
             <Pill icon="ribbon" value={`Lvl ${level}`} />
             <Pill icon="flame" value={`${streak}d`} />
           </View>
-          <View style={[styles.pills, { marginTop: spacing.sm }]}>
+          <View style={[styles.pills, { marginTop: spacing.xs }]}>
             <Pill icon="flask" value={`${simsDone}/${SIMS.length} sims`} />
             <Pill icon="sparkles" value={`${mastered} concepts`} />
           </View>
@@ -210,14 +210,14 @@ const Pill: React.FC<{ icon: string; value: string }> = ({ icon, value }) => {
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   hero: {},
-  pills: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
-  pill: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 12, paddingVertical: 5 },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  icon: { width: 48, height: 48, alignItems: 'center', justifyContent: 'center' },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
-  cell: { minHeight: 120 },
-  simCardInner: { padding: 14, minHeight: 120, justifyContent: 'space-between' },
-  simIcon: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center', marginBottom: 10 },
-  simTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  caseEmoji: { fontSize: 30 },
+  pills: { flexDirection: 'row', gap: 6, flexWrap: 'wrap' },
+  pill: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 4 },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  icon: { width: 38, height: 38, alignItems: 'center', justifyContent: 'center' },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  cell: { minHeight: 90 },
+  simCardInner: { padding: 10, minHeight: 90, justifyContent: 'space-between' },
+  simIcon: { width: 34, height: 34, alignItems: 'center', justifyContent: 'center', marginBottom: 4 },
+  simTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  caseEmoji: { fontSize: 24 },
 });

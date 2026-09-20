@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StatusBar, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated from 'react-native-reanimated';
@@ -14,6 +14,7 @@ import {
   Carousel,
   EmptyState,
   GlassCard,
+  GlobalSearchModal,
   Gradient,
   IconButton,
   Logo,
@@ -61,6 +62,8 @@ export const HomeScreen: React.FC = () => {
   const openDrawer = useDrawerStore(s => s.show);
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const { xp, coins, level, streakDays, completed, activity } =
     useProgressStore();
@@ -164,9 +167,9 @@ export const HomeScreen: React.FC = () => {
         contentContainerStyle={[
           styles.content,
           {
-            paddingVertical: spacing.lg,
-            gap: spacing.xl,
-            paddingBottom: tabBarHeight + spacing.xl,
+            paddingVertical: spacing.md,
+            gap: spacing.md,
+            paddingBottom: tabBarHeight + spacing.lg,
             maxWidth: isTablet ? CONTENT_MAX_WIDTH : undefined,
           },
         ]}
@@ -183,7 +186,7 @@ export const HomeScreen: React.FC = () => {
               style={StyleSheet.absoluteFill}
               borderRadius={radius.xl}
             />
-            <View style={[styles.heroInner, { padding: spacing.xl }]}>
+            <View style={[styles.heroInner, { padding: spacing.md }]}>
               <View style={styles.headerRow}>
                 <Pressable
                   onPress={() => openDrawer()}
@@ -191,28 +194,35 @@ export const HomeScreen: React.FC = () => {
                   accessibilityLabel="Open menu"
                   hitSlop={8}
                 >
-                  <Logo size={38} style={styles.brandMark} />
+                  <Logo size={32} style={styles.brandMark} />
                 </Pressable>
                 <View style={styles.flex}>
                   <Text variant="label" color="textInverse" style={styles.heroEyebrow}>
                     ANVIKSHA AI LAB
                   </Text>
-                  <Text variant="h1" color="textInverse">Learn AI by Playing</Text>
+                  <Text variant="h2" color="textInverse">Learn AI by Playing</Text>
                 </View>
-                <IconButton
-                  name="settings-outline"
-                  accessibilityLabel="Settings"
-                  onPress={() => navigation.navigate('Settings')}
-                />
+                <View style={styles.headerButtons}>
+                  <IconButton
+                    name="search-outline"
+                    accessibilityLabel="Global Search"
+                    onPress={() => setSearchOpen(true)}
+                  />
+                  <IconButton
+                    name="settings-outline"
+                    accessibilityLabel="Settings"
+                    onPress={() => navigation.navigate('Settings')}
+                  />
+                </View>
               </View>
 
-              <View style={[styles.stats, { gap: spacing.sm, marginTop: spacing.lg }]}>
+              <View style={[styles.stats, { gap: spacing.xs, marginTop: spacing.sm }]}>
                 <XPBadge value={xp} kind="xp" />
                 <XPBadge value={coins} kind="coins" />
                 <XPBadge value={streakDays} kind="streak" />
                 <View style={styles.flex} />
                 <View style={[styles.levelPill, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
-                  <Icon name="ribbon" size={15} color={colors.textInverse} />
+                  <Icon name="ribbon" size={14} color={colors.textInverse} />
                   <Text variant="label" color="textInverse">{`Level ${level}`}</Text>
                 </View>
               </View>
@@ -579,6 +589,9 @@ export const HomeScreen: React.FC = () => {
           )}
         </Padded>
       </ScrollView>
+
+      {/* Global Command / Instant Search Modal */}
+      <GlobalSearchModal visible={searchOpen} onClose={() => setSearchOpen(false)} />
     </SafeAreaView>
   );
 };
@@ -595,7 +608,7 @@ const ProgressTileCard: React.FC<{
   tint: string;
   widthPercent: string;
 }> = ({ icon, value, label, tint, widthPercent }) => {
-  const { colors, radius, spacing } = useTheme();
+  const { colors, radius } = useTheme();
   return (
     <GlassCard
       elevation="sm"
@@ -605,20 +618,20 @@ const ProgressTileCard: React.FC<{
           width: widthPercent as any,
           backgroundColor: colors.surface,
           borderColor: colors.glassBorder,
-          borderRadius: radius.lg,
-          padding: spacing.md,
+          borderRadius: radius.md,
+          padding: 10,
         },
       ]}
     >
       <View style={styles.progressRowHeader}>
         <View style={[styles.progressIconBox, { backgroundColor: tint + '18' }]}>
-          <Icon name={icon} size={20} color={tint} />
+          <Icon name={icon} size={16} color={tint} />
         </View>
       </View>
-      <Text variant="h2" style={{ color: tint, marginTop: 6, fontSize: 18 }}>
+      <Text variant="bodyStrong" style={{ color: tint, marginTop: 4, fontSize: 16 }}>
         {value}
       </Text>
-      <Text variant="caption" color="textSecondary" style={{ marginTop: 2 }}>
+      <Text variant="caption" color="textSecondary" style={{ marginTop: 1, fontSize: 11 }}>
         {label}
       </Text>
     </GlassCard>
@@ -632,45 +645,46 @@ const styles = StyleSheet.create({
   hero: {},
   heroInner: {},
   heroEyebrow: { letterSpacing: 1.2, opacity: 0.9 },
-  glossaryIcon: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
-  activityIcon: { width: 48, height: 48, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
-  rowGap: { flexDirection: 'row', alignItems: 'center', gap: 14 },
-  rowBetweenFlex: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 4 },
-  headerRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  brandMark: { borderRadius: 10 },
+  glossaryIcon: { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+  activityIcon: { width: 38, height: 38, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+  rowGap: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  rowBetweenFlex: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 2 },
+  headerRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  headerButtons: { flexDirection: 'row', alignItems: 'center', gap: 2 },
+  brandMark: { borderRadius: 8 },
   stats: { flexDirection: 'row', alignItems: 'center' },
   levelPill: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    paddingHorizontal: 12,
-    paddingVertical: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
     borderRadius: 999,
   },
   brainCard: { overflow: 'hidden' },
-  brainInner: { padding: 20, gap: 16 },
-  brainTop: { flexDirection: 'row', alignItems: 'center', gap: 14 },
-  brainIconContainer: { width: 48, height: 48, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.2)', alignItems: 'center', justifyContent: 'center' },
-  brainEmoji: { fontSize: 28 },
+  brainInner: { padding: 12, gap: 10 },
+  brainTop: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  brainIconContainer: { width: 38, height: 38, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.2)', alignItems: 'center', justifyContent: 'center' },
+  brainEmoji: { fontSize: 20 },
   brainCtaRow: { flexDirection: 'row' },
   brainCta: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 6,
     backgroundColor: '#FFFFFF',
-    paddingHorizontal: 18,
-    paddingVertical: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
   },
-  quickGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+  quickGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   quickCell: { width: '48%' },
-  quickCardInner: { padding: 14 },
+  quickCardInner: { padding: 10 },
   quickRow2: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  quickIcon: { width: 42, height: 42, alignItems: 'center', justifyContent: 'center' },
-  doneBadge: { padding: 4, borderRadius: 999 },
-  progressGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
-  progressTileCard: { minHeight: 92, justifyContent: 'center' },
+  quickIcon: { width: 34, height: 34, alignItems: 'center', justifyContent: 'center' },
+  doneBadge: { padding: 3, borderRadius: 999 },
+  progressGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  progressTileCard: { minHeight: 68, justifyContent: 'center' },
   progressRowHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  progressIconBox: { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-  allSimsBanner: { padding: 12 },
-  arenaEmoji: { fontSize: 34 },
+  progressIconBox: { width: 30, height: 30, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
+  allSimsBanner: { padding: 10 },
+  arenaEmoji: { fontSize: 28 },
 });

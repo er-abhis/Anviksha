@@ -42,34 +42,34 @@ export const LessonCard: React.FC<{ data: LessonCardData; onPress?: () => void }
         </View>
         <Icon name={meta.icon} size={18} color={meta.color} />
       </View>
-      <Text variant="label" color="textSecondary" numberOfLines={1} style={{ marginTop: spacing.sm }}>
+      <Text variant="label" color="textSecondary" numberOfLines={1} style={{ marginTop: spacing.xs }}>
         {data.worldTitle}
       </Text>
       <Text variant="bodyStrong" numberOfLines={2} style={styles.title}>
         {data.title}
       </Text>
-      <View style={[styles.footer, { marginTop: spacing.md }]}>
+      <View style={[styles.footer, { marginTop: spacing.sm }]}>
         <View style={styles.metaItem}>
-          <Icon name="time-outline" size={14} color={colors.textTertiary} />
-          <Text variant="caption" color="textTertiary">{`${data.minutes} min`}</Text>
+          <Icon name="time-outline" size={12} color={colors.textTertiary} />
+          <Text variant="caption" color="textTertiary" style={{ fontSize: 11 }}>{`${data.minutes} min`}</Text>
         </View>
         <View style={styles.metaItem}>
-          <Icon name="flash-outline" size={14} color={colors.xp} />
-          <Text variant="caption" color="textTertiary">{`${data.xp} XP`}</Text>
+          <Icon name="flash-outline" size={12} color={colors.xp} />
+          <Text variant="caption" color="textTertiary" style={{ fontSize: 11 }}>{`${data.xp} XP`}</Text>
         </View>
         <View style={styles.flex} />
-        <Text variant="label" style={{ color: meta.color }}>{meta.label}</Text>
+        <Text variant="label" style={{ color: meta.color, fontSize: 11 }}>{meta.label}</Text>
       </View>
     </Card>
   );
 };
 
 const styles = StyleSheet.create({
-  card: { minHeight: 150, justifyContent: 'flex-start' },
+  card: { minHeight: 118, justifyContent: 'flex-start' },
   flex: { flex: 1 },
   headRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  chapterPill: { paddingHorizontal: 8, paddingVertical: 3 },
-  title: { marginTop: 2, minHeight: 44 },
-  footer: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  metaItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  chapterPill: { paddingHorizontal: 6, paddingVertical: 2 },
+  title: { marginTop: 2, minHeight: 32 },
+  footer: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  metaItem: { flexDirection: 'row', alignItems: 'center', gap: 3 },
 });

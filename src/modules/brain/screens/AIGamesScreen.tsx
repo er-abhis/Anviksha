@@ -170,7 +170,7 @@ export const AIGamesScreen: React.FC = () => {
   }));
 
   return (
-    <Screen ref={scrollRef} scroll contentContainerStyle={{ gap: spacing.lg, paddingBottom: spacing.giant }}>
+    <Screen ref={scrollRef} scroll contentContainerStyle={{ gap: spacing.md, paddingBottom: spacing.giant }}>
       <Header
         title="AI Arcade Games 🎮"
         subtitle="10 interactive games with live reactive UI ambiance"
@@ -181,29 +181,29 @@ export const AIGamesScreen: React.FC = () => {
       <Animated.View
         style={[
           styles.heroBadgeRow,
-          { borderRadius: radius.md, padding: spacing.md, borderWidth: 1.5 },
+          { borderRadius: radius.md, padding: 8, borderWidth: 1 },
           dynamicGlowStyle,
         ]}
       >
         <View style={[styles.countPill, { backgroundColor: currentGame.themeColor }]}>
-          <Text variant="caption" color="onPrimary" style={{ fontWeight: '700' }}>
+          <Text variant="caption" color="onPrimary" style={{ fontWeight: '700', fontSize: 10 }}>
             {GAMES.length} GAMES UNLOCKED 🏆
           </Text>
         </View>
-        <Text variant="caption" color="text" style={{ flex: 1, fontWeight: '600' }}>
-          Active Theme Vibe: <Text variant="caption" style={{ color: currentGame.themeColor, fontWeight: '700' }}>{currentGame.title}</Text>
+        <Text variant="caption" color="text" style={{ flex: 1, fontWeight: '600', fontSize: 11 }}>
+          Vibe: <Text variant="caption" style={{ color: currentGame.themeColor, fontWeight: '700', fontSize: 11 }}>{currentGame.title}</Text>
         </Text>
       </Animated.View>
 
       {/* Horizontal Games Showcase Carousel */}
-      <View style={{ gap: spacing.xs }}>
-        <Text variant="label" color="textSecondary">
+      <View style={{ gap: 4 }}>
+        <Text variant="label" color="textSecondary" style={{ fontSize: 11 }}>
           EXPLORE ALL 10 ARCADE GAMES (SWIPE ➔):
         </Text>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={[styles.carouselContainer, { gap: spacing.md }]}
+          contentContainerStyle={[styles.carouselContainer, { gap: spacing.sm }]}
         >
           {GAMES.map((game, idx) => {
             const isActive = activeIdx === idx;
@@ -218,36 +218,36 @@ export const AIGamesScreen: React.FC = () => {
                   style={[
                     styles.gameCard,
                     {
-                      width: 220,
-                      borderRadius: radius.lg,
+                      width: 175,
+                      borderRadius: radius.md,
                       borderColor: isActive ? game.themeColor : colors.glassBorder,
-                      borderWidth: isActive ? 2 : StyleSheet.hairlineWidth,
+                      borderWidth: isActive ? 1.5 : StyleSheet.hairlineWidth,
                       backgroundColor: isActive ? colors.surfaceElevated : colors.surface,
                     },
                   ]}
                 >
                   <View style={styles.cardHeader}>
-                    <View style={[styles.iconBox, { backgroundColor: game.themeColor + '22', borderRadius: radius.md }]}>
-                      <Icon name={game.icon} size={22} color={game.themeColor} />
+                    <View style={[styles.iconBox, { backgroundColor: game.themeColor + '22', borderRadius: radius.sm }]}>
+                      <Icon name={game.icon} size={18} color={game.themeColor} />
                     </View>
                     <View style={[styles.tagBadge, { backgroundColor: game.themeColor + '22' }]}>
-                      <Text variant="caption" style={{ color: game.themeColor, fontSize: 10, fontWeight: '700' }}>{game.tag}</Text>
+                      <Text variant="caption" style={{ color: game.themeColor, fontSize: 9, fontWeight: '700' }}>{game.tag}</Text>
                     </View>
                   </View>
 
-                  <Text variant="bodyStrong" color="text" numberOfLines={1} style={{ marginTop: 8 }}>
+                  <Text variant="bodyStrong" color="text" numberOfLines={1} style={{ marginTop: 6, fontSize: 13 }}>
                     {game.index}. {game.title}
                   </Text>
-                  <Text variant="caption" color="textSecondary" numberOfLines={2} style={{ height: 32, marginTop: 2 }}>
+                  <Text variant="caption" color="textSecondary" numberOfLines={2} style={{ height: 26, marginTop: 1, fontSize: 11, lineHeight: 13 }}>
                     {game.subtitle}
                   </Text>
 
-                  <View style={[styles.cardFooter, { marginTop: 8 }]}>
-                    <Text variant="caption" style={{ color: game.themeColor, fontWeight: '700' }}>
+                  <View style={[styles.cardFooter, { marginTop: 6 }]}>
+                    <Text variant="caption" style={{ color: game.themeColor, fontWeight: '700', fontSize: 11 }}>
                       {game.xp}
                     </Text>
                     <View style={[styles.playBtnPill, { backgroundColor: isActive ? game.themeColor : colors.surfaceAlt }]}>
-                      <Text variant="caption" style={{ color: isActive ? colors.onPrimary : colors.text, fontWeight: '700' }}>
+                      <Text variant="caption" style={{ color: isActive ? colors.onPrimary : colors.text, fontWeight: '700', fontSize: 10 }}>
                         {isActive ? 'Playing ▶' : 'Play'}
                       </Text>
                     </View>
@@ -263,7 +263,7 @@ export const AIGamesScreen: React.FC = () => {
       <Animated.View
         style={[
           styles.arenaHeader,
-          { borderRadius: radius.lg, padding: spacing.md, borderWidth: 1 },
+          { borderRadius: radius.md, padding: 8, borderWidth: 1 },
           dynamicGlowStyle,
         ]}
       >
@@ -272,14 +272,14 @@ export const AIGamesScreen: React.FC = () => {
           onPress={handlePrev}
           style={[styles.navArrowBtn, { opacity: activeIdx === 0 ? 0.3 : 1 }]}
         >
-          <Icon name="chevron-back" size={20} color={colors.text} />
+          <Icon name="chevron-back" size={18} color={colors.text} />
         </Pressable>
 
         <View style={styles.arenaTitleBox}>
-          <Text variant="caption" style={{ color: currentGame.themeColor, fontWeight: '700' }} center>
+          <Text variant="caption" style={{ color: currentGame.themeColor, fontWeight: '700', fontSize: 10 }} center>
             PLAYING GAME {currentGame.index} OF {GAMES.length}
           </Text>
-          <Text variant="bodyStrong" color="text" center>
+          <Text variant="bodyStrong" color="text" center style={{ fontSize: 14 }}>
             {currentGame.title}
           </Text>
         </View>
@@ -289,7 +289,7 @@ export const AIGamesScreen: React.FC = () => {
           onPress={handleNext}
           style={[styles.navArrowBtn, { opacity: activeIdx === GAMES.length - 1 ? 0.3 : 1 }]}
         >
-          <Icon name="chevron-forward" size={20} color={colors.text} />
+          <Icon name="chevron-forward" size={18} color={colors.text} />
         </Pressable>
       </Animated.View>
 
@@ -308,7 +308,7 @@ export const AIGamesScreen: React.FC = () => {
       </View>
 
       {/* Bottom 10-Game Switcher Dots */}
-      <View style={[styles.bottomSwitchRow, { gap: spacing.xs }]}>
+      <View style={[styles.bottomSwitchRow, { gap: 4 }]}>
         {GAMES.map((g, idx) => {
           const isActive = activeIdx === idx;
           return (
@@ -320,11 +320,11 @@ export const AIGamesScreen: React.FC = () => {
                 {
                   backgroundColor: isActive ? g.themeColor : colors.surfaceAlt,
                   borderRadius: radius.pill,
-                  paddingHorizontal: isActive ? 10 : 6,
+                  paddingHorizontal: isActive ? 8 : 5,
                 },
               ]}
             >
-              <Text variant="caption" style={{ color: isActive ? colors.onPrimary : colors.textSecondary, fontSize: 11, fontWeight: '700' }}>
+              <Text variant="caption" style={{ color: isActive ? colors.onPrimary : colors.textSecondary, fontSize: 10, fontWeight: '700' }}>
                 {g.index}
               </Text>
             </Pressable>
@@ -336,18 +336,18 @@ export const AIGamesScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  heroBadgeRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  countPill: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999 },
-  carouselContainer: { paddingVertical: 4 },
-  gameCard: { padding: 12, gap: 4 },
+  heroBadgeRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  countPill: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 999 },
+  carouselContainer: { paddingVertical: 2 },
+  gameCard: { padding: 10, gap: 2 },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  iconBox: { width: 36, height: 36, alignItems: 'center', justifyContent: 'center' },
-  tagBadge: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999 },
+  iconBox: { width: 32, height: 32, alignItems: 'center', justifyContent: 'center' },
+  tagBadge: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 999 },
   cardFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  playBtnPill: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999 },
+  playBtnPill: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 999 },
   arenaHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   arenaTitleBox: { flex: 1, alignItems: 'center' },
-  navArrowBtn: { padding: 8 },
-  bottomSwitchRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', marginTop: 8 },
-  bottomDotBtn: { paddingVertical: 6, alignItems: 'center', justifyContent: 'center' },
+  navArrowBtn: { padding: 6 },
+  bottomSwitchRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', marginTop: 4 },
+  bottomDotBtn: { paddingVertical: 4, alignItems: 'center', justifyContent: 'center' },
 });

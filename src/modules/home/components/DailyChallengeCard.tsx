@@ -35,7 +35,7 @@ export const DailyChallengeCard: React.FC<{
         </View>
       </View>
 
-      <Text variant="body" color="textSecondary" style={{ marginTop: spacing.sm, lineHeight: 20 }}>
+      <Text variant="caption" color="textSecondary" style={{ marginTop: spacing.xs, lineHeight: 18 }}>
         {data.description}
       </Text>
 
@@ -47,11 +47,11 @@ export const DailyChallengeCard: React.FC<{
               backgroundColor: colors.success + '22',
               borderColor: colors.success + '66',
               borderRadius: radius.md,
-              marginTop: spacing.md,
+              marginTop: spacing.sm,
             },
           ]}
         >
-          <Icon name="checkmark-circle" size={18} color={colors.success} />
+          <Icon name="checkmark-circle" size={16} color={colors.success} />
           <Text variant="bodyStrong" color="success">
             Challenge completed for today!
           </Text>
@@ -59,10 +59,10 @@ export const DailyChallengeCard: React.FC<{
       ) : (
         <Button
           label="Start Challenge"
-          size="md"
+          size="sm"
           onPress={onStart}
-          right={<Icon name="arrow-forward" size={16} color={colors.onPrimary} />}
-          style={{ marginTop: spacing.md, alignSelf: 'stretch' }}
+          right={<Icon name="arrow-forward" size={14} color={colors.onPrimary} />}
+          style={{ marginTop: spacing.sm, alignSelf: 'stretch' }}
         />
       )}
     </GlassCard>
@@ -74,18 +74,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: 10,
+    gap: 8,
   },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 },
   titleCol: { flex: 1, minWidth: 0 },
   badgeWrap: { flexShrink: 0 },
-  spark: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
+  spark: { width: 34, height: 34, alignItems: 'center', justifyContent: 'center' },
   completedBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
-    padding: 12,
+    gap: 6,
+    padding: 8,
     borderWidth: 1,
   },
 });
