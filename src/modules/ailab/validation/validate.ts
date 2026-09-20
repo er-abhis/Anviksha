@@ -80,6 +80,30 @@ const MISSING_REASON: Record<
     title: 'Your AI can decide but cannot actually act.',
     suggestion: 'Add a Tool so it can take an action.',
   },
+  guardrail: {
+    title: 'Your AI has no safety filter to block harmful or unsafe content.',
+    suggestion: 'Add Guardrails to filter inputs and outputs.',
+  },
+  vector_db: {
+    title: 'Your AI lacks a high-speed similarity index for vector embeddings.',
+    suggestion: 'Add Vector DB to index semantic knowledge.',
+  },
+  reranker: {
+    title: 'Your AI cannot rank retrieved knowledge by semantic relevance.',
+    suggestion: 'Add a Reranker to score and order facts.',
+  },
+  code_interpreter: {
+    title: 'Your AI cannot execute code or algorithm logic.',
+    suggestion: 'Add Code Interpreter to run code in a sandbox.',
+  },
+  fine_tuner: {
+    title: 'Your AI uses standard weights without domain specialization.',
+    suggestion: 'Add Model Adapter to apply fine-tuned behavior.',
+  },
+  image_gen: {
+    title: 'Your AI cannot create visual media or graphics.',
+    suggestion: 'Add Image Generator to synthesize pictures.',
+  },
 };
 
 /** Short clause describing what each block does in the flow (for success text). */
@@ -94,6 +118,12 @@ const FLOW_CLAUSE: Record<LabComponentId, string> = {
   calculator: 'the Calculator handles exact maths',
   vision: 'Vision sees what is in the image',
   tool: 'the Tool carries out the action',
+  guardrail: 'Guardrail checks content safety',
+  vector_db: 'Vector DB searches semantic embeddings',
+  reranker: 'the Reranker orders context by relevance',
+  code_interpreter: 'Code Interpreter executes the code',
+  fine_tuner: 'Model Adapter applies fine-tuned weights',
+  image_gen: 'Image Generator renders the picture',
 };
 
 const label = (id: LabComponentId) => getComponent(id).label;

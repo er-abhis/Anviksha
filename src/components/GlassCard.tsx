@@ -45,7 +45,12 @@ export const GlassCard: React.FC<GlassCardProps> = ({
 
   if (onPress) {
     return (
-      <PressableScale onPress={onPress} style={[surface, style]} {...rest}>
+      <PressableScale
+        onPress={onPress}
+        accessibilityRole="button"
+        style={[surface, style]}
+        {...rest}
+      >
         {inner}
       </PressableScale>
     );

@@ -43,7 +43,7 @@ const Tab = createBottomTabNavigator();
 
 const renderStack = async (name: string, Comp: React.ComponentType<any>, params?: object) => {
   await ReactTestRenderer.act(() => {
-    ReactTestRenderer.create(
+    const instance = ReactTestRenderer.create(
       <GestureHandlerRootView>
         <SafeAreaProvider initialMetrics={METRICS}>
           <ThemeProvider>
@@ -56,12 +56,13 @@ const renderStack = async (name: string, Comp: React.ComponentType<any>, params?
         </SafeAreaProvider>
       </GestureHandlerRootView>,
     );
+    instance.unmount();
   });
 };
 
 const renderTab = async (name: string, Comp: React.ComponentType<any>) => {
   await ReactTestRenderer.act(() => {
-    ReactTestRenderer.create(
+    const instance = ReactTestRenderer.create(
       <GestureHandlerRootView>
         <SafeAreaProvider initialMetrics={METRICS}>
           <ThemeProvider>
@@ -74,6 +75,7 @@ const renderTab = async (name: string, Comp: React.ComponentType<any>) => {
         </SafeAreaProvider>
       </GestureHandlerRootView>,
     );
+    instance.unmount();
   });
 };
 

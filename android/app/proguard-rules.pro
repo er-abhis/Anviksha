@@ -8,3 +8,22 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
+
+# React Native Reanimated
+-keep class com.swmansion.reanimated.** { *; }
+-keep class com.facebook.react.turbomodule.core.CallInvokerHolderImpl { *; }
+
+# React Native Gesture Handler
+-keep class com.swmansion.gesturehandler.** { *; }
+
+# React Native MMKV
+-keep class com.reactnativemmkv.** { *; }
+
+# React Native Quick SQLite
+-keep class com.reactnativequicksqlite.** { *; }
+
+# React Native View Shot
+-keep class com.greententacle.reactnativeviewshot.** { *; }
+
+# Notifee
+-keep class com.iogov.notifee.** { *; }

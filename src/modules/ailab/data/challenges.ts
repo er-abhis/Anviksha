@@ -219,4 +219,56 @@ export const CHALLENGES: Challenge[] = [
     expectOrder: ['brain', 'memory'],
     success: 'The Brain leads and calls on Memory — order matters in a pipeline.',
   },
+
+  // ── Code Co-pilot ─────────────────────────────────────────
+  {
+    id: 'copilot-interpreter',
+    missionId: 'code_copilot',
+    type: 'missing_component',
+    prompt: 'Your coding assistant plans the code logic but cannot execute or verify it.',
+    hint: 'It needs a tool to execute Python code.',
+    startComponents: ['brain'],
+    options: ['code_interpreter', 'stt', 'tts'],
+    expectAdd: ['code_interpreter'],
+    success: 'Code Interpreter executes Python script logic safely in a sandbox.',
+  },
+
+  // ── Guarded Banking Bot ──────────────────────────────────
+  {
+    id: 'banking-guardrail',
+    missionId: 'guarded_banking_bot',
+    type: 'missing_component',
+    prompt: 'Your banking bot answers questions but lacks safety filters for malicious prompts.',
+    hint: 'Shield the bot with a safety filter.',
+    startComponents: ['search', 'brain'],
+    options: ['guardrail', 'vision', 'tts'],
+    expectAdd: ['guardrail'],
+    success: 'Guardrails intercept toxic or prompt-injection attempts before querying records.',
+  },
+
+  // ── Vision Artist ─────────────────────────────────────────
+  {
+    id: 'artist-image-gen',
+    missionId: 'multimodal_vision_artist',
+    type: 'missing_component',
+    prompt: 'Your artist AI understands the reference photo but cannot synthesize new artwork.',
+    hint: 'Which block generates new images from text?',
+    startComponents: ['vision', 'brain'],
+    options: ['image_gen', 'calculator', 'stt'],
+    expectAdd: ['image_gen'],
+    success: 'Image Generator renders the AI Brain concept into a brand new diffusion image.',
+  },
+
+  // ── High-Speed RAG Engine ─────────────────────────────────
+  {
+    id: 'rag-vector-db',
+    missionId: 'hyper_personalized_rag',
+    type: 'missing_component',
+    prompt: 'Your high-speed RAG engine has a reranker but no high-dimensional similarity index.',
+    hint: 'Add a high-performance vector index store.',
+    startComponents: ['reranker', 'brain'],
+    options: ['vector_db', 'voice_input', 'tts'],
+    expectAdd: ['vector_db'],
+    success: 'Vector DB indexes embeddings for instant, sub-millisecond semantic retrieval.',
+  },
 ];

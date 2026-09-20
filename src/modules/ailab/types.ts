@@ -20,7 +20,13 @@ export type LabComponentId =
   | 'tts'
   | 'calculator'
   | 'vision'
-  | 'tool';
+  | 'tool'
+  | 'guardrail'
+  | 'vector_db'
+  | 'reranker'
+  | 'code_interpreter'
+  | 'fine_tuner'
+  | 'image_gen';
 
 /** Loose grouping used for tray sections and node tinting (later phases). */
 export type LabComponentCategory =
@@ -29,7 +35,8 @@ export type LabComponentCategory =
   | 'memory'
   | 'knowledge'
   | 'output'
-  | 'tool';
+  | 'tool'
+  | 'security';
 
 export interface LabComponent {
   id: LabComponentId;

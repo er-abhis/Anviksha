@@ -157,6 +157,38 @@ export const SettingsScreen: React.FC = () => {
             value={settings.notifications}
             onValueChange={settings.setNotifications}
           />
+          {settings.notifications && (
+            <View style={{ paddingVertical: 10, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.glassBorder, gap: 6 }}>
+              <Text variant="caption" color="textSecondary">Daily Reminder Schedule Time</Text>
+              <View style={{ flexDirection: 'row', gap: 8 }}>
+                {[
+                  { label: '🌅 9:00 AM', time: '09:00' },
+                  { label: '☀️ 2:00 PM', time: '14:00' },
+                  { label: '🌙 8:00 PM', time: '20:00' },
+                ].map(item => {
+                  const active = (settings.notificationTime || '20:00') === item.time;
+                  return (
+                    <Pressable
+                      key={item.time}
+                      onPress={() => settings.setNotificationTime(item.time)}
+                      style={{
+                        paddingHorizontal: 10,
+                        paddingVertical: 6,
+                        borderRadius: radius.pill,
+                        backgroundColor: active ? colors.primary : colors.surfaceAlt,
+                        borderColor: active ? colors.accent : colors.glassBorder,
+                        borderWidth: 1,
+                      }}
+                    >
+                      <Text variant="caption" style={{ color: active ? colors.onPrimary : colors.text, fontWeight: active ? '700' : '400', fontSize: 11 }}>
+                        {item.label}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </View>
+          )}
           <SettingRow
             icon="accessibility-outline"
             label="Reduce motion"

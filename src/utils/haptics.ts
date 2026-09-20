@@ -1,26 +1,38 @@
+import { Platform, Vibration } from 'react-native';
+
+export type HapticType =
+  | 'selection'
+  | 'success'
+  | 'error'
+  | 'impactLight'
+  | 'impactHeavy';
+
 /**
- * Tiny haptic feedback helper. Uses the built-in RN Vibration API (no native
- * dependency) and always respects the user's in-app Haptics setting. Every
- * call is a no-op when Haptics is off, so call sites don't need to check.
+ * Pure offline tactile haptic feedback trigger using standard React Native Vibration API.
+ * Provides distinct vibration pulse patterns tailored for UI interactions.
  */
-import { Vibration } from 'react-native';
-// Import the leaf store directly (not the store index) to avoid an import cycle
-// when stores themselves fire haptics.
-import { useSettingsStore } from '../store/settingsStore';
+export const triggerHaptic = (type: HapticType = 'selection') => {
+  if (Platform.OS === 'web') return;
 
-const on = (): boolean => useSettingsStore.getState().haptics;
-
-/** Light tap — selections, button confirmations. */
-export const hapticLight = (): void => {
-  if (on()) Vibration.vibrate(10);
-};
-
-/** Positive result — correct answer, achievement unlocked, streak up. */
-export const hapticSuccess = (): void => {
-  if (on()) Vibration.vibrate([0, 20, 60, 30]);
-};
-
-/** Negative result — wrong answer. */
-export const hapticError = (): void => {
-  if (on()) Vibration.vibrate([0, 40, 40, 40]);
+  try {
+    switch (type) {
+      case 'selection':
+        Vibration.vibrate(10);
+        break;
+      case 'impactLight':
+        Vibration.vibrate(15);
+        break;
+      case 'impactHeavy':
+        Vibration.vibrate([0, 20, 30, 25]);
+        break;
+      case 'success':
+        Vibration.vibrate([0, 15, 50, 25]);
+        break;
+      case 'error':
+        Vibration.vibrate([0, 30, 40, 30, 40, 30]);
+        break;
+    }
+  } catch (_e) {
+    // Ignore devices without vibration motor
+  }
 };

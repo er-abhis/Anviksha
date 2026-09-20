@@ -27,6 +27,8 @@ import { NaiveBayes } from '../sims/NaiveBayes';
 import { TokenGeneration } from '../sims/TokenGeneration';
 import { FineTuning } from '../sims/FineTuning';
 import { AIAgent } from '../sims/AIAgent';
+import { MultiHeadAttentionSim } from '../sims/MultiHeadAttentionSim';
+import { InteractivePromptSandboxSim } from '../sims/InteractivePromptSandboxSim';
 
 const SIM_XP = 40;
 
@@ -51,6 +53,8 @@ const PANELS: Record<string, React.FC> = {
   'token-generation': TokenGeneration,
   'fine-tuning': FineTuning,
   'ai-agent': AIAgent,
+  'multi-head-attention': MultiHeadAttentionSim,
+  'prompt-sandbox': InteractivePromptSandboxSim,
 };
 
 export const BrainSimScreen: React.FC = () => {

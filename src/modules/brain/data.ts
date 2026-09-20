@@ -25,7 +25,9 @@ export type SimId =
   | 'naive-bayes'
   | 'token-generation'
   | 'fine-tuning'
-  | 'ai-agent';
+  | 'ai-agent'
+  | 'multi-head-attention'
+  | 'prompt-sandbox';
 
 export interface SimMeta {
   id: SimId;
@@ -111,6 +113,24 @@ export const SIMS: SimMeta[] = [
     tagline: 'Compare Greedy, Top-K, Nucleus & Beam Search step-by-step.',
     icon: 'git-commit-outline',
     concept: 'Decoding strategies',
+    category: 'LLMs & Transformers',
+    minutes: 3,
+  },
+  {
+    id: 'multi-head-attention',
+    title: 'Multi-Head Attention Lab',
+    tagline: 'See how 8 parallel attention heads process dependencies simultaneously.',
+    icon: 'grid-outline',
+    concept: 'Multi-head attention',
+    category: 'LLMs & Transformers',
+    minutes: 3,
+  },
+  {
+    id: 'prompt-sandbox',
+    title: 'Interactive Prompt Sandbox',
+    tagline: 'Test system prompts, temperature sampling & token streams live.',
+    icon: 'code-slash-outline',
+    concept: 'Prompt engineering sandbox',
     category: 'LLMs & Transformers',
     minutes: 3,
   },

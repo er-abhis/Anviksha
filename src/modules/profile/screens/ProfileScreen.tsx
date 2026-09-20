@@ -11,6 +11,7 @@ import {
   Header,
   IconButton,
   Screen,
+  ShareCardModal,
   Text,
   XPBadge,
 } from '../../../components';
@@ -24,6 +25,8 @@ export const ProfileScreen: React.FC = () => {
   const tabBarHeight = useBottomTabBarHeight();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  const [shareOpen, setShareOpen] = React.useState(false);
 
   const { xp, coins, level, streakDays, completed } = useProgressStore();
   const unlocked = useAchievementsStore(s => s.unlocked);
@@ -40,6 +43,7 @@ export const ProfileScreen: React.FC = () => {
   ];
 
   const menu: { icon: string; label: string; onPress: () => void }[] = [
+    { icon: 'share-social-outline', label: 'Share Achievement Card 🏆', onPress: () => setShareOpen(true) },
     { icon: 'map-outline', label: 'My Worlds', onPress: () => navigation.navigate('Worlds') },
     { icon: 'book-outline', label: 'AI Glossary', onPress: () => navigation.navigate('Glossary') },
     { icon: 'library-outline', label: 'Learn More', onPress: () => navigation.navigate('LearnMore') },
@@ -149,6 +153,8 @@ export const ProfileScreen: React.FC = () => {
           ))}
         </GlassCard>
       </Animated.View>
+
+      <ShareCardModal visible={shareOpen} onClose={() => setShareOpen(false)} />
     </Screen>
   );
 };

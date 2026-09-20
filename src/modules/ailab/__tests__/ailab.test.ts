@@ -19,14 +19,14 @@ import { LabComponentId } from '../types';
 const isKnown = (id: LabComponentId) => id in LAB_COMPONENTS;
 
 describe('AI Lab data integrity', () => {
-  it('has the eight missions with unique ids', () => {
-    expect(MISSIONS).toHaveLength(8);
+  it('has the twelve missions with unique ids', () => {
+    expect(MISSIONS).toHaveLength(12);
     const ids = MISSIONS.map(m => m.id);
     expect(new Set(ids).size).toBe(ids.length);
   });
 
-  it('exposes the ten-component catalog consistently', () => {
-    expect(LAB_COMPONENT_LIST).toHaveLength(10);
+  it('exposes the sixteen-component catalog consistently', () => {
+    expect(LAB_COMPONENT_LIST).toHaveLength(16);
     LAB_COMPONENT_LIST.forEach(c => expect(LAB_COMPONENTS[c.id].id).toBe(c.id));
   });
 
@@ -610,8 +610,8 @@ describe('AI Lab Free Build (Phase 10)', () => {
   const { freeBuildFeedback } = require('../freebuild/validate');
   const { localProvider } = require('../provider/LocalSimulationProvider');
 
-  it('has the eight categories with unique ids and valid components', () => {
-    expect(FREE_CATEGORIES).toHaveLength(8);
+  it('has the eleven categories with unique ids and valid components', () => {
+    expect(FREE_CATEGORIES).toHaveLength(11);
     const ids = FREE_CATEGORIES.map((c: any) => c.id);
     expect(new Set(ids).size).toBe(ids.length);
     FREE_CATEGORIES.forEach((c: any) => {

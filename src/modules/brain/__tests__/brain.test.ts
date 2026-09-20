@@ -181,7 +181,7 @@ describe('content + missions', () => {
     expect(missionForDay('2026-09-11')).toEqual(missionForDay('2026-09-11'));
   });
   it('has at least 20 interactive simulations', () => {
-    expect(SIMS.length).toBe(20);
+    expect(SIMS.length).toBeGreaterThanOrEqual(20);
     expect(SIMS.length + CASES.length).toBeGreaterThanOrEqual(27);
   });
 });
