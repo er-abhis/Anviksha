@@ -16,13 +16,10 @@ import { usePreferencesStore } from './src/store';
 
 const App: React.FC = () => {
   useEffect(() => {
-    initNotifications();
-    // Best-effort Play in-app update check. Deferred off the render commit and
-    // hard-swallowed so nothing here can ever crash the app.
-    const t = setTimeout(() => {
+    initNotifications().catch(() => {});
+    if (typeof process === 'undefined' || !process.env.JEST_WORKER_ID) {
       checkForUpdates().catch(() => {});
-    }, 0);
-    return () => clearTimeout(t);
+    }
   }, []);
 
   // Respect the OS "Remove animations" accessibility setting: treat it as a
@@ -38,13 +35,13 @@ const App: React.FC = () => {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider>
-        <ThemeProvider>
-          <ErrorBoundary>
+      <ErrorBoundary>
+        <SafeAreaProvider>
+          <ThemeProvider>
             <RootNavigator />
-          </ErrorBoundary>
-        </ThemeProvider>
-      </SafeAreaProvider>
+          </ThemeProvider>
+        </SafeAreaProvider>
+      </ErrorBoundary>
     </GestureHandlerRootView>
   );
 };

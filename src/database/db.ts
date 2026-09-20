@@ -35,9 +35,14 @@ const runMigrations = async (db: AppDatabase): Promise<void> => {
 export const getDatabase = (): Promise<AppDatabase> => {
   if (!dbPromise) {
     dbPromise = (async () => {
-      const db = open({ name: DATABASE_NAME });
-      await runMigrations(db);
-      return db;
+      try {
+        const db = open({ name: DATABASE_NAME });
+        await runMigrations(db);
+        return db;
+      } catch (err) {
+        dbPromise = null;
+        throw err;
+      }
     })();
   }
   return dbPromise;
@@ -45,5 +50,9 @@ export const getDatabase = (): Promise<AppDatabase> => {
 
 /** Call once at app startup so the schema is ready before first screen. */
 export const initDatabase = async (): Promise<void> => {
-  await getDatabase();
+  try {
+    await getDatabase();
+  } catch {
+    // DB failure shouldn't block app launch; screens degrade gracefully.
+  }
 };

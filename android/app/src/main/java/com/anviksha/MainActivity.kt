@@ -32,7 +32,7 @@ class MainActivity : ReactActivity() {
     controller.isAppearanceLightNavigationBars = false
 
     setTheme(R.style.AppTheme)
-    super.onCreate(savedInstanceState)
+    super.onCreate(null)
   }
 
   /**

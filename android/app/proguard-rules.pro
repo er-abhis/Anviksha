@@ -1,13 +1,12 @@
 # Add project specific ProGuard rules here.
-# By default, the flags in this file are appended to flags specified
-# in /usr/local/Cellar/android-sdk/24.3.3/tools/proguard/proguard-android.txt
-# You can edit the include path and order by changing the proguardFiles
-# directive in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
 
-# Add any project specific keep options here:
+# React Native Core & TurboModules / JNI
+-keep class com.facebook.react.** { *; }
+-keep class com.facebook.jni.** { *; }
+-keep class com.facebook.hermes.** { *; }
+
+# React Native Nitro Modules
+-keep class com.margelo.nitro.** { *; }
 
 # React Native Reanimated
 -keep class com.swmansion.reanimated.** { *; }
@@ -16,8 +15,12 @@
 # React Native Gesture Handler
 -keep class com.swmansion.gesturehandler.** { *; }
 
+# React Native Screens
+-keep class com.swmansion.rnscreens.** { *; }
+
 # React Native MMKV
 -keep class com.reactnativemmkv.** { *; }
+-keep class com.tencent.mmkv.** { *; }
 
 # React Native Quick SQLite
 -keep class com.reactnativequicksqlite.** { *; }
@@ -26,4 +29,22 @@
 -keep class com.greententacle.reactnativeviewshot.** { *; }
 
 # Notifee
--keep class com.iogov.notifee.** { *; }
+-keep class app.notifee.core.** { *; }
+-keep class io.invertase.notifee.** { *; }
+
+# Vector Icons
+-keep class com.oblador.vectoricons.** { *; }
+
+# Lottie
+-keep class com.airbnb.lottie.** { *; }
+
+# SVG
+-keep class com.horcrux.svg.** { *; }
+
+# In-App Updates (Google Play Core)
+-keep class com.sudoplz.rninappupdate.** { *; }
+-keep class com.google.android.play.core.** { *; }
+
+# Device Info & Share
+-keep class com.learnium.RNDeviceInfo.** { *; }
+-keep class cl.json.** { *; }

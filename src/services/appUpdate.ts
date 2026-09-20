@@ -8,33 +8,40 @@
  * is sideloaded or installed from a non-Play source.
  */
 import { Platform } from 'react-native';
-import SpInAppUpdates, {
-  AndroidUpdateType,
-  AndroidInstallStatus,
-} from 'sp-react-native-in-app-updates';
 
 let alreadyChecked = false;
 
 export const checkForUpdates = async (): Promise<void> => {
-  // In-app updates are Android-only; skip dev builds (not installed via Play).
+  // In-app updates are Android-only; skip dev builds or non-Play Store installations (sideloaded APKs).
   if (Platform.OS !== 'android' || __DEV__ || alreadyChecked) return;
   alreadyChecked = true;
 
   try {
-    const updates = new SpInAppUpdates(false);
-    const result = await updates.checkNeedsUpdate();
-    if (!result.shouldUpdate) return;
+    const DeviceInfo = require('react-native-device-info').default || require('react-native-device-info');
+    const installer = await DeviceInfo.getInstallerPackageName().catch(() => '');
+    // Play Store in-app updates ONLY work when installed from Google Play (com.android.vending).
+    // Running on sideloaded APKs, Oppo App Market, or manual release APKs causes Play Core to crash.
+    if (installer !== 'com.android.vending') return;
 
-    // Once the background download finishes, prompt the user to install (this
-    // shows Play's "restart to update" snackbar/dialog).
-    updates.addStatusUpdateListener(status => {
-      if (status.status === AndroidInstallStatus.DOWNLOADED) {
-        updates.installUpdate();
+    const SpInAppUpdates = require('sp-react-native-in-app-updates').default;
+    const { AndroidUpdateType, AndroidInstallStatus } = require('sp-react-native-in-app-updates');
+    const updates = new SpInAppUpdates(false);
+    const result = await updates.checkNeedsUpdate().catch(() => null);
+    if (!result || !result.shouldUpdate) return;
+
+    updates.addStatusUpdateListener((status: any) => {
+      if (status && status.status === AndroidInstallStatus.DOWNLOADED) {
+        try {
+          updates.installUpdate();
+        } catch {
+          // Swallow native install errors
+        }
       }
     });
 
-    await updates.startUpdate({ updateType: AndroidUpdateType.FLEXIBLE });
+    await updates.startUpdate({ updateType: AndroidUpdateType.FLEXIBLE }).catch(() => {});
   } catch {
-    // Best-effort: swallow (no Play services, offline, cancelled, dev build…).
+    // Best-effort: swallow (no Play services, offline, cancelled, dev build, sideloaded…).
   }
 };
+

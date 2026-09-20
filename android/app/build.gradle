@@ -45,19 +45,10 @@ android {
         ndk {
             abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
         }
-
-        externalNativeBuild {
-            cmake {
-                arguments "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON", "-DCMAKE_SHARED_LINKER_FLAGS=-Wl,-z,max-page-size=16384"
-            }
-            ndkBuild {
-                arguments "APP_LDFLAGS+=-Wl,-z,max-page-size=16384"
-            }
-        }
     }
     packaging {
         jniLibs {
-            useLegacyPackaging = false
+            useLegacyPackaging = true
         }
     }
     signingConfigs {
@@ -82,7 +73,7 @@ android {
         }
         release {
             // Signed with the upload keystore from android/key.properties.
-            signingConfig signingConfigs.release
+            signingConfig (keystorePropertiesFile.exists() ? signingConfigs.release : signingConfigs.debug)
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }

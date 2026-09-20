@@ -149,8 +149,26 @@ export const rescheduleReminders = async (): Promise<void> => {
           repeatFrequency: RepeatFrequency.DAILY,
           alarmManager: { allowWhileIdle: true },
         },
-      ).catch(() => {
-        // e.g. exact-alarm denied on Android 14 — non-fatal.
+      ).catch(async () => {
+        // Fallback for devices without exact alarm permission (e.g. Android 12+)
+        await notifee.createTriggerNotification(
+          {
+            id,
+            title: r.title,
+            body: r.body,
+            data: r.target as unknown as Record<string, string>,
+            android: {
+              channelId: CHANNEL_ID,
+              smallIcon: 'ic_launcher',
+              pressAction: { id: 'default', launchActivity: 'default' },
+            },
+          },
+          {
+            type: TriggerType.TIMESTAMP,
+            timestamp: nextAt(r.hour, !!r.skipToday),
+            repeatFrequency: RepeatFrequency.DAILY,
+          },
+        ).catch(() => {});
       });
     }),
   );
@@ -177,36 +195,30 @@ export const initNotifications = async (): Promise<void> => {
       importance: AndroidImportance.DEFAULT,
     });
 
-    // Friendly one-time explanation before the system prompt.
+    // Set primer key
     if (!storage.getBoolean(PRIMER_KEY)) {
       storage.set(PRIMER_KEY, true);
-      await new Promise<void>(resolve => {
-        Alert.alert(
-          'Stay on track 🔔',
-          'Anviksha can send a gentle daily reminder for your AI challenge and next lesson. No spam — just a nudge to keep your streak alive.',
-          [{ text: 'Sounds good', onPress: () => resolve() }],
-          { cancelable: false, onDismiss: () => resolve() },
-        );
-      });
     }
 
-    const settings = await notifee.requestPermission();
+    const settings = await notifee.requestPermission().catch(() => ({ authorizationStatus: AuthorizationStatus.DENIED }));
     permissionGranted =
-      settings.authorizationStatus === AuthorizationStatus.AUTHORIZED ||
-      settings.authorizationStatus === AuthorizationStatus.PROVISIONAL;
+      settings?.authorizationStatus === AuthorizationStatus.AUTHORIZED ||
+      settings?.authorizationStatus === AuthorizationStatus.PROVISIONAL;
 
     // Foreground taps.
-    notifee.onForegroundEvent(({ type, detail }) => {
-      if (type === EventType.PRESS) {
-        navigateFromNotification(readTarget(detail.notification?.data));
-      }
-    });
+    try {
+      notifee.onForegroundEvent(({ type, detail }) => {
+        if (type === EventType.PRESS) {
+          navigateFromNotification(readTarget(detail.notification?.data));
+        }
+      });
+    } catch {}
 
     // Cold-start tap (app launched from a notification).
-    const initial = await notifee.getInitialNotification();
+    const initial = await notifee.getInitialNotification().catch(() => null);
     if (initial) {
       setTimeout(
-        () => navigateFromNotification(readTarget(initial.notification.data)),
+        () => navigateFromNotification(readTarget(initial.notification?.data)),
         400,
       );
     }
