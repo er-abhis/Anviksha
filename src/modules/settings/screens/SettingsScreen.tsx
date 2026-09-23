@@ -3,7 +3,7 @@ import { ScrollView, Pressable, StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { GlassCard, Header, Screen, SectionTitle, Text } from '../../../components';
+import { GlassCard, Gradient, Header, Screen, SectionTitle, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import {
   usePreferencesStore,
@@ -76,16 +76,31 @@ export const SettingsScreen: React.FC = () => {
   const preference = useThemeStore(s => s.preference);
   const setPreference = useThemeStore(s => s.setPreference);
 
-  const settings = useSettingsStore();
-  const reducedMotion = usePreferencesStore(s => s.reducedMotion);
-  const setReducedMotion = usePreferencesStore(s => s.setReducedMotion);
+  const settingsStore = useSettingsStore();
+  // Defensive state fallbacks in case of legacy persisted values
+  const settings = {
+    language: settingsStore?.language || 'en',
+    sound: settingsStore?.sound ?? true,
+    haptics: settingsStore?.haptics ?? true,
+    notifications: settingsStore?.notifications ?? true,
+    notificationTime: settingsStore?.notificationTime || '20:00',
+    setLanguage: (lang: any) => { try { settingsStore?.setLanguage?.(lang); } catch {} },
+    setSound: (v: boolean) => { try { settingsStore?.setSound?.(v); } catch {} },
+    setHaptics: (v: boolean) => { try { settingsStore?.setHaptics?.(v); } catch {} },
+    setNotifications: (v: boolean) => { try { settingsStore?.setNotifications?.(v); } catch {} },
+    setNotificationTime: (tm: string) => { try { settingsStore?.setNotificationTime?.(tm); } catch {} },
+  };
+
+  const reducedMotion = usePreferencesStore(s => s?.reducedMotion ?? false);
+  const setReducedMotionStore = usePreferencesStore(s => s?.setReducedMotion);
+  const setReducedMotion = (v: boolean) => { try { setReducedMotionStore?.(v); } catch {} };
 
   return (
     <Screen scroll contentContainerStyle={{ gap: spacing.xl }}>
       <Header title={t('settings')} onBack={() => navigation.goBack()} />
 
       {/* Hero Banner */}
-      <Animated.View>
+      <View>
         <GlassCard elevation="glow" padded={false} style={{ borderRadius: radius.xl, overflow: 'hidden' }}>
           <Gradient colors={gradients.brand} style={StyleSheet.absoluteFill} />
           <View style={{ padding: spacing.lg, gap: spacing.xs }}>
@@ -103,10 +118,10 @@ export const SettingsScreen: React.FC = () => {
             </Text>
           </View>
         </GlassCard>
-      </Animated.View>
+      </View>
 
       {/* Appearance */}
-      <Animated.View>
+      <View>
         <SectionTitle title={`${t('appearance')} 🎨`} />
         <GlassCard elevation="glow">
           <Text variant="label" color="textSecondary" style={{ marginBottom: spacing.sm }}>
@@ -123,7 +138,7 @@ export const SettingsScreen: React.FC = () => {
               return (
                 <Pressable
                   key={opt.key}
-                  onPress={() => setPreference(opt.key)}
+                  onPress={() => { try { setPreference(opt.key); } catch {} }}
                   style={[
                     styles.themeBtn,
                     {
@@ -162,10 +177,10 @@ export const SettingsScreen: React.FC = () => {
             })}
           </ScrollView>
         </GlassCard>
-      </Animated.View>
+      </View>
 
       {/* Language */}
-      <Animated.View>
+      <View>
         <SectionTitle title={`${t('language')} 🌐`} />
         <GlassCard>
           <Text variant="label" color="textSecondary" style={{ marginBottom: spacing.sm }}>
@@ -208,10 +223,10 @@ export const SettingsScreen: React.FC = () => {
             })}
           </ScrollView>
         </GlassCard>
-      </Animated.View>
+      </View>
 
       {/* Preferences */}
-      <Animated.View>
+      <View>
         <SectionTitle title="Preferences" />
         <GlassCard padded={false} style={{ paddingHorizontal: spacing.lg }}>
           <SettingRow
@@ -275,10 +290,10 @@ export const SettingsScreen: React.FC = () => {
             onValueChange={setReducedMotion}
           />
         </GlassCard>
-      </Animated.View>
+      </View>
 
       {/* About */}
-      <Animated.View>
+      <View>
         <SectionTitle title={t('about')} />
         <GlassCard padded={false} style={{ paddingHorizontal: spacing.lg }}>
           <ActionRow
@@ -294,7 +309,7 @@ export const SettingsScreen: React.FC = () => {
             onPress={rateApp}
           />
         </GlassCard>
-      </Animated.View>
+      </View>
 
       <Text variant="caption" color="textTertiary" center>
         {`${APP.name} v${APP.version}`}

@@ -81,14 +81,14 @@ export const shareAchievement = async (message: string, imageUri?: string): Prom
 };
 
 export const rateApp = async (): Promise<void> => {
-  // Prefer the native Play Store app; fall back to the web listing.
   const marketUrl = `market://details?id=${APP.androidPackageId}`;
   try {
-    if (await Linking.canOpenURL(marketUrl)) {
-      await Linking.openURL(marketUrl);
+    const canOpen = await Linking.canOpenURL(marketUrl).catch(() => false);
+    if (canOpen) {
+      await Linking.openURL(marketUrl).catch(() => {});
       return;
     }
-    await Linking.openURL(webStoreUrl());
+    await Linking.openURL(webStoreUrl()).catch(() => {});
   } catch {
     Alert.alert(
       'Not available yet',

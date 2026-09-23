@@ -183,60 +183,110 @@ export const HomeScreen: React.FC = () => {
           },
         ]}
       >
-        {/* ================= HUB 1: HERO & DASHBOARD OVERVIEW ================= */}
+        {/* ================= TOP CLEAN HEADER ================= */}
+        <Padded style={{ paddingVertical: spacing.xs }}>
+          <View style={styles.cleanHeader}>
+            <Pressable
+              onPress={() => openDrawer()}
+              accessibilityRole="button"
+              accessibilityLabel="Open menu"
+              hitSlop={8}
+            >
+              <Logo size={32} style={styles.brandMark} />
+            </Pressable>
+            <View style={styles.headerTitleWrap}>
+              <Text variant="h3" style={{ fontWeight: '800', letterSpacing: 0.5 }}>
+                Anviksha AI
+              </Text>
+            </View>
+            <IconButton
+              name="search-outline"
+              accessibilityLabel="Global Search"
+              onPress={() => setSearchOpen(true)}
+            />
+          </View>
+        </Padded>
+
+        {/* ================= SECTION 1 (TOP HERO): TODAY'S LEARNING / CONTINUE WHERE YOU LEFT OFF ================= */}
         <Padded>
-          <Animated.View
+          <View
             style={[styles.hero, { borderRadius: radius.xl }, elevation.glow]}
           >
             <Gradient
-              colors={gradients.brand}
+              colors={world.gradient || gradients.brand}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={StyleSheet.absoluteFill}
               borderRadius={radius.xl}
             />
-            <View style={[styles.heroInner, { padding: spacing.md }]}>
-              <View style={styles.headerRow}>
-                <Pressable
-                  onPress={() => openDrawer()}
-                  accessibilityRole="button"
-                  accessibilityLabel="Open menu"
-                  hitSlop={8}
-                >
-                  <Logo size={32} style={styles.brandMark} />
-                </Pressable>
-                <View style={styles.flex}>
-                  <Text variant="label" color="textInverse" style={styles.heroEyebrow}>
-                    ANVIKSHA AI PLATFORM
+            <View style={{ padding: spacing.lg, gap: spacing.sm }}>
+              <View style={styles.heroBadgeRow}>
+                <View style={styles.primaryTag}>
+                  <Text variant="caption" color="textInverse" style={{ fontWeight: '800', fontSize: 10, letterSpacing: 0.8 }}>
+                    CONTINUE LEARNING · WORLD {world.order}
                   </Text>
-                  <Text variant="h2" color="textInverse">{t('app_tagline')}</Text>
                 </View>
-                <View style={styles.headerButtons}>
-                  <IconButton
-                    name="search-outline"
-                    accessibilityLabel="Global Search"
-                    onPress={() => setSearchOpen(true)}
-                  />
-                  <IconButton
-                    name="settings-outline"
-                    accessibilityLabel="Settings"
-                    onPress={() => navigation.navigate('Settings')}
-                  />
-                </View>
+                <Text variant="caption" color="textInverse" style={{ opacity: 0.9, fontWeight: '700' }}>
+                  {Math.round(worldProgress(world.id, completed) * 100)}% DONE
+                </Text>
               </View>
 
-              <View style={[styles.stats, { gap: spacing.xs, marginTop: spacing.sm }]}>
-                <XPBadge value={xp} kind="xp" />
-                <XPBadge value={coins} kind="coins" />
-                <XPBadge value={streakDays} kind="streak" />
-                <View style={styles.flex} />
-                <View style={[styles.levelPill, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
-                  <Icon name="ribbon" size={14} color={colors.textInverse} />
-                  <Text variant="label" color="textInverse">{`Level ${level}`}</Text>
+              <Text variant="h2" color="textInverse" style={{ marginTop: 2 }}>
+                {world.title}
+              </Text>
+              <Text variant="caption" color="textInverse" style={{ opacity: 0.92, fontSize: 13, lineHeight: 18 }}>
+                {world.subtitle}
+              </Text>
+
+              {/* Target Lesson Action Card */}
+              {continueLessons[0] && (
+                <View style={styles.nextLessonBox}>
+                  <View style={styles.flex}>
+                    <Text variant="caption" color="textInverse" style={{ opacity: 0.8, fontSize: 11, textTransform: 'uppercase' }}>
+                      Next Chapter To Complete
+                    </Text>
+                    <Text variant="bodyStrong" color="textInverse" numberOfLines={1} style={{ fontSize: 15 }}>
+                      {`Ch ${continueLessons[0].order}: ${continueLessons[0].title}`}
+                    </Text>
+                  </View>
+                  <View style={styles.xpPillMini}>
+                    <Icon name="flash" size={12} color="#FACC15" />
+                    <Text variant="caption" color="textInverse" style={{ fontWeight: '700', fontSize: 11 }}>
+                      {`+${continueLessons[0].xp} XP`}
+                    </Text>
+                  </View>
                 </View>
-              </View>
+              )}
+
+              {/* BIG PRIMARY CTA BUTTON: START / CONTINUE */}
+              <Pressable
+                onPress={() => continueLessons[0] ? openLesson(continueLessons[0].id) : openWorld(world.id)}
+                style={({ pressed }) => [
+                  styles.heroCtaBtn,
+                  { opacity: pressed ? 0.85 : 1 }
+                ]}
+              >
+                <Icon name="play" size={18} color={colors.primary} />
+                <Text variant="bodyStrong" style={{ color: colors.primary, fontSize: 15, fontWeight: '800' }}>
+                  {continueLessons[0] ? "▶ Continue Learning" : "▶ Start Chapter 1"}
+                </Text>
+              </Pressable>
             </View>
-          </Animated.View>
+          </View>
+        </Padded>
+
+        {/* Quick User Stats Row */}
+        <Padded style={{ marginTop: -spacing.xs }}>
+          <View style={[styles.statsRowPill, { backgroundColor: colors.surfaceAlt, borderRadius: radius.lg, padding: spacing.xs, borderColor: colors.glassBorder, borderWidth: 1 }]}>
+            <XPBadge value={xp} kind="xp" />
+            <XPBadge value={coins} kind="coins" />
+            <XPBadge value={streakDays} kind="streak" />
+            <View style={styles.flex} />
+            <View style={[styles.levelPill, { backgroundColor: colors.primaryMuted }]}>
+              <Icon name="ribbon" size={14} color={colors.primary} />
+              <Text variant="label" color="primary">{`Level ${level}`}</Text>
+            </View>
+          </View>
         </Padded>
 
         {/* ================= BOLD FEATURED HIGHLIGHTS GRID ================= */}
@@ -764,18 +814,68 @@ const ProgressTileCard: React.FC<{
 };
 
 const styles = StyleSheet.create({
-  fill: { flex: 1 },
-  flex: { flex: 1 },
-  content: { width: '100%', alignSelf: 'center' },
-  hero: {},
-  heroInner: {},
-  heroEyebrow: { letterSpacing: 1.2, opacity: 0.9 },
-  glossaryIcon: { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-  activityIcon: { width: 38, height: 38, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-  rowGap: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  rowBetweenFlex: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 2 },
-  headerRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  headerButtons: { flexDirection: 'row', alignItems: 'center', gap: 2 },
+  cleanHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 4,
+  },
+  headerTitleWrap: {
+    flex: 1,
+    marginLeft: 12,
+    justifyContent: 'center',
+  },
+  heroBadgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  primaryTag: {
+    backgroundColor: 'rgba(255,255,255,0.22)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 999,
+  },
+  nextLessonBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'rgba(0,0,0,0.25)',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 12,
+    marginTop: 4,
+  },
+  xpPillMini: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 999,
+  },
+  heroCtaBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 14,
+    marginTop: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  statsRowPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
   brandMark: { borderRadius: 8 },
   stats: { flexDirection: 'row', alignItems: 'center' },
   levelPill: {

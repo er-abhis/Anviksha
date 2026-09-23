@@ -19,10 +19,10 @@ interface SettingsState {
 export const useSettingsStore = create<SettingsState>()(
   persist(
     set => ({
-      language: DEFAULTS.language,
-      sound: DEFAULTS.sound,
-      haptics: DEFAULTS.haptics,
-      notifications: DEFAULTS.notifications,
+      language: DEFAULTS.language || 'en',
+      sound: DEFAULTS.sound ?? true,
+      haptics: DEFAULTS.haptics ?? true,
+      notifications: DEFAULTS.notifications ?? true,
       notificationTime: '20:00',
       setLanguage: language => set({ language }),
       setSound: sound => set({ sound }),
@@ -31,7 +31,7 @@ export const useSettingsStore = create<SettingsState>()(
       setNotificationTime: notificationTime => set({ notificationTime }),
     }),
     {
-      name: StorageKeys.language,
+      name: 'app.settings.v2',
       storage: createJSONStorage(() => zustandMMKVStorage),
     },
   ),
