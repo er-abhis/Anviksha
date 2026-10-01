@@ -18,8 +18,8 @@ import {
 } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { RootStackParamList } from '../../../navigation/types';
-import { useProgressStore } from '../../../store';
-import { WORLDS, isLessonUnlocked, lessonsForWorld } from '../../../content';
+import { getLessonCompletionPercent, useProgressStore } from '../../../store';
+import { WORLDS, lessonsForWorld } from '../../../content';
 
 export const WorldDetailScreen: React.FC = () => {
   const { colors, radius, spacing, gradients, elevation } = useTheme();
@@ -28,6 +28,8 @@ export const WorldDetailScreen: React.FC = () => {
   const route = useRoute<RouteProp<RootStackParamList, 'WorldDetail'>>();
   const world = WORLDS.find(w => w.id === route.params.worldId);
   const completed = useProgressStore(s => s.completed);
+  const lessons = world ? lessonsForWorld(world.id) : [];
+  const accentColor = world?.gradient ? world.gradient[0] : colors.primary;
 
   if (!world) {
     return (
@@ -38,9 +40,7 @@ export const WorldDetailScreen: React.FC = () => {
     );
   }
 
-  const lessons = lessonsForWorld(world.id);
-
-  const accentColor = world.gradient ? world.gradient[0] : colors.primary;
+  const lessonStepProgress = useProgressStore(s => s.lessonStepProgress);
 
   return (
     <Screen scroll contentContainerStyle={{ gap: spacing.lg }}>
@@ -84,17 +84,17 @@ export const WorldDetailScreen: React.FC = () => {
       ) : (
         lessons.map((lesson, i) => {
           const done = lesson.id in completed;
-          const unlocked = isLessonUnlocked(lesson, completed);
-          const bg = done ? colors.success : unlocked ? accentColor : colors.surfaceAlt;
-          const iconName = done ? 'checkmark' : unlocked ? 'play' : 'book-outline';
-          const iconColor = done ? '#FFFFFF' : unlocked ? '#FFFFFF' : colors.textSecondary;
+          const pct = getLessonCompletionPercent(lesson.id, completed, lessonStepProgress);
+          const bg = done ? colors.success : pct > 0 ? accentColor : colors.surfaceAlt;
+          const iconName = done ? 'checkmark' : pct > 0 ? 'play' : 'book-outline';
+          const iconColor = done ? '#FFFFFF' : pct > 0 ? '#FFFFFF' : colors.textSecondary;
 
           return (
             <Animated.View key={lesson.id}>
               <GlassCard
                 elevation="glow"
                 style={{
-                  borderColor: done ? colors.success + '44' : unlocked ? accentColor + '44' : colors.border,
+                  borderColor: done ? colors.success + '44' : pct > 0 ? accentColor + '44' : colors.border,
                   borderWidth: 1,
                   borderRadius: radius.lg,
                 }}
@@ -105,13 +105,22 @@ export const WorldDetailScreen: React.FC = () => {
                     <Icon name={iconName} size={18} color={iconColor} />
                   </View>
                   <View style={styles.flex}>
-                    <Text variant="bodyStrong">{`${lesson.order}. ${lesson.title}`}</Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <Text variant="bodyStrong" style={{ flex: 1 }}>{`${lesson.order}. ${lesson.title}`}</Text>
+                      {pct > 0 && (
+                        <View style={{ backgroundColor: done ? colors.success + '22' : accentColor + '22', paddingHorizontal: 8, paddingVertical: 2, borderRadius: radius.pill }}>
+                          <Text variant="caption" style={{ color: done ? colors.success : accentColor, fontWeight: '700', fontSize: 10 }}>
+                            {done ? '100% COMPLETE' : `${pct}% IN PROGRESS`}
+                          </Text>
+                        </View>
+                      )}
+                    </View>
                     <Text variant="caption" color="textSecondary" style={{ marginTop: 2 }}>
                       {done
-                        ? `Completed · ${lesson.estimatedMinutes} min`
-                        : unlocked
-                        ? `${lesson.estimatedMinutes} min · ${lesson.difficulty} · +${lesson.xp} XP`
-                        : 'Complete previous lesson to unlock'}
+                        ? `Completed · 100%`
+                        : pct > 0
+                        ? `${pct}% completed · Tap to resume`
+                        : `${lesson.estimatedMinutes} min · ${lesson.difficulty} · +${lesson.xp} XP`}
                     </Text>
                   </View>
                   <View style={{ backgroundColor: accentColor + '18', padding: 6, borderRadius: radius.pill }}>

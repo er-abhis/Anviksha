@@ -101,16 +101,9 @@ export const isWorldUnlocked = (
 export const UNLOCK_ALL_LESSONS = true;
 
 export const isLessonUnlocked = (
-  lesson: Lesson,
-  completed: Record<string, number>,
-): boolean => {
-  if (UNLOCK_ALL_LESSONS) return true;
-  if (lesson.order === 1) return true;
-  const prev = lessonsForWorld(lesson.worldId).find(
-    l => l.order === lesson.order - 1,
-  );
-  return prev ? prev.id in completed : true;
-};
+  _lesson: Lesson,
+  _completed: Record<string, number>,
+): boolean => true;
 
 /**
  * Whether a lesson's INTERACTIVE part (activity, quiz, XP, completion) is open.

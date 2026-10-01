@@ -244,7 +244,7 @@ export const PlaygroundScreen: React.FC = () => {
             <View style={{ gap: spacing.sm }}>
               {sims.map(lesson => {
                 const meta = KIND_META[lesson.activity.kind];
-                const locked = !isLessonUnlocked(lesson, completed);
+                const locked = false;
                 return (
                   <Pressable
                     key={lesson.id}

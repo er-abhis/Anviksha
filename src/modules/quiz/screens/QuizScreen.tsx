@@ -158,6 +158,8 @@ export const QuizScreen: React.FC = () => {
         <QuizSession
           key={attempt}
           questions={questions}
+          lessonId={lesson.id}
+          initialIndex={store.lessonStepProgress?.[lesson.id]?.currentStep || 0}
           passThreshold={PASS_THRESHOLD}
           computeReward={() => ({ xp: lesson.xp, coins: lesson.coins })}
           onComplete={onComplete}

@@ -36,3 +36,7 @@ export const triggerHaptic = (type: HapticType = 'selection') => {
     // Ignore devices without vibration motor
   }
 };
+
+export const hapticSelection = () => triggerHaptic('selection');
+export const hapticSuccess = () => triggerHaptic('success');
+export const hapticError = () => triggerHaptic('error');

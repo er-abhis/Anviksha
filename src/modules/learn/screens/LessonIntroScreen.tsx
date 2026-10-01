@@ -17,7 +17,7 @@ import {
 } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { RootStackParamList } from '../../../navigation/types';
-import { useProgressStore } from '../../../store';
+import { getLessonCompletionPercent, useProgressStore } from '../../../store';
 import {
   blockingLesson,
   getLesson,
@@ -64,6 +64,8 @@ export const LessonIntroScreen: React.FC = () => {
   const route = useRoute<RouteProp<RootStackParamList, 'LessonIntro'>>();
   const lesson = getLesson(route.params.lessonId);
   const completed = useProgressStore(s => s.completed);
+  const lessonStepProgress = useProgressStore(s => s.lessonStepProgress);
+  const percent = lesson ? getLessonCompletionPercent(lesson.id, completed, lessonStepProgress) : 0;
 
   if (!lesson) {
     return (
@@ -142,6 +144,76 @@ export const LessonIntroScreen: React.FC = () => {
         </Gradient>
       </View>
 
+      {/* ── 4-Step Learning Loop Indicator (P1: Lesson Engine Banner) ── */}
+      <View
+        style={[
+          lessonStyles.stepStrip,
+          {
+            backgroundColor: colors.surfaceAlt,
+            borderBottomColor: colors.border,
+            paddingHorizontal: spacing.lg,
+          },
+        ]}>
+        {[
+          { key: 'discover', label: 'Discover', icon: 'bulb-outline', step: 1 },
+          { key: 'experiment', label: 'Experiment', icon: 'flask-outline', step: 2 },
+          { key: 'understand', label: 'Understand', icon: 'eye-outline', step: 3 },
+          { key: 'challenge', label: 'Challenge', icon: 'trophy-outline', step: 4 },
+        ].map((s, i, arr) => {
+          // Map lesson kind to step: reading=1, interactive=2, quiz=3/4
+          const currentStep = isDone ? 4 : unlocked ? 2 : 1;
+          const isActive = s.step === currentStep;
+          const isDoneStep = s.step < currentStep;
+          return (
+            <React.Fragment key={s.key}>
+              <View style={lessonStyles.stepItem}>
+                <View
+                  style={[
+                    lessonStyles.stepIconWrap,
+                    {
+                      backgroundColor: isDoneStep
+                        ? colors.primary
+                        : isActive
+                        ? colors.primaryMuted
+                        : colors.border,
+                    },
+                  ]}>
+                  <Icon
+                    name={isDoneStep ? 'checkmark' : s.icon}
+                    size={13}
+                    color={isDoneStep ? '#FFFFFF' : isActive ? colors.primary : colors.textTertiary}
+                  />
+                </View>
+                <Text
+                  variant="caption"
+                  style={{
+                    fontSize: 10,
+                    fontWeight: isActive ? '700' : '500',
+                    color: isActive
+                      ? colors.primary
+                      : isDoneStep
+                      ? colors.textSecondary
+                      : colors.textTertiary,
+                    marginTop: 3,
+                  }}>
+                  {s.label}
+                </Text>
+              </View>
+              {i < arr.length - 1 && (
+                <View
+                  style={[
+                    lessonStyles.stepConnector,
+                    {
+                      backgroundColor: isDoneStep ? colors.primary : colors.border,
+                    },
+                  ]}
+                />
+              )}
+            </React.Fragment>
+          );
+        })}
+      </View>
+
       {/* ---------- Body ---------- */}
       <View style={styles.body}>
         <Intro delay={80} icon="reader-outline" title="Overview">
@@ -209,42 +281,25 @@ export const LessonIntroScreen: React.FC = () => {
               <Text variant="label" color="success">You’ve completed this chapter</Text>
             </View>
           )}
-          {unlocked ? (
-            <>
-              <Button
-                label={isDone ? 'Review the lesson' : 'Start learning'}
-                onPress={start}
-                fullWidth
-                right={<Icon name="arrow-forward" size={18} color={colors.onPrimary} />}
-              />
-              <Text variant="caption" color="textTertiary" center>
-                {`Complete the interactive lesson and quiz to earn ${lesson.xp} XP.`}
-              </Text>
-            </>
-          ) : (
-            <View
-              style={[
-                styles.lockCard,
-                { borderRadius: radius.lg, backgroundColor: colors.surfaceAlt, borderColor: colors.border },
-              ]}
-            >
-              <View style={[styles.lockIcon, { backgroundColor: colors.primaryMuted, borderRadius: radius.pill }]}>
-                <Icon name="lock-closed" size={20} color={colors.primary} />
-              </View>
-              <Text variant="bodyStrong" center>
-                Complete the previous lesson to unlock this one.
-              </Text>
-              <Text variant="body" color="textSecondary" center>
-                You’re only one step away.
-              </Text>
-              <Button label="Start learning" disabled onPress={() => {}} fullWidth />
-              {blocker && (
-                <Text variant="caption" color="textTertiary" center>
-                  {`Finish Lesson ${blocker.order} — “${blocker.title}” — first.`}
-                </Text>
-              )}
-            </View>
-          )}
+          <Button
+            label={
+              isDone
+                ? 'Review lesson (100% Completed)'
+                : percent > 0
+                ? `Resume lesson (${percent}% Completed)`
+                : 'Start learning'
+            }
+            onPress={start}
+            fullWidth
+            right={<Icon name="arrow-forward" size={18} color={colors.onPrimary} />}
+          />
+          <Text variant="caption" color="textTertiary" center>
+            {isDone
+              ? 'You have completed this lesson! You can review or practice anytime.'
+              : percent > 0
+              ? `You are ${percent}% through this lesson. Tap to resume from where you left off.`
+              : `Complete the interactive lesson and quiz to earn ${lesson.xp} XP.`}
+          </Text>
         </Animated.View>
       </View>
     </Screen>
@@ -324,3 +379,31 @@ const styles = StyleSheet.create({
   lockCard: { alignItems: 'center', gap: 12, padding: 24, borderWidth: StyleSheet.hairlineWidth },
   lockIcon: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
 });
+
+/** Styles specific to the 4-step lesson engine strip added in P1 redesign. */
+const lessonStyles = StyleSheet.create({
+  stepStrip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  stepItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  stepIconWrap: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stepConnector: {
+    width: 16,
+    height: 2,
+    borderRadius: 1,
+    marginBottom: 14,
+  },
+});
+

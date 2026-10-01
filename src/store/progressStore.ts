@@ -11,6 +11,13 @@ export interface ActivityEntry {
   at: number;
 }
 
+export interface LessonProgressEntry {
+  currentStep: number;
+  totalSteps: number;
+  percent: number;
+  updatedAt: number;
+}
+
 interface ProgressState extends PlayerStats {
   /** entityId -> score (0..100). Presence implies "completed". */
   completed: Record<string, number>;
@@ -20,12 +27,15 @@ interface ProgressState extends PlayerStats {
   dailyCompletedDate: string | null;
   /** Recent activity feed, newest first. */
   activity: ActivityEntry[];
+  /** lessonId -> saved step progress */
+  lessonStepProgress: Record<string, LessonProgressEntry>;
   addXp: (amount: number) => void;
   addCoins: (amount: number) => void;
   markCompleted: (entityId: string, score: number) => void;
   completeWorld: (worldId: string) => void;
   completeDailyChallenge: (date: string, xp: number, coins: number) => void;
   logActivity: (entry: Omit<ActivityEntry, 'id'>) => void;
+  saveLessonProgress: (lessonId: string, currentStep: number, totalSteps: number) => void;
   reset: () => void;
 }
 
@@ -38,6 +48,19 @@ const initial = {
   completedWorlds: {} as Record<string, true>,
   dailyCompletedDate: null as string | null,
   activity: [] as ActivityEntry[],
+  lessonStepProgress: {} as Record<string, LessonProgressEntry>,
+};
+
+/** Helper to get completion % (0..100) for a lesson */
+export const getLessonCompletionPercent = (
+  lessonId: string,
+  completed: Record<string, number>,
+  lessonStepProgress: Record<string, LessonProgressEntry> = {},
+): number => {
+  if (lessonId in completed) return 100;
+  const entry = lessonStepProgress[lessonId];
+  if (entry && entry.percent > 0) return entry.percent;
+  return 0;
 };
 
 // Simple, tunable curve. ponytail: flat 500xp/level; swap for a curve when design lands.
@@ -98,6 +121,27 @@ export const useProgressStore = create<ProgressState>()(
             ...state.activity,
           ].slice(0, MAX_ACTIVITY),
         })),
+      saveLessonProgress: (lessonId, currentStep, totalSteps) =>
+        set(state => {
+          const percent =
+            totalSteps > 0
+              ? Math.min(
+                  100,
+                  Math.max(0, Math.round((currentStep / totalSteps) * 100)),
+                )
+              : 0;
+          return {
+            lessonStepProgress: {
+              ...(state.lessonStepProgress || {}),
+              [lessonId]: {
+                currentStep,
+                totalSteps,
+                percent,
+                updatedAt: Date.now(),
+              },
+            },
+          };
+        }),
       reset: () => set(initial),
     }),
     {

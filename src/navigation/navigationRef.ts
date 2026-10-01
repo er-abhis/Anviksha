@@ -25,7 +25,7 @@ export const navigateFromNotification = (target?: NotificationTarget): void => {
       break;
     case 'Home':
     default:
-      navigationRef.navigate('Main', { screen: 'Home' });
+      navigationRef.navigate('Main', { screen: 'Learn' });
       break;
   }
 };

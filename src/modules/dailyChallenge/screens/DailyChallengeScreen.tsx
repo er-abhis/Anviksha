@@ -14,7 +14,7 @@ import {
 import { QuizResult, QuizSession } from '../../learn/components/QuizSession';
 
 export const DailyChallengeScreen: React.FC = () => {
-  const { colors, spacing } = useTheme();
+  const { colors, spacing, radius, gradients } = useTheme();
   const navigation = useNavigation();
 
   const store = useProgressStore();

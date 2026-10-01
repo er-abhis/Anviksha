@@ -2,7 +2,7 @@ export { useThemeStore } from './themeStore';
 export type { ThemePreference } from './themeStore';
 export { useSettingsStore } from './settingsStore';
 export { usePreferencesStore } from './preferencesStore';
-export { useProgressStore } from './progressStore';
+export { useProgressStore, getLessonCompletionPercent } from './progressStore';
 export { useAchievementsStore } from './achievementsStore';
 export { useDrawerStore } from './drawerStore';
 export { useAILabStore } from '../modules/ailab/storage/aiLabStore';

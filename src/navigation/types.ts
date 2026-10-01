@@ -1,12 +1,12 @@
 import { NavigatorScreenParams } from '@react-navigation/native';
 
-/** Bottom tab shell — the persistent home of the app. */
+/** Bottom tab shell — 3 clear, purposeful tabs that eliminate decision fatigue. */
 export type MainTabParamList = {
-  Home: undefined;
-  Playground: undefined;
-  Games: undefined;
-  AILab: undefined;
-  Achievements: undefined;
+  /** The guided learning trail — where users progress through their AI journey. */
+  Learn: undefined;
+  /** Freeform experimentation hub — sims, games, builds, detective cases. */
+  Sandbox: undefined;
+  /** User stats, achievements, settings, and progress. */
   Profile: undefined;
 };
 

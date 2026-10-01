@@ -62,7 +62,7 @@ export const AppDrawer: React.FC = () => {
     return () => sub.remove();
   }, [open, hide]);
 
-  const go = (route: 'Coffee' | 'About' | 'Developer' | 'LearnMore' | 'Search' | 'Privacy') => {
+  const go = (route: 'Coffee' | 'About' | 'Developer' | 'LearnMore' | 'Search' | 'Privacy' | 'AIGames') => {
     hide();
     if (navigationRef.isReady()) navigationRef.navigate(route);
   };
@@ -72,7 +72,8 @@ export const AppDrawer: React.FC = () => {
     : undefined;
 
   const items: Item[] = [
-    { key: 'Home', icon: 'home-outline', label: t('home'), route: 'Main', run: () => { hide(); navigationRef.isReady() && navigationRef.navigate('Main', { screen: 'Home' }); } },
+    { key: 'Home', icon: 'home-outline', label: t('home'), route: 'Main', run: () => { hide(); navigationRef.isReady() && navigationRef.navigate('Main', { screen: 'Learn' }); } },
+
     { key: 'Games', icon: 'game-controller-outline', label: `${t('games')} 🎮`, route: 'AIGames', run: () => go('AIGames') },
     { key: 'Search', icon: 'search-outline', label: t('search'), route: 'Search', run: () => go('Search') },
     { key: 'LearnMore', icon: 'library-outline', label: t('learn_more'), route: 'LearnMore', run: () => go('LearnMore') },
@@ -87,7 +88,7 @@ export const AppDrawer: React.FC = () => {
 
   // Home is "active" on the tab shell (route name 'Main') too.
   const isActive = (item: Item) =>
-    !!item.route && (current === item.route || (item.route === 'Main' && current === 'Home'));
+    !!item.route && (current === item.route || (item.route === 'Main' && current === 'Learn'));
 
   const scrimStyle = useAnimatedStyle(() => ({ opacity: p.value * 0.55 }));
   const panelStyle = useAnimatedStyle(() => ({

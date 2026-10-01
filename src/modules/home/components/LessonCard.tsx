@@ -11,6 +11,7 @@ export interface LessonCardData {
   minutes: number;
   xp: number;
   status: 'done' | 'locked' | 'open';
+  percent?: number;
 }
 
 /**
@@ -22,18 +23,19 @@ export const LessonCard: React.FC<{ data: LessonCardData; onPress?: () => void }
   onPress,
 }) => {
   const { colors, radius, spacing } = useTheme();
+  const percent = data.percent || (data.status === 'done' ? 100 : 0);
   const meta =
-    data.status === 'done'
-      ? { icon: 'checkmark-circle', label: 'Completed', color: colors.success }
-      : data.status === 'locked'
-      ? { icon: 'lock-closed', label: 'Locked', color: colors.textTertiary }
+    percent >= 100
+      ? { icon: 'checkmark-circle', label: '100% Complete', color: colors.success }
+      : percent > 0
+      ? { icon: 'play-circle', label: `${percent}% Resume`, color: colors.primary }
       : { icon: 'play-circle', label: 'Start', color: colors.primary };
 
   return (
     <Card
       onPress={onPress}
       elevation="md"
-      glow={data.status === 'open'}
+      glow={percent > 0 && percent < 100}
       style={styles.card}
     >
       <View style={styles.headRow}>
@@ -48,7 +50,13 @@ export const LessonCard: React.FC<{ data: LessonCardData; onPress?: () => void }
       <Text variant="bodyStrong" numberOfLines={2} style={styles.title}>
         {data.title}
       </Text>
-      <View style={[styles.footer, { marginTop: spacing.sm }]}>
+
+      {/* Mini Progress Bar */}
+      <View style={{ height: 3, backgroundColor: colors.border, borderRadius: radius.pill, marginTop: spacing.xs, overflow: 'hidden' }}>
+        <View style={{ height: '100%', width: `${percent}%`, backgroundColor: meta.color, borderRadius: radius.pill }} />
+      </View>
+
+      <View style={[styles.footer, { marginTop: spacing.xs }]}>
         <View style={styles.metaItem}>
           <Icon name="time-outline" size={12} color={colors.textTertiary} />
           <Text variant="caption" color="textTertiary" style={{ fontSize: 11 }}>{`${data.minutes} min`}</Text>
@@ -58,7 +66,7 @@ export const LessonCard: React.FC<{ data: LessonCardData; onPress?: () => void }
           <Text variant="caption" color="textTertiary" style={{ fontSize: 11 }}>{`${data.xp} XP`}</Text>
         </View>
         <View style={styles.flex} />
-        <Text variant="label" style={{ color: meta.color, fontSize: 11 }}>{meta.label}</Text>
+        <Text variant="label" style={{ color: meta.color, fontSize: 11, fontWeight: '700' }}>{meta.label}</Text>
       </View>
     </Card>
   );

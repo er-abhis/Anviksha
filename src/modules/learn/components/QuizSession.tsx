@@ -44,6 +44,8 @@ export interface CompletionInfo {
 
 interface Props {
   questions: Question[];
+  lessonId?: string;
+  initialIndex?: number;
   /** 0..1. Use 0 for no pass gate (daily challenge). */
   passThreshold?: number;
   computeReward: (correct: number, total: number) => { xp: number; coins: number };
@@ -67,6 +69,8 @@ const TYPE_LABEL: Record<Question['type'], string> = {
 
 export const QuizSession: React.FC<Props> = ({
   questions,
+  lessonId,
+  initialIndex = 0,
   passThreshold = 0,
   computeReward,
   onComplete,
@@ -75,7 +79,8 @@ export const QuizSession: React.FC<Props> = ({
   completion,
 }) => {
   const { colors, radius, spacing } = useTheme();
-  const [idx, setIdx] = useState(0);
+  const saveLessonProgress = useProgressStore(s => s.saveLessonProgress);
+  const [idx, setIdx] = useState(() => Math.min(initialIndex, Math.max(0, questions.length - 1)));
   const [correctCount, setCorrectCount] = useState(0);
   const [done, setDone] = useState(false);
   const [reported, setReported] = useState(false);
@@ -87,6 +92,9 @@ export const QuizSession: React.FC<Props> = ({
     setCorrectCount(nextCorrect);
     if (idx + 1 >= total) {
       setDone(true);
+      if (lessonId) {
+        saveLessonProgress(lessonId, total, total);
+      }
       const accuracy = total === 0 ? 0 : nextCorrect / total;
       const passed = accuracy >= passThreshold;
       const { xp, coins } = computeReward(nextCorrect, total);
@@ -95,7 +103,11 @@ export const QuizSession: React.FC<Props> = ({
         onComplete({ correct: nextCorrect, total, accuracy, passed, xp, coins });
       }
     } else {
-      setIdx(idx + 1);
+      const nextIdx = idx + 1;
+      setIdx(nextIdx);
+      if (lessonId) {
+        saveLessonProgress(lessonId, nextIdx, total);
+      }
     }
   };
 

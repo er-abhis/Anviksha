@@ -12,27 +12,25 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { MainTabParamList } from './types';
 import { useTheme } from '../theme/ThemeProvider';
 import { easing } from '../theme/animations';
-import { HomeScreen } from '../modules/home/screens/HomeScreen';
-import { PlaygroundScreen } from '../modules/playground/screens/PlaygroundScreen';
-import { AIGamesScreen } from '../modules/brain/screens/AIGamesScreen';
-import { AILabScreen } from '../modules/ailab/screens/AILabScreen';
-import { AchievementsScreen } from '../modules/achievements/screens/AchievementsScreen';
+import { LearnScreen } from '../modules/learn/screens/LearnScreen';
+import { SandboxScreen } from '../modules/learn/screens/SandboxScreen';
 import { ProfileScreen } from '../modules/profile/screens/ProfileScreen';
-
-import { useTranslation } from '../i18n/useTranslation';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 const ICONS: Record<keyof MainTabParamList, { on: string; off: string }> = {
-  Home: { on: 'home', off: 'home-outline' },
-  Playground: { on: 'flask', off: 'flask-outline' },
-  Games: { on: 'game-controller', off: 'game-controller-outline' },
-  AILab: { on: 'hardware-chip', off: 'hardware-chip-outline' },
-  Achievements: { on: 'trophy', off: 'trophy-outline' },
+  Learn: { on: 'map', off: 'map-outline' },
+  Sandbox: { on: 'flask', off: 'flask-outline' },
   Profile: { on: 'person', off: 'person-outline' },
 };
 
-/** Animated tab icon: springs up + shows a glowing pill when focused. */
+const TAB_LABELS: Record<keyof MainTabParamList, string> = {
+  Learn: 'Learn',
+  Sandbox: 'Sandbox',
+  Profile: 'Profile',
+};
+
+/** Animated tab icon: springs up + shows a glowing pill indicator when focused. */
 const TabIcon: React.FC<{
   route: keyof MainTabParamList;
   focused: boolean;
@@ -71,7 +69,6 @@ const TabIcon: React.FC<{
 export const MainTabs: React.FC = () => {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
-  const { t } = useTranslation();
 
   return (
     <Tab.Navigator
@@ -91,37 +88,21 @@ export const MainTabs: React.FC = () => {
         tabBarIcon: ({ focused, color }) => (
           <TabIcon route={route.name} focused={focused} color={color} />
         ),
-      })}
-    >
+      })}>
       <Tab.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{ tabBarLabel: t('home') }}
+        name="Learn"
+        component={LearnScreen}
+        options={{ tabBarLabel: TAB_LABELS.Learn }}
       />
       <Tab.Screen
-        name="Playground"
-        component={PlaygroundScreen}
-        options={{ tabBarLabel: t('playground') }}
-      />
-      <Tab.Screen
-        name="Games"
-        component={AIGamesScreen}
-        options={{ tabBarLabel: t('games') }}
-      />
-      <Tab.Screen
-        name="AILab"
-        component={AILabScreen}
-        options={{ tabBarLabel: t('ai_lab') }}
-      />
-      <Tab.Screen
-        name="Achievements"
-        component={AchievementsScreen}
-        options={{ tabBarLabel: t('achievements') }}
+        name="Sandbox"
+        component={SandboxScreen}
+        options={{ tabBarLabel: TAB_LABELS.Sandbox }}
       />
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}
-        options={{ tabBarLabel: t('profile') }}
+        options={{ tabBarLabel: TAB_LABELS.Profile }}
       />
     </Tab.Navigator>
   );

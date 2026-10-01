@@ -26,6 +26,7 @@ import { RootStackParamList } from '../../../navigation/types';
 import {
   conceptsMastered,
   dueForReview,
+  getLessonCompletionPercent,
   simsCompletedCount,
   useAchievementsStore,
   useBrainStore,
@@ -129,8 +130,11 @@ export const HomeScreen: React.FC = () => {
   const lessonStatus = (l: Lesson): 'done' | 'locked' | 'open' =>
     l.id in completed ? 'done' : isLessonUnlocked(l, completed) ? 'open' : 'locked';
 
+  const lessonStepProgress = useProgressStore(s => s.lessonStepProgress);
+
   const renderLesson = (l: Lesson) => {
     const w = getWorld(l.worldId);
+    const pct = getLessonCompletionPercent(l.id, completed, lessonStepProgress);
     return (
       <LessonCard
         data={{
@@ -140,6 +144,7 @@ export const HomeScreen: React.FC = () => {
           minutes: l.estimatedMinutes,
           xp: l.xp,
           status: lessonStatus(l),
+          percent: pct,
         }}
         onPress={() => openLesson(l.id)}
       />
@@ -293,12 +298,11 @@ export const HomeScreen: React.FC = () => {
         <Padded>
           <SectionTitle
             title={t('featured_hubs')}
-            subtitle="Explore our top interactive experiences"
           />
           <View style={styles.featuredGrid}>
             {/* Hub 1: AI Arcade */}
             <Pressable
-              onPress={() => navigation.navigate('Main', { screen: 'Games' })}
+              onPress={() => navigation.navigate('AIGames')}
               style={({ pressed }) => [styles.featuredCard, { opacity: pressed ? 0.85 : 1 }]}
             >
               <GlassCard elevation="glow" padded={false} style={styles.featuredCardInner}>
@@ -481,7 +485,7 @@ export const HomeScreen: React.FC = () => {
             elevation="glow"
             padded={false}
             onPress={() => navigation.navigate('Brain')}
-            style={[styles.allSimsBanner, { marginTop: spacing.md, height: 60 }]}
+            style={[styles.allSimsBanner, { marginTop: spacing.md }]}
           >
             <Gradient
               colors={gradients.brand}
@@ -685,7 +689,7 @@ export const HomeScreen: React.FC = () => {
             <SectionTitle
               title="Progress & Achievements"
               actionLabel="See all"
-              onAction={() => navigation.navigate('Main', { screen: 'Achievements' })}
+              onAction={() => navigation.navigate('Main', { screen: 'Profile' })}
             />
           </Padded>
           {unlockedAchievements.length === 0 ? (
@@ -814,6 +818,8 @@ const ProgressTileCard: React.FC<{
 };
 
 const styles = StyleSheet.create({
+  fill: { flex: 1 },
+  content: { flexGrow: 1 },
   cleanHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -871,6 +877,10 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
+  hero: {
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
   statsRowPill: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -885,6 +895,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 999,
+  },
+  // Row with gap — used by mission card, arena card, resource cards
+  rowGap: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  // Flexible fill inside row layouts
+  flex: { flex: 1 },
+  // Icon container in activity/mission cards
+  activityIcon: {
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  // Icon container in glossary/resource cards
+  glossaryIcon: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   brainCard: { overflow: 'hidden' },
   brainInner: { padding: 12, gap: 10 },
@@ -902,25 +930,30 @@ const styles = StyleSheet.create({
   },
   quickGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   quickCell: { width: '48%' },
-  quickCardInner: { overflow: 'hidden', height: 105 },
+  // Removed fixed height — let content size itself
+  quickCardInner: { overflow: 'hidden', minHeight: 105 },
   quickCardPadding: { padding: 12, flex: 1, justifyContent: 'space-between' },
   quickRow2: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   quickIconWrap: { width: 32, height: 32, borderRadius: 8, backgroundColor: 'rgba(255,255,255,0.25)', alignItems: 'center', justifyContent: 'center' },
   doneBadgeWhite: { backgroundColor: 'rgba(255,255,255,0.25)', padding: 3, borderRadius: 999 },
+  // No fixed height — banner must auto-size to fit two lines of text
   allSimsBanner: { overflow: 'hidden' },
-  allSimsPadding: { paddingHorizontal: 12, paddingVertical: 10, flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  allSimsPadding: { paddingHorizontal: 16, paddingVertical: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   arenaEmoji: { fontSize: 28 },
   progressGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   progressCell: { width: '48%' },
-  progressCardInner: { overflow: 'hidden', height: 85 },
+  // Removed fixed height — let content size itself
+  progressCardInner: { overflow: 'hidden', minHeight: 85 },
   progressInnerPadding: { padding: 10, flex: 1, justifyContent: 'space-between' },
   progressRowHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   progressIconBox: { width: 28, height: 28, borderRadius: 8, backgroundColor: 'rgba(255,255,255,0.25)', alignItems: 'center', justifyContent: 'center' },
   featuredGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   featuredCard: { width: '48%' },
-  featuredCardInner: { overflow: 'hidden', height: 130 },
+  // Removed fixed height — let content size itself
+  featuredCardInner: { overflow: 'hidden', minHeight: 130 },
   featuredPadding: { padding: 12, flex: 1, justifyContent: 'space-between' },
   featuredHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   featuredIconWrap: { width: 34, height: 34, borderRadius: 10, backgroundColor: 'rgba(255,255,255,0.25)', alignItems: 'center', justifyContent: 'center' },
   liveTag: { backgroundColor: 'rgba(255,255,255,0.25)', paddingHorizontal: 7, paddingVertical: 3, borderRadius: 999 },
 });
+

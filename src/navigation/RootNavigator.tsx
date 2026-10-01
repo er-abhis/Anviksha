@@ -40,6 +40,7 @@ import { AIGamesScreen } from '../modules/brain/screens/AIGamesScreen';
 import { DetectiveScreen } from '../modules/brain/screens/DetectiveScreen';
 import { AppDrawer } from './AppDrawer';
 
+
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const RootNavigator: React.FC = () => {
