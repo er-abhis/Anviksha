@@ -46,3 +46,8 @@ export { GlobalSearchModal } from './GlobalSearchModal';
 export { ShareCardModal } from './ShareCardModal';
 export { ShareAchievementModal } from './ShareAchievementModal';
 export type { ShareAchievementModalProps } from './ShareAchievementModal';
+export { AITelemetryBar } from './AITelemetryBar';
+export { AICopilotModal } from './AICopilotModal';
+export { AIPerformanceRadarCard } from './AIPerformanceRadarCard';
+export { AINewsCard } from './AINewsCard';
+

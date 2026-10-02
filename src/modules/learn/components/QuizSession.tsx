@@ -5,7 +5,7 @@ import ViewShot from 'react-native-view-shot';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { AchievementCard, Button, Confetti, DraggableList, GlassCard, ProgressBar, QuestionMedia, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
-import { usePreferencesStore } from '../../../store';
+import { usePreferencesStore, useProgressStore } from '../../../store';
 import { shareAchievement } from '../../../utils/appLinks';
 import { hapticSuccess, hapticError } from '../../../utils/haptics';
 import { ChoiceQuestion, MatchQuestion, OrderQuestion, Question } from '../../../content';

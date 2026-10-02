@@ -12,6 +12,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { MainTabParamList } from './types';
 import { useTheme } from '../theme/ThemeProvider';
 import { easing } from '../theme/animations';
+import { HomeScreen } from '../modules/home/screens/HomeScreen';
 import { LearnScreen } from '../modules/learn/screens/LearnScreen';
 import { SandboxScreen } from '../modules/learn/screens/SandboxScreen';
 import { ProfileScreen } from '../modules/profile/screens/ProfileScreen';
@@ -19,12 +20,14 @@ import { ProfileScreen } from '../modules/profile/screens/ProfileScreen';
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 const ICONS: Record<keyof MainTabParamList, { on: string; off: string }> = {
+  Home: { on: 'sparkles', off: 'sparkles-outline' },
   Learn: { on: 'map', off: 'map-outline' },
   Sandbox: { on: 'flask', off: 'flask-outline' },
   Profile: { on: 'person', off: 'person-outline' },
 };
 
 const TAB_LABELS: Record<keyof MainTabParamList, string> = {
+  Home: 'Home',
   Learn: 'Learn',
   Sandbox: 'Sandbox',
   Profile: 'Profile',
@@ -89,6 +92,11 @@ export const MainTabs: React.FC = () => {
           <TabIcon route={route.name} focused={focused} color={color} />
         ),
       })}>
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{ tabBarLabel: TAB_LABELS.Home }}
+      />
       <Tab.Screen
         name="Learn"
         component={LearnScreen}

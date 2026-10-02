@@ -17,6 +17,8 @@ import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useTheme, useThemeMode } from '../../../theme/ThemeProvider';
 import {
+  AICopilotModal,
+  AITelemetryBar,
   AnimatedBlobs,
   GlassCard,
   Gradient,
@@ -48,6 +50,8 @@ export const LearnScreen: React.FC = () => {
   const tabBarHeight = useBottomTabBarHeight();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  const [copilotOpen, setCopilotOpen] = React.useState(false);
 
   const { xp, streakDays, level, completed } = useProgressStore();
 
@@ -107,15 +111,29 @@ export const LearnScreen: React.FC = () => {
               Master AI by experimenting &amp; solving challenges
             </Text>
           </View>
-          <View style={[styles.streakPill, { backgroundColor: colors.primaryMuted }]}>
-            <Text style={{ fontSize: 14 }}>🔥</Text>
-            <Text
-              variant="label"
-              color="primary"
-              style={{ fontSize: 12, fontWeight: '700' }}>
-              {streakDays}d
+          <Pressable
+            onPress={() => setCopilotOpen(true)}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 4,
+              backgroundColor: colors.primaryMuted,
+              borderColor: colors.accent,
+              borderWidth: 1,
+              paddingHorizontal: 8,
+              paddingVertical: 4,
+              borderRadius: radius.pill,
+            }}>
+            <Text style={{ fontSize: 13 }}>🤖</Text>
+            <Text variant="caption" color="accent" style={{ fontWeight: '800', fontSize: 10 }}>
+              COPILOT
             </Text>
-          </View>
+          </Pressable>
+        </View>
+
+        {/* ── LIVE TELEMETRY STRIP ── */}
+        <View style={{ paddingHorizontal: spacing.lg, marginTop: -spacing.xs }}>
+          <AITelemetryBar />
         </View>
 
         {/* ── QUICK STATS STRIP ── */}
@@ -552,6 +570,10 @@ export const LearnScreen: React.FC = () => {
           })}
         </Animated.View>
       </ScrollView>
+      <AICopilotModal
+        visible={copilotOpen}
+        onClose={() => setCopilotOpen(false)}
+      />
     </SafeAreaView>
   );
 };

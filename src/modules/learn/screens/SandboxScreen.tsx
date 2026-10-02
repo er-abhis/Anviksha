@@ -6,6 +6,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {
+  AICopilotModal,
+  AITelemetryBar,
   GlassCard,
   Gradient,
   Screen,
@@ -113,6 +115,8 @@ export const SandboxScreen: React.FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
+  const [copilotOpen, setCopilotOpen] = React.useState(false);
+
   const completed = useProgressStore(s => s.completed);
   const casesState = useBrainStore(s => s.cases);
   const unlockedCount = LESSONS.filter(l => isLessonUnlocked(l, completed)).length;
@@ -188,6 +192,8 @@ export const SandboxScreen: React.FC = () => {
         gap: spacing.lg,
         paddingBottom: tabBarHeight + spacing.xl,
       }}>
+      {/* Live AI Telemetry Ticker */}
+      <AITelemetryBar />
       {/* Hero Banner */}
       <Animated.View entering={FadeInDown.springify()}>
         <GlassCard
@@ -268,6 +274,11 @@ export const SandboxScreen: React.FC = () => {
           </Animated.View>
         ))}
       </View>
+      {/* AICopilotModal overlay */}
+      <AICopilotModal
+        visible={copilotOpen}
+        onClose={() => setCopilotOpen(false)}
+      />
     </Screen>
   );
 };

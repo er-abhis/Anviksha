@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { GlassCard, Gradient, Header, Screen, SectionTitle, Text } from '../../../components';
+import { AITelemetryBar, GlassCard, Gradient, Header, Screen, SectionTitle, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { RootStackParamList } from '../../../navigation/types';
 import {
@@ -51,6 +51,7 @@ export const BrainScreen: React.FC = () => {
   return (
     <Screen scroll backdropIntensity={0.5} contentContainerStyle={{ gap: spacing.md }}>
       <Header title="" onBack={() => navigation.goBack()} />
+      <AITelemetryBar />
 
       {/* Hero */}
       <View style={[styles.hero, { borderRadius: radius.xl, overflow: 'hidden' }]}>

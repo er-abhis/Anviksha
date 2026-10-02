@@ -2,6 +2,8 @@ import { NavigatorScreenParams } from '@react-navigation/native';
 
 /** Bottom tab shell — 3 clear, purposeful tabs that eliminate decision fatigue. */
 export type MainTabParamList = {
+  /** The primary AI landing hub — featuring live neural core widget and quick launch hubs. */
+  Home: undefined;
   /** The guided learning trail — where users progress through their AI journey. */
   Learn: undefined;
   /** Freeform experimentation hub — sims, games, builds, detective cases. */

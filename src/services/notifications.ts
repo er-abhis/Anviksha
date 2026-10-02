@@ -54,40 +54,29 @@ interface Built {
 
 /** Each reminder is a pure builder over current state — easy to extend. */
 const REMINDERS: Record<string, (completed: Completed, dailyDone: boolean) => Built> = {
-  'daily-challenge': (_c, dailyDone) => ({
-    title: '🧠 Daily AI Challenge is Live!',
+  'morning-ai-news': (_c, dailyDone) => ({
+    title: '🌅 Morning AI Digest',
     body:
-      "Your new AI challenge is ready. Complete today's challenge, earn XP, and keep your learning streak alive!",
-    target: { screen: 'DailyChallenge' },
+      'DeepSeek-V3 & INT8 Quantization Latency Breakthrough! Tap to read today’s top AI research paper.',
+    target: { screen: 'Home' },
     hour: 9,
-    // If already done today, don't nudge again today — fire tomorrow instead.
     skipToday: dailyDone,
   }),
-  'evening-continue': completed => {
+  'afternoon-ai-radar': () => ({
+    title: '☀️ Afternoon AI Tech Pulse',
+    body:
+      'Small Language Models achieve sub-10ms token latency on mobile NPUs. Tap to check today’s AI performance radar!',
+    target: { screen: 'Home' },
+    hour: 14,
+  }),
+  'evening-ai-paper': completed => {
     const pending = nextPendingLesson(completed);
-    if (pending) {
-      return {
-        title: '📚 Continue Your AI Journey',
-        body:
-          "You're just one lesson away from learning something amazing. Continue your next AI lesson and keep your streak going!",
-        target: { screen: 'Lesson', lessonId: pending.id },
-        hour: 19,
-      };
-    }
-    if (allAvailableDone(completed)) {
-      return {
-        title: '🎉 Great Progress!',
-        body:
-          "You've completed all available lessons. Come back tomorrow for a new Daily Challenge!",
-        target: { screen: 'Home' },
-        hour: 19,
-      };
-    }
-    // Fresh user with nothing unlocked yet — point them at lesson one.
     return {
-      title: '📚 Continue Your AI Journey',
-      body: 'Start your first AI lesson and begin your learning streak!',
-      target: { screen: 'Home' },
+      title: '🌙 Evening AI Deep Dive',
+      body: pending
+        ? `Self-Rewarding LLMs & DPO alignment paper released. Tap to continue Chapter ${pending.order}: ${pending.title}!`
+        : 'Self-Rewarding LLMs & DPO alignment paper released. Tap to explore latest AI research insights!',
+      target: pending ? { screen: 'Lesson', lessonId: pending.id } : { screen: 'Home' },
       hour: 19,
     };
   },

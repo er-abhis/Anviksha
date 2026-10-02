@@ -10,6 +10,8 @@ import { useTheme, useThemeMode } from '../../../theme/ThemeProvider';
 import { useResponsive } from '../../../hooks/useResponsive';
 import { CONTENT_MAX_WIDTH } from '../../../constants/layout';
 import {
+  AINewsCard,
+  AIPerformanceRadarCard,
   AnimatedBlobs,
   Carousel,
   EmptyState,
@@ -54,6 +56,7 @@ import { LessonCard } from '../components/LessonCard';
 import { SpotlightCard } from '../components/SpotlightCard';
 import { AchievementChip } from '../components/AchievementChip';
 import { ActivityRow } from '../components/ActivityRow';
+import { LiveNeuralWidget } from '../components/LiveNeuralWidget';
 import { useTranslation } from '../../../i18n/useTranslation';
 
 const QUICK_SIM_GRADIENTS: Record<string, readonly string[]> = {
@@ -188,7 +191,7 @@ export const HomeScreen: React.FC = () => {
           },
         ]}
       >
-        {/* ================= TOP CLEAN HEADER ================= */}
+        {/* ================= TOP BRANDED AI HEADER ================= */}
         <Padded style={{ paddingVertical: spacing.xs }}>
           <View style={styles.cleanHeader}>
             <Pressable
@@ -196,14 +199,26 @@ export const HomeScreen: React.FC = () => {
               accessibilityRole="button"
               accessibilityLabel="Open menu"
               hitSlop={8}
+              style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}
             >
-              <Logo size={32} style={styles.brandMark} />
+              <Logo size={34} style={styles.brandMark} />
+              <View style={styles.headerTitleWrap}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                  <Text variant="h3" style={{ fontWeight: '900', letterSpacing: 0.6 }}>
+                    Anviksha AI
+                  </Text>
+                  <View style={[styles.aiPillBadge, { backgroundColor: colors.primaryMuted, borderColor: colors.accent + '66' }]}>
+                    <Text style={{ fontSize: 9, fontWeight: '800', color: colors.accent, letterSpacing: 0.5 }}>
+                      ⚡ NEURAL ENGINE
+                    </Text>
+                  </View>
+                </View>
+                <Text variant="caption" color="textSecondary" style={{ fontSize: 11, fontWeight: '500' }}>
+                  Interactive AI Learning & Lab Platform
+                </Text>
+              </View>
             </Pressable>
-            <View style={styles.headerTitleWrap}>
-              <Text variant="h3" style={{ fontWeight: '800', letterSpacing: 0.5 }}>
-                Anviksha AI
-              </Text>
-            </View>
+            <View style={styles.flex} />
             <IconButton
               name="search-outline"
               accessibilityLabel="Global Search"
@@ -212,7 +227,7 @@ export const HomeScreen: React.FC = () => {
           </View>
         </Padded>
 
-        {/* ================= SECTION 1 (TOP HERO): TODAY'S LEARNING / CONTINUE WHERE YOU LEFT OFF ================= */}
+        {/* ================= SECTION 1 (PRIMARY HERO): CONFIDENT AI LEARNING PATH ================= */}
         <Padded>
           <View
             style={[styles.hero, { borderRadius: radius.xl }, elevation.glow]}
@@ -227,19 +242,21 @@ export const HomeScreen: React.FC = () => {
             <View style={{ padding: spacing.lg, gap: spacing.sm }}>
               <View style={styles.heroBadgeRow}>
                 <View style={styles.primaryTag}>
-                  <Text variant="caption" color="textInverse" style={{ fontWeight: '800', fontSize: 10, letterSpacing: 0.8 }}>
-                    CONTINUE LEARNING · WORLD {world.order}
+                  <Text variant="caption" color="textInverse" style={{ fontWeight: '900', fontSize: 11, letterSpacing: 1 }}>
+                    🤖 MASTER ARTIFICIAL INTELLIGENCE · WORLD {world.order}
                   </Text>
                 </View>
-                <Text variant="caption" color="textInverse" style={{ opacity: 0.9, fontWeight: '700' }}>
-                  {Math.round(worldProgress(world.id, completed) * 100)}% DONE
-                </Text>
+                <View style={{ backgroundColor: 'rgba(255,255,255,0.22)', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 999 }}>
+                  <Text variant="caption" color="textInverse" style={{ fontWeight: '800', fontSize: 11 }}>
+                    {Math.round(worldProgress(world.id, completed) * 100)}% COMPLETED
+                  </Text>
+                </View>
               </View>
 
-              <Text variant="h2" color="textInverse" style={{ marginTop: 2 }}>
+              <Text variant="h2" color="textInverse" style={{ marginTop: 2, fontSize: 22, fontWeight: '800' }}>
                 {world.title}
               </Text>
-              <Text variant="caption" color="textInverse" style={{ opacity: 0.92, fontSize: 13, lineHeight: 18 }}>
+              <Text variant="caption" color="textInverse" style={{ opacity: 0.94, fontSize: 13, lineHeight: 18 }}>
                 {world.subtitle}
               </Text>
 
@@ -247,16 +264,16 @@ export const HomeScreen: React.FC = () => {
               {continueLessons[0] && (
                 <View style={styles.nextLessonBox}>
                   <View style={styles.flex}>
-                    <Text variant="caption" color="textInverse" style={{ opacity: 0.8, fontSize: 11, textTransform: 'uppercase' }}>
-                      Next Chapter To Complete
+                    <Text variant="caption" color="textInverse" style={{ opacity: 0.85, fontSize: 10, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                      Current Chapter to Complete
                     </Text>
-                    <Text variant="bodyStrong" color="textInverse" numberOfLines={1} style={{ fontSize: 15 }}>
+                    <Text variant="bodyStrong" color="textInverse" numberOfLines={1} style={{ fontSize: 15, fontWeight: '800' }}>
                       {`Ch ${continueLessons[0].order}: ${continueLessons[0].title}`}
                     </Text>
                   </View>
                   <View style={styles.xpPillMini}>
-                    <Icon name="flash" size={12} color="#FACC15" />
-                    <Text variant="caption" color="textInverse" style={{ fontWeight: '700', fontSize: 11 }}>
+                    <Icon name="flash" size={13} color="#FACC15" />
+                    <Text variant="caption" color="textInverse" style={{ fontWeight: '800', fontSize: 12 }}>
                       {`+${continueLessons[0].xp} XP`}
                     </Text>
                   </View>
@@ -271,27 +288,42 @@ export const HomeScreen: React.FC = () => {
                   { opacity: pressed ? 0.85 : 1 }
                 ]}
               >
-                <Icon name="play" size={18} color={colors.primary} />
-                <Text variant="bodyStrong" style={{ color: colors.primary, fontSize: 15, fontWeight: '800' }}>
-                  {continueLessons[0] ? "▶ Continue Learning" : "▶ Start Chapter 1"}
+                <Icon name="rocket" size={18} color={colors.primary} />
+                <Text variant="bodyStrong" style={{ color: colors.primary, fontSize: 15, fontWeight: '900', letterSpacing: 0.3 }}>
+                  {continueLessons[0] ? "🚀 CONTINUE AI LESSON" : "🚀 START CHAPTER 1"}
                 </Text>
               </Pressable>
             </View>
           </View>
         </Padded>
 
-        {/* Quick User Stats Row */}
+        {/* Sleek User Stats Dashboard Bar */}
         <Padded style={{ marginTop: -spacing.xs }}>
           <View style={[styles.statsRowPill, { backgroundColor: colors.surfaceAlt, borderRadius: radius.lg, padding: spacing.xs, borderColor: colors.glassBorder, borderWidth: 1 }]}>
             <XPBadge value={xp} kind="xp" />
             <XPBadge value={coins} kind="coins" />
             <XPBadge value={streakDays} kind="streak" />
             <View style={styles.flex} />
-            <View style={[styles.levelPill, { backgroundColor: colors.primaryMuted }]}>
+            <View style={[styles.levelPill, { backgroundColor: colors.primaryMuted, borderColor: colors.accent + '44', borderWidth: 1 }]}>
               <Icon name="ribbon" size={14} color={colors.primary} />
-              <Text variant="label" color="primary">{`Level ${level}`}</Text>
+              <Text variant="label" color="primary" style={{ fontWeight: '800' }}>{`Level ${level}`}</Text>
             </View>
           </View>
+        </Padded>
+
+        {/* ================= LIVE INTERACTIVE AI NEURAL CORE ================= */}
+        <Padded>
+          <LiveNeuralWidget onOpenFullSim={() => navigation.navigate('Brain')} />
+        </Padded>
+
+        {/* ================= AI PERFORMANCE RADAR & TECH METRICS ================= */}
+        <Padded>
+          <AIPerformanceRadarCard />
+        </Padded>
+
+        {/* ================= DAILY AI NEWS & RESEARCH PAPERS ================= */}
+        <Padded>
+          <AINewsCard />
         </Padded>
 
         {/* ================= BOLD FEATURED HIGHLIGHTS GRID ================= */}
@@ -827,9 +859,13 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   headerTitleWrap: {
-    flex: 1,
-    marginLeft: 12,
     justifyContent: 'center',
+  },
+  aiPillBadge: {
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 999,
+    borderWidth: 1,
   },
   heroBadgeRow: {
     flexDirection: 'row',

@@ -132,6 +132,44 @@ export const ProfileScreen: React.FC = () => {
         </GlassCard>
       </Animated.View>
 
+      {/* ── AI MASTERY MATRIX CARD ── */}
+      <Animated.View>
+        <GlassCard elevation="glow" style={{ borderRadius: radius.xl, gap: spacing.sm }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <Icon name="hardware-chip" size={20} color={colors.accent} />
+              <Text variant="h3" style={{ fontSize: 16, fontWeight: '800' }}>
+                AI Mastery Matrix
+              </Text>
+            </View>
+            <View style={{ backgroundColor: colors.primaryMuted, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999 }}>
+              <Text variant="caption" color="accent" style={{ fontWeight: '800', fontSize: 10 }}>
+                {`LEVEL ${level}`}
+              </Text>
+            </View>
+          </View>
+
+          <View style={{ gap: spacing.xs, marginTop: 4 }}>
+            {[
+              { name: 'Neural Networks & Loss', pct: Math.min(100, Math.round((lessonsDone / LESSONS.length) * 100 + 15)), color: '#7C5CFF' },
+              { name: 'Transformers & Attention', pct: Math.min(100, Math.round((lessonsDone / LESSONS.length) * 100 + 10)), color: '#06D6C4' },
+              { name: 'LLM Prompt Engineering', pct: Math.min(100, Math.round((lessonsDone / LESSONS.length) * 100 + 25)), color: '#FF2E93' },
+              { name: 'Computer Vision & CNNs', pct: Math.min(100, Math.round((lessonsDone / LESSONS.length) * 100 + 5)), color: '#F59E0B' },
+            ].map(skill => (
+              <View key={skill.name} style={{ gap: 3 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                  <Text variant="caption" style={{ fontWeight: '700', fontSize: 11 }}>{skill.name}</Text>
+                  <Text variant="caption" color="textSecondary" style={{ fontWeight: '800', fontSize: 11 }}>{`${skill.pct}%`}</Text>
+                </View>
+                <View style={{ height: 6, backgroundColor: colors.border, borderRadius: 3, overflow: 'hidden' }}>
+                  <View style={{ width: `${skill.pct}%`, height: '100%', backgroundColor: skill.color, borderRadius: 3 }} />
+                </View>
+              </View>
+            ))}
+          </View>
+        </GlassCard>
+      </Animated.View>
+
       <Animated.View>
         <GlassCard padded={false} elevation="glow" style={{ paddingHorizontal: spacing.lg }}>
           {menu.map((m, i) => (
