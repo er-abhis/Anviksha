@@ -160,6 +160,48 @@ export const BrainScreen: React.FC = () => {
         );
       })}
 
+      {/* Frontier AI Labs & Specs */}
+      <View>
+        <SectionTitle title="Frontier AI Tools & Architecture 🚀" />
+        <View style={{ gap: spacing.sm }}>
+          <GlassCard
+            elevation="glow"
+            onPress={() => navigation.navigate('ModelExplorer')}
+            style={{ borderColor: colors.primary + '44', borderWidth: 1 }}
+          >
+            <View style={styles.row}>
+              <View style={[styles.icon, { backgroundColor: colors.primaryMuted, borderRadius: radius.md }]}>
+                <Icon name="hardware-chip-outline" size={24} color={colors.primary} />
+              </View>
+              <View style={styles.flex}>
+                <Text variant="label" color="primary">LLM LANDSCAPE & SPECS</Text>
+                <Text variant="bodyStrong">AI Model Battle Matrix & MoE Specs</Text>
+                <Text variant="caption" color="textSecondary">Compare GPT-4o, DeepSeek-R1, Claude 3.5 & Llama 3.3.</Text>
+              </View>
+              <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
+            </View>
+          </GlassCard>
+
+          <GlassCard
+            elevation="glow"
+            onPress={() => navigation.navigate('NeuralVisualizer')}
+            style={{ borderColor: colors.accentAlt + '44', borderWidth: 1 }}
+          >
+            <View style={styles.row}>
+              <View style={[styles.icon, { backgroundColor: 'rgba(255,46,147,0.18)', borderRadius: radius.md }]}>
+                <Icon name="git-network-outline" size={24} color={colors.accentAlt} />
+              </View>
+              <View style={styles.flex}>
+                <Text variant="label" color="accentAlt">INTERACTIVE TOKENIZER & ATTENTION</Text>
+                <Text variant="bodyStrong">Neural Visualizer & LLM Sampler</Text>
+                <Text variant="caption" color="textSecondary">Watch text become tokens, embeddings & softmax probabilities.</Text>
+              </View>
+              <Icon name="chevron-forward" size={18} color={colors.textTertiary} />
+            </View>
+          </GlassCard>
+        </View>
+      </View>
+
       {/* AI Arcade Games */}
       <View>
         <SectionTitle title="AI Arcade Games 🎮" />

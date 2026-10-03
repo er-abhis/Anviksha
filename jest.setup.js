@@ -155,3 +155,14 @@ jest.mock('react-native-quick-sqlite', () => ({
     close: () => {},
   }),
 }));
+
+// react-native-webview is native — stub WebView component.
+jest.mock('react-native-webview', () => {
+  const { View } = require('react-native');
+  return {
+    __esModule: true,
+    default: (props: any) => <View testID="mock-webview" {...props} />,
+    WebView: (props: any) => <View testID="mock-webview" {...props} />,
+  };
+});
+

@@ -38,8 +38,8 @@ android {
         applicationId "com.abhishek.anviksha"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 9
-        versionName "1.0.8"
+        versionCode 11
+        versionName "1.1.0"
 
         // Universal CPU Architecture Support for maximum Play Store device reach
         ndk {

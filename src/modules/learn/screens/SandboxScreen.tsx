@@ -20,6 +20,7 @@ import { useProgressStore } from '../../../store';
 import { LESSONS, isLessonUnlocked } from '../../../content';
 import { CASES, SIMS } from '../../brain/data';
 import { useBrainStore } from '../../../store';
+import { AIEvolutionTimeline } from '../../brain/components/AIEvolutionTimeline';
 
 /** A single tool card in the Sandbox hub. */
 const SandboxCard: React.FC<{
@@ -243,6 +244,11 @@ export const SandboxScreen: React.FC = () => {
             </View>
           </View>
         </GlassCard>
+      </Animated.View>
+
+      {/* AI Evolution & Breakthrough History */}
+      <Animated.View entering={FadeInDown.delay(100).springify()}>
+        <AIEvolutionTimeline />
       </Animated.View>
 
       {/* Tool cards */}

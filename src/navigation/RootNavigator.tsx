@@ -38,6 +38,9 @@ import { BrainScreen } from '../modules/brain/screens/BrainScreen';
 import { BrainSimScreen } from '../modules/brain/screens/BrainSimScreen';
 import { AIGamesScreen } from '../modules/brain/screens/AIGamesScreen';
 import { DetectiveScreen } from '../modules/brain/screens/DetectiveScreen';
+import { WebViewScreen } from '../modules/news/screens/WebViewScreen';
+import { ModelExplorerScreen } from '../modules/brain/screens/ModelExplorerScreen';
+import { NeuralVisualizerScreen } from '../modules/brain/screens/NeuralVisualizerScreen';
 import { AppDrawer } from './AppDrawer';
 
 
@@ -200,6 +203,21 @@ export const RootNavigator: React.FC = () => {
         <Stack.Screen
           name="WorldDetail"
           component={WorldDetailScreen}
+          options={{ animation: 'slide_from_right' }}
+        />
+        <Stack.Screen
+          name="WebView"
+          component={WebViewScreen}
+          options={{ animation: 'slide_from_bottom' }}
+        />
+        <Stack.Screen
+          name="ModelExplorer"
+          component={ModelExplorerScreen}
+          options={{ animation: 'slide_from_right' }}
+        />
+        <Stack.Screen
+          name="NeuralVisualizer"
+          component={NeuralVisualizerScreen}
           options={{ animation: 'slide_from_right' }}
         />
       </Stack.Navigator>

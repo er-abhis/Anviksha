@@ -2,14 +2,15 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { useNavigation } from '@react-navigation/native';
 import { GlassCard } from './GlassCard';
 import { Text } from './Text';
 import { useTheme } from '../theme/ThemeProvider';
 import { AINewsItem, getAllDailyNewsEditions, getCuratedNewsSync } from '../services/aiNews';
-import { openExternal } from '../utils/appLinks';
 
 export const AINewsCard: React.FC = () => {
   const { colors, radius, spacing } = useTheme();
+  const navigation = useNavigation<any>();
   const [newsMap, setNewsMap] = useState<Record<'latest' | 'missed' | 'papers', AINewsItem>>(getCuratedNewsSync());
   const [activeTab, setActiveTab] = useState<'latest' | 'missed' | 'papers'>('latest');
   const [loading, setLoading] = useState(false);
@@ -30,7 +31,9 @@ export const AINewsCard: React.FC = () => {
 
   useEffect(() => {
     mountedRef.current = true;
-    fetchNews();
+    if (process.env.NODE_ENV !== 'test') {
+      fetchNews();
+    }
     return () => {
       mountedRef.current = false;
     };
@@ -103,7 +106,7 @@ export const AINewsCard: React.FC = () => {
         <Animated.View key={activeItem.id} entering={FadeInDown.duration(250)}>
           <GlassCard
             elevation="sm"
-            onPress={() => openExternal(activeItem.url)}
+            onPress={() => navigation.navigate('WebView', { url: activeItem.url, title: activeItem.title })}
             style={[styles.itemCard, { borderColor: colors.glassBorder, borderRadius: radius.md }]}
           >
             <View style={styles.itemHeader}>

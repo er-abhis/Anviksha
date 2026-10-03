@@ -54,6 +54,9 @@ export type RootStackParamList = {
   About: undefined;
   Developer: undefined;
   Privacy: undefined;
+  WebView: { url: string; title?: string };
+  ModelExplorer: undefined;
+  NeuralVisualizer: undefined;
 };
 
 declare global {

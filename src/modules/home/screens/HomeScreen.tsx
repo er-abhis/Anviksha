@@ -57,6 +57,7 @@ import { SpotlightCard } from '../components/SpotlightCard';
 import { AchievementChip } from '../components/AchievementChip';
 import { ActivityRow } from '../components/ActivityRow';
 import { LiveNeuralWidget } from '../components/LiveNeuralWidget';
+import { WelcomeGuideBanner } from '../components/WelcomeGuideBanner';
 import { useTranslation } from '../../../i18n/useTranslation';
 
 const QUICK_SIM_GRADIENTS: Record<string, readonly string[]> = {
@@ -77,6 +78,7 @@ export const HomeScreen: React.FC = () => {
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const [searchOpen, setSearchOpen] = useState(false);
+  const [showAdvancedMetrics, setShowAdvancedMetrics] = useState(false);
 
   const { xp, coins, level, streakDays, completed, activity } =
     useProgressStore();
@@ -311,14 +313,12 @@ export const HomeScreen: React.FC = () => {
           </View>
         </Padded>
 
-        {/* ================= LIVE INTERACTIVE AI NEURAL CORE ================= */}
+        {/* ================= BEGINNER GUIDED WELCOME BANNER ================= */}
         <Padded>
-          <LiveNeuralWidget onOpenFullSim={() => navigation.navigate('Brain')} />
-        </Padded>
-
-        {/* ================= AI PERFORMANCE RADAR & TECH METRICS ================= */}
-        <Padded>
-          <AIPerformanceRadarCard />
+          <WelcomeGuideBanner
+            onStartLesson={() => continueLessons[0] ? openLesson(continueLessons[0].id) : openWorld(world.id)}
+            onExploreSandbox={() => navigation.navigate('Main', { screen: 'Sandbox' })}
+          />
         </Padded>
 
         {/* ================= DAILY AI NEWS & RESEARCH PAPERS ================= */}
@@ -779,6 +779,50 @@ export const HomeScreen: React.FC = () => {
               <Icon name="open-outline" size={18} color={colors.textTertiary} />
             </View>
           </GlassCard>
+        </Padded>
+
+        {/* ================= OPTIONAL EXPERT AI METRICS & TELEMETRY ================= */}
+        <Padded>
+          <Pressable
+            onPress={() => setShowAdvancedMetrics(prev => !prev)}
+            style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1 }]}
+          >
+            <GlassCard
+              elevation="sm"
+              style={{
+                borderRadius: radius.lg,
+                padding: spacing.sm,
+                borderColor: colors.border,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justify: 'space-between',
+              }}
+            >
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <Icon name="hardware-chip-outline" size={18} color={colors.primary} />
+                <View>
+                  <Text variant="bodyStrong" style={{ fontSize: 13, fontWeight: '700' }}>
+                    ⚡ Expert Tech & Benchmark Telemetry
+                  </Text>
+                  <Text variant="caption" color="textSecondary" style={{ fontSize: 11 }}>
+                    {showAdvancedMetrics ? 'Tap to collapse' : 'Tap to view live neural core & radar charts'}
+                  </Text>
+                </View>
+              </View>
+              <Icon
+                name={showAdvancedMetrics ? 'chevron-up' : 'chevron-down'}
+                size={18}
+                color={colors.textSecondary}
+              />
+            </GlassCard>
+          </Pressable>
+
+          {showAdvancedMetrics && (
+            <View style={{ gap: spacing.md, marginTop: spacing.md }}>
+              <LiveNeuralWidget onOpenFullSim={() => navigation.navigate('Brain')} />
+              <AIPerformanceRadarCard />
+            </View>
+          )}
         </Padded>
 
         {/* Recent Activity */}
