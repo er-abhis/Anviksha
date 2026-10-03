@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
   titleWrap: {
     flex: 1,
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     height: 3,
     width: '100%',
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
   loader: {
     transform: [{ scale: 0.7 }],
@@ -177,8 +177,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   loadingOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
 });

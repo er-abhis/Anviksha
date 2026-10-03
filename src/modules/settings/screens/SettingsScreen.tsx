@@ -3,7 +3,7 @@ import { ScrollView, Pressable, StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { GlassCard, Gradient, Header, Screen, SectionTitle, Text } from '../../../components';
+import { AnimatedDropdown, GlassCard, Gradient, Header, Screen, SectionTitle, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import {
   usePreferencesStore,
@@ -120,62 +120,21 @@ export const SettingsScreen: React.FC = () => {
         </GlassCard>
       </View>
 
-      {/* Appearance */}
+      {/* Appearance & Themes */}
       <View>
         <SectionTitle title={`${t('appearance')} 🎨`} />
         <GlassCard elevation="glow">
-          <Text variant="label" color="textSecondary" style={{ marginBottom: spacing.sm }}>
-            Choose Color Theme (7 Vibrant Options)
-          </Text>
-
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={[styles.themeRow, { gap: spacing.xs }]}
-          >
-            {THEME_OPTIONS.map(opt => {
-              const active = preference === opt.key;
-              return (
-                <Pressable
-                  key={opt.key}
-                  onPress={() => { try { setPreference(opt.key); } catch {} }}
-                  style={[
-                    styles.themeBtn,
-                    {
-                      borderRadius: radius.lg,
-                      backgroundColor: active ? colors.primary : colors.surfaceAlt,
-                      borderColor: active ? colors.accent : colors.glassBorder,
-                      borderWidth: active ? 2 : StyleSheet.hairlineWidth,
-                      paddingHorizontal: 12,
-                      paddingVertical: 8,
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      gap: 6,
-                    },
-                  ]}
-                >
-                  <View style={{ flexDirection: 'row', width: 14, height: 14, borderRadius: 7, overflow: 'hidden' }}>
-                    <View style={{ flex: 1, backgroundColor: opt.colors[0] }} />
-                    <View style={{ flex: 1, backgroundColor: opt.colors[1] }} />
-                  </View>
-                  <Icon
-                    name={opt.icon}
-                    size={16}
-                    color={active ? colors.onPrimary : colors.text}
-                  />
-                  <Text
-                    variant="label"
-                    style={{
-                      color: active ? colors.onPrimary : colors.text,
-                      fontWeight: active ? '700' : '500',
-                    }}
-                  >
-                    {opt.label}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
+          <AnimatedDropdown
+            label="App Color Theme"
+            options={THEME_OPTIONS.map(opt => ({
+              key: opt.key,
+              label: opt.label,
+              icon: opt.icon,
+              colors: opt.colors,
+            }))}
+            selectedKey={preference}
+            onSelect={key => { try { setPreference(key as any); } catch {} }}
+          />
         </GlassCard>
       </View>
 
@@ -183,45 +142,16 @@ export const SettingsScreen: React.FC = () => {
       <View>
         <SectionTitle title={`${t('language')} 🌐`} />
         <GlassCard>
-          <Text variant="label" color="textSecondary" style={{ marginBottom: spacing.sm }}>
-            Choose App Language (6 Languages)
-          </Text>
-
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={[styles.themeRow, { gap: spacing.xs }]}
-          >
-            {SUPPORTED_LANGUAGES.map(lang => {
-              const active = (settings.language || 'en') === lang.code;
-              return (
-                <Pressable
-                  key={lang.code}
-                  onPress={() => settings.setLanguage(lang.code as any)}
-                  style={[
-                    styles.themeBtn,
-                    {
-                      borderRadius: radius.lg,
-                      backgroundColor: active ? colors.primary : colors.surfaceAlt,
-                      borderColor: active ? colors.accent : colors.glassBorder,
-                      borderWidth: active ? 2 : StyleSheet.hairlineWidth,
-                    },
-                  ]}
-                >
-                  <Text style={{ fontSize: 16 }}>{lang.flag}</Text>
-                  <Text
-                    variant="label"
-                    style={{
-                      color: active ? colors.onPrimary : colors.text,
-                      fontWeight: active ? '700' : '500',
-                    }}
-                  >
-                    {lang.label}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
+          <AnimatedDropdown
+            label="App Interface Language"
+            options={SUPPORTED_LANGUAGES.map(lang => ({
+              key: lang.code,
+              label: lang.label,
+              flag: lang.flag,
+            }))}
+            selectedKey={settings.language || 'en'}
+            onSelect={code => settings.setLanguage(code as any)}
+          />
         </GlassCard>
       </View>
 

@@ -50,4 +50,6 @@ export { AITelemetryBar } from './AITelemetryBar';
 export { AICopilotModal } from './AICopilotModal';
 export { AIPerformanceRadarCard } from './AIPerformanceRadarCard';
 export { AINewsCard } from './AINewsCard';
+export { AnimatedDropdown } from './AnimatedDropdown';
+export type { AnimatedDropdownProps, DropdownOption } from './AnimatedDropdown';
 

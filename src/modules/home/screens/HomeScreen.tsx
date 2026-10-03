@@ -188,7 +188,7 @@ export const HomeScreen: React.FC = () => {
           {
             paddingVertical: spacing.md,
             gap: spacing.md,
-            paddingBottom: tabBarHeight + spacing.lg,
+            paddingBottom: tabBarHeight + spacing.sm,
             maxWidth: isTablet ? CONTENT_MAX_WIDTH : undefined,
           },
         ]}
@@ -243,9 +243,9 @@ export const HomeScreen: React.FC = () => {
             />
             <View style={{ padding: spacing.lg, gap: spacing.sm }}>
               <View style={styles.heroBadgeRow}>
-                <View style={styles.primaryTag}>
-                  <Text variant="caption" color="textInverse" style={{ fontWeight: '900', fontSize: 11, letterSpacing: 1 }}>
-                    🤖 MASTER ARTIFICIAL INTELLIGENCE · WORLD {world.order}
+                <View style={[styles.primaryTag, { flexShrink: 1 }]}>
+                  <Text variant="caption" color="textInverse" numberOfLines={1} style={{ fontWeight: '900', fontSize: 11, letterSpacing: 0.5 }}>
+                    WORLD {world.order} · LEARNING PATH
                   </Text>
                 </View>
                 <View style={{ backgroundColor: 'rgba(255,255,255,0.22)', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 999 }}>
@@ -267,7 +267,7 @@ export const HomeScreen: React.FC = () => {
                 <View style={styles.nextLessonBox}>
                   <View style={styles.flex}>
                     <Text variant="caption" color="textInverse" style={{ opacity: 0.85, fontSize: 10, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                      Current Chapter to Complete
+                      {Object.keys(completed).length === 0 ? "First Chapter to Start" : "Current Chapter to Complete"}
                     </Text>
                     <Text variant="bodyStrong" color="textInverse" numberOfLines={1} style={{ fontSize: 15, fontWeight: '800' }}>
                       {`Ch ${continueLessons[0].order}: ${continueLessons[0].title}`}
@@ -292,7 +292,7 @@ export const HomeScreen: React.FC = () => {
               >
                 <Icon name="rocket" size={18} color={colors.primary} />
                 <Text variant="bodyStrong" style={{ color: colors.primary, fontSize: 15, fontWeight: '900', letterSpacing: 0.3 }}>
-                  {continueLessons[0] ? "🚀 CONTINUE AI LESSON" : "🚀 START CHAPTER 1"}
+                  {Object.keys(completed).length === 0 ? "START CHAPTER 1" : "CONTINUE LESSON"}
                 </Text>
               </Pressable>
             </View>
@@ -795,7 +795,7 @@ export const HomeScreen: React.FC = () => {
                 borderColor: colors.border,
                 flexDirection: 'row',
                 alignItems: 'center',
-                justify: 'space-between',
+                justifyContent: 'space-between',
               }}
             >
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>

@@ -12,6 +12,7 @@ import { Text } from './Text';
 import { XPBadge } from './XPBadge';
 import { useProgressStore, conceptsMastered, useBrainStore } from '../store';
 import { triggerHaptic } from '../utils/haptics';
+import { shareAchievement } from '../utils/appLinks';
 
 export const ShareCardModal: React.FC<{
   visible: boolean;
@@ -25,18 +26,15 @@ export const ShareCardModal: React.FC<{
 
   const handleShare = async () => {
     triggerHaptic('impactHeavy');
+    const msg = `I'm at Level ${level} with ${xp} XP and a ${streakDays}-day streak on Anviksha AI Lab! Learn AI by playing:`;
     try {
+      let uri: string | undefined;
       if (viewShotRef.current && (viewShotRef.current as any).capture) {
-        const uri = await (viewShotRef.current as any).capture();
-        await Share.open({
-          title: 'My AI Mastery on Anviksha',
-          message: `🔥 I'm at Level ${level} with ${xp} XP and a ${streakDays}-day streak on Anviksha AI Lab! Learn AI by playing:`,
-          url: uri,
-          type: 'image/png',
-        });
+        uri = await (viewShotRef.current as any).capture();
       }
+      await shareAchievement(msg, uri);
     } catch (_e) {
-      // User cancelled share or share failed silently
+      await shareAchievement(msg);
     }
   };
 

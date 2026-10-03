@@ -59,11 +59,18 @@ export const ProfileScreen: React.FC = () => {
         title={t('profile')}
         large
         right={
-          <IconButton
-            name="settings-outline"
-            accessibilityLabel="Settings"
-            onPress={() => navigation.navigate('Settings')}
-          />
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <IconButton
+              name="share-social-outline"
+              accessibilityLabel="Share Profile"
+              onPress={() => setShareOpen(true)}
+            />
+            <IconButton
+              name="settings-outline"
+              accessibilityLabel="Settings"
+              onPress={() => navigation.navigate('Settings')}
+            />
+          </View>
         }
       />
 

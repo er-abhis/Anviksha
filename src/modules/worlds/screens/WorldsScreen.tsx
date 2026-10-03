@@ -32,7 +32,7 @@ const DIFFICULTY: Record<Difficulty, { label: string; icon: string }> = {
 };
 
 export const WorldsScreen: React.FC = () => {
-  const { colors, radius, spacing, elevation } = useTheme();
+  const { colors, radius, spacing, gradients, elevation } = useTheme();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const completed = useProgressStore(s => s.completed);
   const [query, setQuery] = useState('');

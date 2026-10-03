@@ -54,7 +54,15 @@ export type TranslationKey =
   | 'back'
   | 'cancel'
   | 'submit'
-  | 'clear';
+  | 'clear'
+  | 'start_chapter'
+  | 'continue_lesson'
+  | 'explore_topics'
+  | 'ai_glossary'
+  | 'my_worlds'
+  | 'expert_telemetry'
+  | 'latest_news'
+  | 'welcome_title';
 
 export const TRANSLATIONS: Record<LanguageCode, Record<TranslationKey, string>> = {
   en: {
@@ -107,6 +115,14 @@ export const TRANSLATIONS: Record<LanguageCode, Record<TranslationKey, string>> 
     cancel: 'Cancel',
     submit: 'Submit',
     clear: 'Clear',
+    start_chapter: 'Start Chapter 1',
+    continue_lesson: 'Continue Lesson',
+    explore_topics: 'Explore Topics',
+    ai_glossary: 'AI Glossary',
+    my_worlds: 'My Worlds',
+    expert_telemetry: 'Expert Tech Telemetry',
+    latest_news: 'Latest AI News & Breakthroughs',
+    welcome_title: 'Welcome to Anviksha AI!',
   },
   fr: {
     app_title: 'Anviksha AI',
@@ -158,6 +174,14 @@ export const TRANSLATIONS: Record<LanguageCode, Record<TranslationKey, string>> 
     cancel: 'Annuler',
     submit: 'Soumettre',
     clear: 'Effacer',
+    start_chapter: 'Commencer Chapitre 1',
+    continue_lesson: 'Continuer la Leçon',
+    explore_topics: 'Explorer les Sujets',
+    ai_glossary: 'Glossaire IA',
+    my_worlds: 'Mes Mondes',
+    expert_telemetry: 'Télémétrie Expert',
+    latest_news: 'Dernières Actualités IA',
+    welcome_title: 'Bienvenue sur Anviksha AI !',
   },
   ja: {
     app_title: 'Anviksha AI',
@@ -362,5 +386,13 @@ export const TRANSLATIONS: Record<LanguageCode, Record<TranslationKey, string>> 
     cancel: 'रद्द करें',
     submit: 'जमा करें',
     clear: 'साफ़ करें',
+    start_chapter: 'अध्याय 1 शुरू करें',
+    continue_lesson: 'पाठ जारी रखें',
+    explore_topics: 'विषयों की खोज करें',
+    ai_glossary: 'AI शब्दावली',
+    my_worlds: 'मेरी दुनिया',
+    expert_telemetry: 'विशेषज्ञ तकनीकी टेलीमेट्री',
+    latest_news: 'नवीनतम AI समाचार',
+    welcome_title: 'अन्वीक्षा AI में आपका स्वागत है!',
   },
 };

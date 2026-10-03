@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Button, GlassCard, Header, Screen, Text, XPBadge } from '../../../components';
+import { Button, GlassCard, Gradient, Header, Screen, Text, XPBadge } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { useAchievementsStore, useProgressStore } from '../../../store';
 import {

@@ -55,28 +55,29 @@ export const buildAchievementMessage = (lesson: Lesson): string => {
  * work on Android (core RN Share can't share files there).
  */
 export const shareAchievement = async (message: string, imageUri?: string): Promise<void> => {
+  const fullMsg = message.includes('http') ? message : `${message}\n${webStoreUrl()}`;
   try {
-    // Lazy require: react-native-share initialises its native module at import
-    // time, so importing it eagerly would crash the whole app on launch if the
-    // native build is stale. Requiring it here keeps failure contained to share.
-    const RNShare = require('react-native-share').default;
-    if (imageUri) {
+    const rawRNShare = require('react-native-share');
+    const RNShare = rawRNShare?.default || rawRNShare;
+    if (imageUri && RNShare && typeof RNShare.open === 'function') {
       const url =
-        imageUri.startsWith('file://') || imageUri.startsWith('content://')
+        imageUri.startsWith('file://') || imageUri.startsWith('content://') || imageUri.startsWith('data:')
           ? imageUri
           : `file://${imageUri}`;
-      await RNShare.open({ url, message, type: 'image/png', failOnCancel: false });
-    } else {
-      await RNShare.open({ message, failOnCancel: false });
+      await RNShare.open({ url, message: fullMsg, type: 'image/png', failOnCancel: false });
+      return;
+    } else if (RNShare && typeof RNShare.open === 'function') {
+      await RNShare.open({ message: fullMsg, failOnCancel: false });
+      return;
     }
-  } catch {
-    // Native module missing (stale build), user dismissed, or unavailable —
-    // fall back to the core RN share sheet (text only) so sharing still works.
-    try {
-      await Share.share({ message });
-    } catch {
-      // Nothing more to do.
-    }
+  } catch (_e) {
+    // Fall back to RN core Share
+  }
+
+  try {
+    await Share.share({ message: fullMsg, title: 'Anviksha AI Lab' });
+  } catch (_e) {
+    // User dismissed or share sheet unavailable
   }
 };
 

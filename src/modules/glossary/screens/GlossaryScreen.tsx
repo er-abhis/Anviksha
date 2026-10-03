@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { EmptyState, GlassCard, Header, Screen, SearchBar, Text } from '../../../components';
+import { EmptyState, GlassCard, Gradient, Header, Screen, SearchBar, Text } from '../../../components';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { useAchievementsStore } from '../../../store';
 import { GLOSSARY, GlossaryTerm, glossaryTerm } from '../../../content';
@@ -18,7 +18,7 @@ const SEARCH_HINTS = [
 ];
 
 export const GlossaryScreen: React.FC = () => {
-  const { colors, radius, spacing } = useTheme();
+  const { colors, radius, spacing, gradients } = useTheme();
   const navigation = useNavigation();
   const unlock = useAchievementsStore(s => s.unlock);
   const [query, setQuery] = useState('');

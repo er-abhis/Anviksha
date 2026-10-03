@@ -36,7 +36,7 @@ export const SearchScreen: React.FC = () => {
       icon: 'book-outline',
       title: l.title,
       subtitle: l.subtitle,
-      onPress: () => navigation.navigate('Lesson', { lessonId: l.id }),
+      onPress: () => (navigation as any).navigate('LessonIntro', { lessonId: l.id }),
     }));
     const glossary: Row[] = GLOSSARY.filter(t => has(q, t.name, t.simple, t.technical)).map(t => ({
       key: `glossary-${t.slug}`,
